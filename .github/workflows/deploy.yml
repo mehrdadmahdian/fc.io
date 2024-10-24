@@ -27,7 +27,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
             cd /var/www/fc.io
-            git pull
+            git pull --rebase
             docker compose down
             docker compose up --build -d
           EOF
