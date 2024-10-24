@@ -3,10 +3,10 @@
 if [ "$APP_ENV" = "production" ]; then
     echo "Running in production mode..."
     
-    go build -o myapp ./cmd/server/main.go 
+    go build -o myapp ./cmd/server.go 
     exec ./myapp
 
 else
     echo "Running in development mode..."
-    exec reflex -r '\.go$' -- sh -c 'go build -o myapp ./cmd/server/main.go && ./myapp'
+    reflex -r "\\.go$" -s -- sh -c 'echo "change detected!" && go run /var/www/cmd/server.go'
 fi

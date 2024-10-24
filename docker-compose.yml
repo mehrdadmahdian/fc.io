@@ -1,23 +1,23 @@
 services:
-  nginx:
-    build: 
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-    container_name: nginx-container
-    ports:
-      - "80:80"
-    environment:
-      - SERVER_NAME=${SERVER_NAME}
-      - UI_SERVER_PORT=${UI_SERVER_PORT}
-      - API_SERVER_PORT=${API_SERVER_PORT}
-    volumes:
-      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
-      - ./docker/nginx/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
-    depends_on:
-      - ui
-      - api
-    networks:
-      fc-network:
+  # nginx:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./docker/nginx/Dockerfile
+  #   container_name: nginx-container
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     - SERVER_NAME=${SERVER_NAME}
+  #     - UI_SERVER_PORT=${UI_SERVER_PORT}
+  #     - API_SERVER_PORT=${API_SERVER_PORT}
+  #   volumes:
+  #     - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+  #     - ./docker/nginx/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+  #   depends_on:
+  #     - ui
+  #     - api
+  #   networks:
+  #     fc-network:
   api:
     build: 
       context: .
@@ -32,30 +32,9 @@ services:
       APP_ENV: ${APP_ENV}
       API_SERVER_PORT: ${API_SERVER_PORT}
     depends_on:
-      # - db
       - mongodb
     networks:
       fc-network:
-  # db:
-  #   image: mysql
-  #   container_name: db-container
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_API_PASSWORD}
-  #     MYSQL_DATABASE: ${MYSQL_API_DATABASE}
-  #     MYSQL_USER: ${MYSQL_API_USERNAME}
-  #     MYSQL_PASSWORD: ${MYSQL_API_PASSWORD}
-  #   ports:
-  #     - "${MYSQL_API_PORT}:${MYSQL_API_PORT}"
-  #   volumes:
-  #     - fc_mysql_data:/var/lib/mysql
-  #     - ./docker/db/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
-  #     - ./db/my.cnf:/etc/mysql/my.cnf
-  #   restart: always
-  #   command:
-  #     --character-set-server=utf8mb4
-  #     --collation-server=utf8mb4_0900_ai_ci
-  #   networks:
-  #     fc-network:
   ui:
     container_name: ui-container
     build:
@@ -114,3 +93,25 @@ volumes:
     node_modules:
     redis_data:
     mongo-data:
+
+
+    # db:
+  #   image: mysql
+  #   container_name: db-container
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_API_PASSWORD}
+  #     MYSQL_DATABASE: ${MYSQL_API_DATABASE}
+  #     MYSQL_USER: ${MYSQL_API_USERNAME}
+  #     MYSQL_PASSWORD: ${MYSQL_API_PASSWORD}
+  #   ports:
+  #     - "${MYSQL_API_PORT}:${MYSQL_API_PORT}"
+  #   volumes:
+  #     - fc_mysql_data:/var/lib/mysql
+  #     - ./docker/db/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/
+  #     - ./db/my.cnf:/etc/mysql/my.cnf
+  #   restart: always
+  #   command:
+  #     --character-set-server=utf8mb4
+  #     --collation-server=utf8mb4_0900_ai_ci
+  #   networks:
+  #     fc-network:
