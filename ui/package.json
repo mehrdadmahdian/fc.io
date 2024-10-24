@@ -1,0 +1,23 @@
+{
+    "name": "ui",
+    "version": "1.0.0",
+    "description": "ui application",
+    "author": "mehrdad mahdian",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+      "serve": "vue-cli-service serve",
+      "build": "vue-cli-service build",
+      "lint": "vue-cli-service lint"
+    },
+    "dependencies": {
+    "bootstrap": "^5.3.1",
+    "bootstrap-vue": "^2.0.0-rc.24",
+    "vue": "^3.2.47"
+    },
+    "devDependencies": {
+        "@vue/cli-service": "^5.0.8",
+        "@vue/compiler-sfc": "^3.2.47",
+        "vue-loader": "^17.0.0"   
+    }
+  }
