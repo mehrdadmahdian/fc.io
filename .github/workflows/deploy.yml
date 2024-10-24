@@ -26,7 +26,7 @@ jobs:
       - name: Deploy to server using Docker Compose
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd /var/www
+            cd /var/www/fc.io
             git pull
             docker compose down
             docker compose up --build -d
