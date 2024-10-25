@@ -25,24 +25,24 @@ jobs:
       - name: Check for build-related changes on server
         id: check_changes
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
-            cd /var/www/fc.io
-            git fetch origin master
-            LAST_DEPLOYED_COMMIT=$(cat deploy/last_deployed_commit || echo "")
-            
-            if [ -z "$LAST_DEPLOYED_COMMIT" ]; then
-              echo "Build-related changes detected (first deployment)."
-              echo "build_required=true" >> $GITHUB_ENV
-            else
-              if git diff --name-only $LAST_DEPLOYED_COMMIT origin/master | grep -E '(docker-compose.yml|^docker/)'; then
-                echo "Build-related changes detected."
-                echo "build_required=true" >> $GITHUB_ENV
+          if ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "[[ -f /var/www/fc.io/deploy/last_deployed_commit ]]"; then
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
+              cd /var/www/fc.io
+              git fetch origin master
+              LAST_DEPLOYED_COMMIT=\$(cat deploy/last_deployed_commit)
+
+              if git diff --name-only "\$LAST_DEPLOYED_COMMIT" origin/master | grep -E '(docker-compose.yml|^docker/)'; then
+                echo "true" > /tmp/build_required.txt
               else
-                echo "No build-related changes detected."
-                echo "build_required=false" >> $GITHUB_ENV
+                echo "false" > /tmp/build_required.txt
               fi
-            fi
-          EOF
+            EOF
+          else
+            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo 'true' > /tmp/build_required.txt"
+          fi
+
+          BUILD_REQUIRED=$(ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cat /tmp/build_required.txt")
+          echo "build_required=$BUILD_REQUIRED" >> $GITHUB_ENV
 
       - name: Deploy to server using Docker Compose
         run: |
