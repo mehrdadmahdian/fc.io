@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'IranSans';
+    src: url('./fonts/IranSans.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  body {
+    font-family: 'IranSans', sans-serif; /* Use IranSans font */
+    direction: rtl; /* Set the text direction to RTL */
+    text-align: right; /* Align text to the right */
+  }
