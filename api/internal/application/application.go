@@ -7,9 +7,9 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
 	"github.com/mehrdadmahdian/fc.io/internal/database/seeders"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers"
-	"github.com/mehrdadmahdian/fc.io/internal/mongo"
-	"github.com/mehrdadmahdian/fc.io/internal/redis"
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth"
+	"github.com/mehrdadmahdian/fc.io/internal/services/mongo"
+	"github.com/mehrdadmahdian/fc.io/internal/services/redis"
 )
 
 type ApplicationContainer struct {

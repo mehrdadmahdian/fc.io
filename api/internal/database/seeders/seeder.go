@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
-	"github.com/mehrdadmahdian/fc.io/internal/mongo"
+	"github.com/mehrdadmahdian/fc.io/internal/services/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
