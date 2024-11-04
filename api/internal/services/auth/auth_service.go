@@ -5,17 +5,18 @@ import (
 	"errors"
 	"time"
 
-	"github.com/mehrdadmahdian/fc.io/internal/models"
+	"github.com/mehrdadmahdian/fc.io/internal/database/models"
+	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepository *models.UserRepository
-	jWTService     *JWTService
+	userRepository *repositories.UserRepository
+	jwtService     *JWTService
 }
 
 func NewAuthService(
-	userRepository *models.UserRepository,
+	userRepository *repositories.UserRepository,
 	authConfig map[string]interface{},
 ) (*AuthService, error) {
 
@@ -58,7 +59,7 @@ func NewAuthService(
 
 	return &AuthService{
 		userRepository: userRepository,
-		jWTService:     JWTService,
+		jwtService:     JWTService,
 	}, nil
 }
 
@@ -72,11 +73,11 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 		return nil, errors.New("user not found")
 	}
 
-	if err := checkPassword(user.Password, password); err != nil {
+	if err := checkPassword(user.HashedPassword, password); err != nil {
 		return nil, errors.New("invalid password")
 	}
 
-	tokenStruct, err := authService.jWTService.CreateTokenStruct(user.ID, user.Name, user.Email)
+	tokenStruct, err := authService.jwtService.CreateTokenStruct(user.IDString(), user.Name, user.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -85,9 +86,23 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 }
 
 func checkPassword(hashedPassword, password string) error {
-    return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
 func (authService *AuthService) GetUser() string {
 	return "User data from service"
+}
+
+func (authService *AuthService) GetUserByToken(token string) (*models.User, error) {
+	var err error
+	claims, err := authService.jwtService.ParseToken(token)
+	if err != nil {
+		return nil, err
+	}
+	user, err := authService.userRepository.FindUserById(claims.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

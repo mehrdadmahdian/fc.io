@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -25,9 +26,9 @@ func newJWTService(
 }
 
 type UserClaims struct {
-	UserId    string
-	UserName  string
-	UserEmail string
+	UserID    string `json:"userId"`
+	UserName  string `json:"userName"`
+	UserEmail string `json:"userEmail"`
 	jwt.RegisteredClaims
 }
 
@@ -39,7 +40,7 @@ func (service *JWTService) generateToken(
 ) (*string, error) {
 
 	claims := UserClaims{
-		UserId:    userId,
+		UserID:    userId,
 		UserName:  username,
 		UserEmail: email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -94,25 +95,19 @@ func VerifyToken(tokenString string) error {
 	return nil
 }
 
-// func ParseTokenData(tokenString string) (*TokenInformation, error) {
-// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-// 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-// 		}
-// 		return JWTSecret, nil
-// 	})
+func (jwtService *JWTService) ParseToken(tokenString string) (*UserClaims, error) {
+	claims := &UserClaims{}
 
-// 	if err != nil || !token.Valid {
-// 		return nil, fmt.Errorf("invalid token: %v", err)
-// 	}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return jwtService.jwtSecret, nil
+	})
 
-// 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-// 		return &TokenInformation{
-// 			UserId:    int(claims["user_id"].(float64)),
-// 			UserName:  claims["user_name"].(string),
-// 			UserEmail: claims["user_email"].(string),
-// 		}, nil
-// 	}
+	if err != nil || !token.Valid {
+		return nil, fmt.Errorf("invalid token: %v", err)
+	}
 
-// 	return nil, fmt.Errorf("could not parse token")
-// }
+	return claims, nil
+}

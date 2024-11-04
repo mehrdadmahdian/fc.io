@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
@@ -22,6 +23,7 @@ func NewAuthHandler(authService *auth.AuthService) (*AuthHandler, error) {
 func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 	Request, err := requests.ParseRequestBody(c, new(requests.LoginRequest))
 	if err != nil {
+		TraceError(err)
 		return JsonFailed(
 			c,
 			fiber.StatusInternalServerError,
@@ -29,7 +31,6 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 			nil,
 		)
 	}
-
 	validationErros := requests.Validate(Request)
 	if validationErros != nil {
 		return JsonFailed(
@@ -39,7 +40,6 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 			utils.ConvertToMapInterface(validationErros),
 		)
 	}
-
 	TokenStruct, err := handler.authService.Login(
 		context.Background(),
 		Request.Email,
@@ -47,6 +47,7 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
+		TraceError(err)
 		return JsonFailed(
 			c,
 			fiber.StatusBadRequest,
@@ -59,6 +60,8 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 		"access_token":  TokenStruct.Token,
 		"refresh_token": TokenStruct.RefreshToken,
 	}
+
+	fmt.Println(dataMap)
 
 	return JsonSuccess(
 		c,

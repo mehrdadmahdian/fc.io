@@ -1,4 +1,4 @@
-package db
+package mongo
 
 import (
 	"context"
@@ -12,11 +12,10 @@ import (
 
 type MongoService struct {
 	mongoClient *mongo.Client
-	ctx         context.Context
+	ctx context.Context
 }
 
 func NewMongoService(ctx context.Context, uri string) (*MongoService, error) {
-	fmt.Println(uri)
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to MongoDB: %w", err)

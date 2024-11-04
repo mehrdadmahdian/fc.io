@@ -11,7 +11,8 @@ var (
 
 type ServiceCreationError struct {
 	ServiceName string
-	Err         error
+	Err error
+	OriginalErrorMessage string
 }
 
 func (e *ServiceCreationError) Error() string {
