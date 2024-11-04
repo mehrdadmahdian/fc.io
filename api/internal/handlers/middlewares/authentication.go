@@ -22,7 +22,7 @@ func AuthenticationMiddleware(applicationContainer *application.ApplicationConta
 			)
 		}
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-		exists, err := applicationContainer.RedisService.Client().SIsMember(context.Background(), "jwt_blacklist", tokenString).Result()
+		exists, err := applicationContainer.RedisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
 		if err != nil {
 			return handlers.JsonFailed(
 				c,

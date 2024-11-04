@@ -50,7 +50,7 @@ func NewApplicationContainer(Cfg *config.Config, ctx context.Context) (*Applicat
 
 	userRepository, err := repositories.NewUserRepository(mongoService)
 	authService, err := auth.NewAuthService(userRepository, Cfg.Auth)
-	authHandler, err := handlers.NewAuthHandler(authService)
+	authHandler, err := handlers.NewAuthHandler(authService, redisService)
 
 	return &ApplicationContainer{
 		MongoService: mongoService,

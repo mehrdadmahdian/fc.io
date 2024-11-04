@@ -85,6 +85,20 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 	return tokenStruct, nil
 }
 
+func (authService *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*TokenStruct, error) {
+	user, err := authService.GetUserByToken(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenStruct, err := authService.jwtService.CreateTokenStruct(user.IDString(), user.Name, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenStruct, nil
+}
+
 func checkPassword(hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
