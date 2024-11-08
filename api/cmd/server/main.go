@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 	"github.com/mehrdadmahdian/fc.io/config"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/routes"
@@ -30,8 +31,14 @@ func main() {
 	if err != nil {
 		panic(fmt.Sprintf("application could not be initialized: %s", err.Error()))
 	}
+	
+	engine := html.New("./templates", ".html")
+	fiber := fiber.New(fiber.Config{
+		Views: engine,
+		Prefork: false,
+	})
+	fiber.Static("/public", "./public")
 
-	fiber := fiber.New()
 	routes.SetupRoutes(fiber, application)
 	go func() {
 		log.Printf("Starting server on %s", cfg.ServerAddr)

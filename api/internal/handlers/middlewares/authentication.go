@@ -67,3 +67,47 @@ func AuthenticationMiddleware(applicationContainer *application.ApplicationConta
 		return c.Next()
 	}
 }
+
+func SessionMiddleware(applicationContainer *application.ApplicationContainer) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		tokenString := c.Cookies("token")
+		if (tokenString == "") {
+			return c.Status(fiber.StatusUnauthorized).Render("401", fiber.Map{
+                "error": "token is not provided",
+            })
+		}
+
+		exists, err := applicationContainer.RedisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).Render("401", fiber.Map{
+                "error": "failed to check blacklisted offers",
+            })
+		}
+
+		if exists {
+			return c.Status(fiber.StatusUnauthorized).Render("401", fiber.Map{
+                "error": "token is blacklisted",
+            })
+		}
+
+		user, err := applicationContainer.AuthService.GetUserByToken(
+			tokenString,
+		)
+
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).Render("401", fiber.Map{
+                "error": "failed to get user",
+            })
+		}
+
+		if user == nil {
+			return c.Status(fiber.StatusUnauthorized).Render("401", fiber.Map{
+                "error": "user is not found",
+            })
+		}
+
+		c.Locals("user", user)
+
+		return c.Next()
+	}
+}

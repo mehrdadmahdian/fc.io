@@ -7,9 +7,26 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/middlewares"
 )
 
-func SetupRoutes(app *fiber.App, applicationContainer *application.ApplicationContainer) {
+func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.ApplicationContainer) {
+	setupApiRoutes(fiberApp, applicationContainer)
+	setupWebRoutes(fiberApp, applicationContainer)
+}
+
+func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.ApplicationContainer) {
+	SessionMiddleware := middlewares.SessionMiddleware(applicationContainer)
+
+	IndexHandler := applicationContainer.IndexHandler
+
+	webGroup := fiberApp.Group("/web")
+	webGroup.Get("/", IndexHandler.Index)
+	webGroup.Get("/health-check", IndexHandler.Healthcheck)
+	webGroup.Get("/auth-health-check", SessionMiddleware, IndexHandler.AuthHealthcheck)
+
+}
+
+func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.ApplicationContainer) {
 	AuthMiddleware := middlewares.AuthenticationMiddleware(applicationContainer)
-	apiGroup := app.Group("/api")
+	apiGroup := fiberApp.Group("/api")
 	apiGroup.Get("/health-check", handlers.Healthcheck)
 
 	authHandler := applicationContainer.AuthHandler
@@ -40,5 +57,4 @@ func SetupRoutes(app *fiber.App, applicationContainer *application.ApplicationCo
 	stageGroup.Get("/:id", handlers.AuthCheck)
 	stageGroup.Put("/:id", handlers.AuthCheck)
 	stageGroup.Delete("/:id", handlers.AuthCheck)
-
 }
