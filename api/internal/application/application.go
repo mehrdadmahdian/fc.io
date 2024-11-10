@@ -9,6 +9,7 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/api_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/web_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 )
@@ -17,9 +18,10 @@ type Container struct {
 	MongoService   *mongo_service.MongoService
 	RedisService   *redis_service.RedisService
 	AuthService    *auth_service.AuthService
+	BoxService     *box_service.BoxService
 	Seeder         *seeders.Seeder
 	ApiAuthHandler *api_handlers.AuthHandler
-	WebPageHandler *web_handlers.WebHandler
+	WebHandler     *web_handlers.WebHandler
 }
 
 func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
@@ -58,6 +60,16 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 			OriginalErrorMessage: err.Error(),
 		}
 	}
+
+	boxRepository, err := repositories.NewBoxRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "boxRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
 	authService, err := auth_service.NewAuthService(userRepository, Cfg.Auth)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -66,6 +78,16 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 			OriginalErrorMessage: err.Error(),
 		}
 	}
+	
+	boxService, err := box_service.NewBoxService(boxRepository)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "boxService",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
 	authHandler, err := api_handlers.NewAuthHandler(authService, redisService)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -75,10 +97,10 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	webPageHandler, err := web_handlers.NewWebHandler(authService)
+	webHandler, err := web_handlers.NewWebHandler(authService, boxService)
 	if err != nil {
 		return nil, &ServiceCreationError{
-			ServiceName:          "indexController",
+			ServiceName:          "webHandler",
 			Err:                  FailedToCreateService,
 			OriginalErrorMessage: err.Error(),
 		}
@@ -88,8 +110,9 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		MongoService:   mongoService,
 		RedisService:   redisService,
 		AuthService:    authService,
+		BoxService:     boxService,
 		Seeder:         seeder,
 		ApiAuthHandler: authHandler,
-		WebPageHandler: webPageHandler,
+		WebHandler:     webHandler,
 	}, nil
 }

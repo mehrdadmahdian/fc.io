@@ -64,9 +64,13 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 		return c.Render("auth/register", fiber.Map{"ErrorMessage": "requested passwords are not matched."})
 	}
 
-	tokenStruct, err := webHandler.authService.Register(c.Context(), request.Name, request.Email, request.Password)
+	tokenStruct, user, err := webHandler.authService.Register(c.Context(), request.Name, request.Email, request.Password)
 	if err != nil {
 		return c.Render("auth/register", fiber.Map{"ErrorMessage": err})
+	}
+
+	if user == nil {
+		return c.Render("auth/register", fiber.Map{"ErrorMessage": "error while user registration"})
 	}
 
 	c.Cookie(&fiber.Cookie{
@@ -77,6 +81,11 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 		Secure:   false,
 		SameSite: "Strict",
 	})
+
+	err = webHandler.boxService.SetupBoxForUser(user)
+	if (err != nil) {
+		return c.Redirect("/web/dashboard/", fiber.StatusFound)
+	}
 
 	return c.Redirect("/web/dashboard/", fiber.StatusFound)
 }

@@ -15,7 +15,7 @@ func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.Containe
 func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
 	WebAuthMiddleware := middlewares.WebAuthMiddleware(applicationContainer)
 
-	PageHandler := applicationContainer.WebPageHandler
+	PageHandler := applicationContainer.WebHandler
 
 	webGroup := fiberApp.Group("/web")
 	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), PageHandler.Index)

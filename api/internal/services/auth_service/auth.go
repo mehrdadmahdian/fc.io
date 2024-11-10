@@ -3,7 +3,6 @@ package auth_service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 	"unicode"
@@ -88,31 +87,31 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 	return tokenStruct, nil
 }
 
-func (authService *AuthService) Register(ctx context.Context, name, email, password string) (*TokenStruct, error) {
+func (authService *AuthService) Register(ctx context.Context, name, email, password string) (*TokenStruct, *models.User, error) {
 	user, err := authService.userRepository.FindUserByEmail(email)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if user != nil {
-		return nil, errors.New("user with this email already exists.")
+		return nil, nil, errors.New("user with this email already exists.")
 	}
 
 	if isSecurePassword(password) == false {
-		return nil, errors.New("password is not secure. choose better one.")
+		return nil, nil, errors.New("password is not secure. choose better one.")
 	}
 
 	user, err = authService.userRepository.CreateNewUser(name, email, password)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	tokenStruct, err := authService.jwtService.CreateTokenStruct(user.IDString(), user.Name, user.Email)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return tokenStruct, nil
+	return tokenStruct, user, nil
 }
 
 func isSecurePassword(password string) bool {
