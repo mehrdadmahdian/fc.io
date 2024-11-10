@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("could not load config: %v", err)
 	}
 
-	application, err := application.NewApplicationContainer(cfg, ctx)
+	application, err := application.NewContainer(cfg, ctx)
 
 	if err != nil {
 		panic(fmt.Sprintf("application could not be initialized: %s", err.Error()))

@@ -6,15 +6,15 @@ import (
 	"log"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
-	"github.com/mehrdadmahdian/fc.io/internal/services/mongo"
+	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Seeder struct {
-	MongoService *mongo.MongoService
+	MongoService *mongo_service.MongoService
 }
 
-func NewSeeder(mongoService *mongo.MongoService) (*Seeder, error) {
+func NewSeeder(mongoService *mongo_service.MongoService) (*Seeder, error) {
 	return &Seeder{
 		MongoService: mongoService,
 	}, nil

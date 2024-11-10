@@ -1,4 +1,4 @@
-package handlers
+package api_handlers
 
 import (
 	"context"
@@ -7,17 +7,17 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
-	"github.com/mehrdadmahdian/fc.io/internal/services/auth"
-	"github.com/mehrdadmahdian/fc.io/internal/services/redis"
+	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
 type AuthHandler struct {
-	authService  *auth.AuthService
-	redisService *redis.RedisService
+	authService  *auth_service.AuthService
+	redisService *redis_service.RedisService
 }
 
-func NewAuthHandler(authService *auth.AuthService, redisService *redis.RedisService) (*AuthHandler, error) {
+func NewAuthHandler(authService *auth_service.AuthService, redisService *redis_service.RedisService) (*AuthHandler, error) {
 	return &AuthHandler{
 		authService:  authService,
 		redisService: redisService,
@@ -89,7 +89,7 @@ func (handler *AuthHandler) RefreshToken(c *fiber.Ctx) error {
 	if err != nil {
 		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to generate new tokens"), nil)
 	}
-	
+
 	dataMap := map[string]interface{}{
 		"access_token":  tokenStruct.Token,
 		"refresh_token": tokenStruct.RefreshToken,

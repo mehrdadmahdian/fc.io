@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 	"github.com/mehrdadmahdian/fc.io/config"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
@@ -26,17 +27,23 @@ func main() {
 		log.Fatalf("could not load config: %v", err)
 	}
 
-	application, err := application.NewApplicationContainer(cfg, ctx)
+	application, err := application.NewContainer(cfg, ctx)
 
 	if err != nil {
 		panic(fmt.Sprintf("application could not be initialized: %s", err.Error()))
 	}
-	
-	engine := html.New("./templates", ".html")
+
+	engine := html.New("./internal/templates", ".html")
+	engine.Reload(true)
 	fiber := fiber.New(fiber.Config{
-		Views: engine,
+		Views:   engine,
 		Prefork: false,
 	})
+
+	fiber.Use(recover.New(recover.Config{
+		Next:              nil,
+		EnableStackTrace:  true,
+	}))
 	fiber.Static("/public", "./public")
 
 	routes.SetupRoutes(fiber, application)

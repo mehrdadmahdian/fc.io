@@ -1,0 +1,22 @@
+{{ template "dashboard/header" . }}
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <header class="bg-dark text-white text-center p-3">
+        <h2>Flashcards.io Dashboard</h2>
+    </header>
+
+    <main class="container my-5">
+        <div class="card shadow p-4">
+            <h3>Overview</h3>
+            <p>Welcome, {{.User.Name}}! Here you can manage your account, view your data, and explore insights tailored just for you.</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="#">Profile Settings</a></li>
+                <li class="list-group-item"><a href="#">Data Management</a></li>
+                <li class="list-group-item"><a href="#">Insights</a></li>
+            </ul>
+        </div>
+    </main>
+
+    {{ template "dashboard/footer" . }}
+</body>
+</html>

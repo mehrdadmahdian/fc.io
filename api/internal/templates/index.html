@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/public/js/jquery-3.6.0.min.js"></script>
+    <script>
+        const isLoggedIn = {{if .User}}true{{else}}false{{end}};
+    </script>
+    <style>
+        .hero {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 100px 20px;
+        }
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Header -->
+    <header class="p-3 bg-dark text-white text-center">
+        <h2>Flashcards.io</h2>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero text-center">
+        <h1>Discover Your Dashboard</h1>
+        <p class="lead">Easily access your profile, manage settings, and explore insights in one place.</p>
+        <button id="actionButton" class="btn btn-light btn-lg mt-4">Loading...</button>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>About Our Platform</h3>
+                <p>Our application provides a comprehensive suite of tools to help you manage your data and track progress. From intuitive dashboards to secure data storage, we have everything you need to stay organized and efficient.</p>
+                {{if .User}}
+                {{else}}
+                    <a href="/web/auth/register" class="btn btn-primary">Wanted to Join!</a>
+                {{end}}
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-center mt-auto">
+        <p>&copy; 2024 Flashcards.io | <a href="/privacy" class="text-white">Privacy Policy</a></p>
+    </footer>
+
+    <script>
+        const actionButton = document.getElementById("actionButton");
+
+        if (isLoggedIn) {
+            actionButton.textContent = "Go to Dashboard";
+            actionButton.onclick = () => window.location.href = "/web/dashboard";
+        } else {
+            actionButton.textContent = "Login";
+            actionButton.onclick = () => window.location.href = "/web/auth/login";
+        }
+    </script>
+</body>
+</html>

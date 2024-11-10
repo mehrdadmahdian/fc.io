@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
-	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo"
+	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

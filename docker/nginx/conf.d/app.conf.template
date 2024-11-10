@@ -2,6 +2,10 @@ server {
     listen 80;
     server_name $SERVER_NAME;
 
+    location = / {
+        return 302 /web/;
+    }
+    
     location /api/ {
         proxy_pass http://api-container:$API_SERVER_PORT/api/;
         proxy_set_header Host $host;
