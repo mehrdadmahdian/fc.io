@@ -53,8 +53,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
             cd /var/www/fc.io
-            git pull --rebase
-
+            git fetch origin master && git reset --hard origin/master && git clean -fd
+            
             if [[ "${{ env.build_required }}" == "true" ]]; then
               echo "Build-related changes detected. Rebuilding containers."
               docker compose down
