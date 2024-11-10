@@ -1,11 +1,11 @@
 package web_handlers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
+	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
 func (handler *WebHandler) AuthHealthcheck(c *fiber.Ctx) error {
@@ -26,7 +26,6 @@ func (handler *WebHandler) Login(c *fiber.Ctx) error {
 
 func (webHandler *WebHandler) PostLogin(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.LoginRequest))
-	fmt.Println(request)
 	if err != nil {
 		return c.Render("auth/login", fiber.Map{"ErrorMessage": "Can not parse the request"})
 	}
@@ -45,7 +44,7 @@ func (webHandler *WebHandler) PostLogin(c *fiber.Ctx) error {
 		Value:    tokenStruct.Token,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HTTPOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: "Strict",
 	})
 	return c.Redirect("/web/dashboard/", fiber.StatusFound)
@@ -53,18 +52,21 @@ func (webHandler *WebHandler) PostLogin(c *fiber.Ctx) error {
 
 func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.RegisterRequest))
-	fmt.Println(request)
 	if err != nil {
-		return c.Render("auth/login", fiber.Map{"ErrorMessage": "Can not parse the request"})
+		return c.Render("auth/register", fiber.Map{"ErrorMessage": "Can not parse the request"})
 	}
 	validationErros := requests.Validate(request)
 	if validationErros != nil {
-		return c.Render("auth/login", fiber.Map{"ErrorMessage": "Request data is not valid"})
+		return c.Render("auth/register", fiber.Map{"ErrorMessage": utils.MapToString(*validationErros)})
 	}
 
-	tokenStruct, err := webHandler.authService.Login(c.Context(), request.Email, request.Password)
+	if request.Password != request.ConfirmationPassword {
+		return c.Render("auth/register", fiber.Map{"ErrorMessage": "requested passwords are not matched."})
+	}
+
+	tokenStruct, err := webHandler.authService.Register(c.Context(), request.Name, request.Email, request.Password)
 	if err != nil {
-		return c.Render("auth/login", fiber.Map{"ErrorMessage": err})
+		return c.Render("auth/register", fiber.Map{"ErrorMessage": err})
 	}
 
 	c.Cookie(&fiber.Cookie{
@@ -72,9 +74,10 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 		Value:    tokenStruct.Token,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HTTPOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: "Strict",
 	})
+
 	return c.Redirect("/web/dashboard/", fiber.StatusFound)
 }
 

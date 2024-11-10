@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -35,6 +36,26 @@ func (userRepository *UserRepository) FindUserByEmail(email string) (*models.Use
 	}
 
 	return &user, nil
+}
+
+func (userRepository *UserRepository) CreateNewUser(name, email, password string) (*models.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	newUser := &models.User{
+		Email:          email,
+		Name:           name,
+		HashedPassword: string(hashedPassword),
+	}
+
+	_, err = userRepository.collection.InsertOne(context.TODO(), newUser)
+	if err != nil {
+		return nil, err
+	}
+
+	return newUser, nil
 }
 
 func (userRepository *UserRepository) FindUserById(userID string) (*models.User, error) {

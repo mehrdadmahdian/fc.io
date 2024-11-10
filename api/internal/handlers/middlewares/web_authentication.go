@@ -7,7 +7,6 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/application"
 )
 
-
 func WebAuthMiddleware(Container *application.Container) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Cookies("token")
@@ -24,9 +23,7 @@ func WebAuthMiddleware(Container *application.Container) fiber.Handler {
 			return c.Redirect("/web/auth/login", 302)
 		}
 
-		user, err := Container.AuthService.GetUserByToken(
-			tokenString,
-		)
+		user, err := Container.AuthService.GetUserByToken(tokenString)
 
 		if err != nil {
 			return c.Redirect("/web/auth/login", 302)

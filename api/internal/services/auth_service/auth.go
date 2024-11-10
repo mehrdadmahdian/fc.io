@@ -3,7 +3,10 @@ package auth_service
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
@@ -85,6 +88,64 @@ func (authService *AuthService) Login(ctx context.Context, email, password strin
 	return tokenStruct, nil
 }
 
+func (authService *AuthService) Register(ctx context.Context, name, email, password string) (*TokenStruct, error) {
+	user, err := authService.userRepository.FindUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if user != nil {
+		return nil, errors.New("user with this email already exists.")
+	}
+
+	if isSecurePassword(password) == false {
+		return nil, errors.New("password is not secure. choose better one.")
+	}
+
+	user, err = authService.userRepository.CreateNewUser(name, email, password)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenStruct, err := authService.jwtService.CreateTokenStruct(user.IDString(), user.Name, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenStruct, nil
+}
+
+func isSecurePassword(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
+
+	hasLower := false
+	hasUpper := false
+	hasDigit := false
+	hasSpecial := false
+
+	for _, char := range password {
+		switch {
+		case unicode.IsLower(char):
+			hasLower = true
+		case unicode.IsUpper(char):
+			hasUpper = true
+		case unicode.IsDigit(char):
+			hasDigit = true
+		case isSpecialCharacter(char):
+			hasSpecial = true
+		}
+	}
+
+	return hasLower && hasUpper && hasDigit && hasSpecial
+}
+
+func isSpecialCharacter(c rune) bool {
+	specialChars := "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~"
+	return strings.ContainsRune(specialChars, c)
+}
+
 func (authService *AuthService) RefreshToken(ctx context.Context, refreshToken string) (*TokenStruct, error) {
 	user, err := authService.GetUserByToken(refreshToken)
 	if err != nil {
@@ -113,7 +174,7 @@ func (authService *AuthService) GetUserByToken(token string) (*models.User, erro
 	if err != nil {
 		return nil, err
 	}
-	user, err := authService.userRepository.FindUserById(claims.UserID)
+	user, err := authService.userRepository.FindUserByEmail(claims.UserEmail)
 	if err != nil {
 		return nil, err
 	}

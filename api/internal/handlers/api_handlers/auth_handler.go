@@ -2,7 +2,6 @@ package api_handlers
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -77,7 +76,6 @@ func (handler *AuthHandler) Register(c *fiber.Ctx) error {
 func (handler *AuthHandler) RefreshToken(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.RefreshTokenRequest))
 	if err != nil {
-		fmt.Println(err)
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
 	}
 	validationErros := requests.Validate(request)
