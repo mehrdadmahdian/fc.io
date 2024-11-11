@@ -17,7 +17,7 @@ func NewBoxService(boxRepository *repositories.BoxRepository) (*BoxService, erro
 	}, nil
 }
 
-func (boxService *BoxService) SetupBoxForUser(user *models.User) error {
+func (boxService *BoxService) SetupBoxForUser(ctx context.Context, user *models.User) error {
 	box := models.NewBox("Box 1", user.ID)
 	box.Stages = models.GetListOfBasicStages()
 	box.Cards = make([]models.Card, 0)
@@ -28,4 +28,21 @@ func (boxService *BoxService) SetupBoxForUser(user *models.User) error {
 	}
 
 	return nil
+}
+
+func (boxService *BoxService) GetBox(ctx context.Context, boxId string) (*models.Box, error) {
+	box, err := boxService.boxRepository.GetBoxByID(ctx, boxId)
+	if err != nil {
+		return nil, err
+	}
+	return box, nil
+}
+
+
+func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.User) ([]*models.Box, error) {
+	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return boxes, nil
 }

@@ -82,7 +82,7 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 		SameSite: "Strict",
 	})
 
-	err = webHandler.boxService.SetupBoxForUser(user)
+	err = webHandler.boxService.SetupBoxForUser(c.Context(), user)
 	if (err != nil) {
 		return c.Redirect("/web/dashboard/", fiber.StatusFound)
 	}

@@ -9,11 +9,25 @@
         <div class="card shadow p-4">
             <h3>Overview</h3>
             <p>Welcome, {{.User.Name}}! Here you can manage your account, view your data, and explore insights tailored just for you.</p>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a href="#">Profile Settings</a></li>
-                <li class="list-group-item"><a href="#">Data Management</a></li>
-                <li class="list-group-item"><a href="#">Insights</a></li>
-            </ul>
+        </div>
+        <br>
+
+        <!-- Cards Section for Boxes -->
+        <div class="row my-12">
+            {{range .Boxes}}
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">{{.Name}}</h5>
+                        <p class="card-text">
+                            An explanation of he box which needs to be added to the box
+                        </p>
+                        <a href="/web/dashboard/box/{{.IDString}}" class="btn btn-primary justify-content-end">View Box</a>
+                        <a href="/web/dashboard/box/{{.IDString}}/card" class="btn btn-warning justify-content-end">Add Card</a>
+                    </div>
+                </div>
+            </div>
+            {{end}}
         </div>
     </main>
 

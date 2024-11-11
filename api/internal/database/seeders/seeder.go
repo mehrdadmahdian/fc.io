@@ -41,9 +41,9 @@ func (seeder *Seeder) Seed() error {
 	fmt.Println("Users seeded")
 
 	box := models.NewBox("Box 1", user.ID)
-	stage1 := models.NewStage("Stage 1")
-	stage2 := models.NewStage("Stage 2")
-	stage3 := models.NewStage("Stage 3")
+	stage1 := models.NewStage("Stage 1", false)
+	stage2 := models.NewStage("Stage 2", false)
+	stage3 := models.NewStage("Stage 3", false)
 	box.Stages = append(box.Stages, *stage1, *stage2, *stage3)
 
 	card1 := models.NewCard("Card 1 Front", "Card 1 Back", stage1.ID)

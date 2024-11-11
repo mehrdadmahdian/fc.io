@@ -1,0 +1,81 @@
+{{ template "dashboard/header" . }}
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+    <header class="bg-dark text-white text-center p-3">
+        <h2>Flashcards.io Dashboard - Add New Card</h2>
+    </header>
+
+    <main class="container my-5">
+        
+
+        <div class="row my-5 justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h3>Add a New Card to "{{.BoxName}}"</h3>
+                        <form action="/web/dashboard/box/{{.BoxID}}/card" method="POST">
+                            <div class="mb-3">
+                                <label for="cardFront" class="form-label">Front</label>
+                                <input type="text" class="form-control" id="cardFront" name="front" placeholder="Enter front text" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cardBack" class="form-label">Back</label>
+                                <input type="text" class="form-control" id="cardBack" name="back" placeholder="Enter back text" required>
+                            </div>
+                            <!-- <div class="mb-3" id="repeaterContainer">
+                                <label for="cardKey" class="form-label">Key-Value Pairs</label>
+                                <div class="d-flex mb-2">
+                                    <input type="text" class="form-control me-2" name="key[]" placeholder="Text Key" required>
+                                    <input type="text" class="form-control" name="value[]" placeholder="Text Value" required>
+                                    <button type="button" class="btn btn-danger removeRepeater">Remove</button>
+                                </div>
+                                <button type="button" id="addRepeater" class="btn btn-link">+ Add Another Key-Value Pair</button>
+                            </div> -->
+                            <div class="mb-3">
+                                <label for="cardStage" class="form-label">Stage</label>
+                                <select class="form-select" id="cardStage" name="stageId" required>
+                                    <option disabled value="">select one stage</option>
+                                    {{range .Stages}}
+                                        <option 
+                                            {{if .IsDefault}}
+                                                selected
+                                            {{end}}
+                                            value="{{.IDString}}">{{.Name}}
+                                        </option>
+                                    {{end}}
+                                </select>
+                            </div>                
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">Add Card</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {{ template "dashboard/footer" . }}
+</body>
+<script>
+    document.getElementById('addRepeater').addEventListener('click', function() {
+        const container = document.getElementById('repeaterContainer');
+        
+        const newPair = document.createElement('div');
+        newPair.classList.add('d-flex', 'mb-2');
+        newPair.innerHTML = `
+            <input type="text" class="form-control me-2" name="key[]" placeholder="Text Key" required>
+            <input type="text" class="form-control" name="value[]" placeholder="Text Value" required>
+        `;
+        
+        container.insertBefore(newPair, this);
+    });
+
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('removeRepeater')) {
+            const pair = event.target.closest('.d-flex');
+            pair.remove();
+        }
+    });
+</script>
+</html>

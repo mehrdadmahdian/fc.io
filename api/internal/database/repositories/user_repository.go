@@ -39,21 +39,17 @@ func (userRepository *UserRepository) FindUserByEmail(email string) (*models.Use
 }
 
 func (userRepository *UserRepository) CreateNewUser(name, email, password string) (*models.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	newUser := &models.User{
-		Email:          email,
-		Name:           name,
-		HashedPassword: string(hashedPassword),
-	}
+	newUser := models.NewUser(name, email, string(hashedPassword))
 
 	_, err = userRepository.collection.InsertOne(context.TODO(), newUser)
 	if err != nil {
 		return nil, err
-	}
+	}	
 
 	return newUser, nil
 }

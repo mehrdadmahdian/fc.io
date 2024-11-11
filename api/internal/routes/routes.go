@@ -15,20 +15,25 @@ func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.Containe
 func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
 	WebAuthMiddleware := middlewares.WebAuthMiddleware(applicationContainer)
 
-	PageHandler := applicationContainer.WebHandler
+	WebHandler := applicationContainer.WebHandler
 
 	webGroup := fiberApp.Group("/web")
-	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), PageHandler.Index)
-	webGroup.Get("/health-check", PageHandler.Healthcheck)
-	webGroup.Get("/auth/health-check", WebAuthMiddleware, PageHandler.AuthHealthcheck)
+	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), WebHandler.Index)
+	webGroup.Get("/health-check", WebHandler.Healthcheck)
+	webGroup.Get("/auth/health-check", WebAuthMiddleware, WebHandler.AuthHealthcheck)
 
-	webGroup.Get("auth/login", PageHandler.Login)
-	webGroup.Post("auth/login", PageHandler.PostLogin)
-	webGroup.Get("auth/register", PageHandler.Register)
-	webGroup.Post("auth/register", PageHandler.PostRegister)
-	webGroup.Post("auth/logout", WebAuthMiddleware, PageHandler.Logout)
+	webGroup.Get("auth/login", WebHandler.Login)
+	webGroup.Post("auth/login", WebHandler.PostLogin)
+	webGroup.Get("auth/register", WebHandler.Register)
+	webGroup.Post("auth/register", WebHandler.PostRegister)
+	webGroup.Post("auth/logout", WebAuthMiddleware, WebHandler.Logout)
 
-	webGroup.Get("/dashboard", WebAuthMiddleware, PageHandler.Dashboard)
+	dashboardGroup := webGroup.Group("/dashboard")
+	dashboardGroup.Use(WebAuthMiddleware)
+	dashboardGroup.Get("/", WebHandler.Dashboard)
+	dashboardGroup.Get("/box/:boxId/card", WebHandler.CreateCard)
+	dashboardGroup.Post("/box/:boxId/card", WebHandler.StoreCard)
+	dashboardGroup.Get("/box/:boxId/card/:cardId", WebHandler.ShowCard)
 }
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
