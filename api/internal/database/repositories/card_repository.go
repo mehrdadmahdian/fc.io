@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,4 +26,13 @@ func (cardRepository *CardRepository) FindById(id int) (*models.Card, error) {
 	var card models.Card
 
 	return &card, nil
+}
+
+func (cardRepository *CardRepository) InsertCard(ctx context.Context, box *models.Card) (*models.Card, error) {
+	_, err := cardRepository.collection.InsertOne(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return box, nil
 }

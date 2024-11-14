@@ -11,6 +11,7 @@ type BoxService struct {
 	boxRepository *repositories.BoxRepository
 }
 
+
 func NewBoxService(boxRepository *repositories.BoxRepository) (*BoxService, error) {
 	return &BoxService{
 		boxRepository: boxRepository,
@@ -38,6 +39,9 @@ func (boxService *BoxService) GetBox(ctx context.Context, boxId string) (*models
 	return box, nil
 }
 
+func (boxService *BoxService) AddCardToBox(ctx context.Context, box *models.Box, card *models.Card) error {
+	return boxService.boxRepository.AddCardToBox(ctx, box.ID, card)
+}
 
 func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.User) ([]*models.Box, error) {
 	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)

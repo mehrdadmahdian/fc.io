@@ -31,7 +31,7 @@ func (webHandler *WebHandler) PostLogin(c *fiber.Ctx) error {
 	}
 	validationErros := requests.Validate(request)
 	if validationErros != nil {
-		return c.Render("auth/login", fiber.Map{"ErrorMessage": "Request data is not valid"})
+		return c.Render("auth/login", fiber.Map{"ErrorMessage": utils.MapToString(*validationErros)})
 	}
 
 	tokenStruct, err := webHandler.authService.Login(c.Context(), request.Email, request.Password)
@@ -83,7 +83,7 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 	})
 
 	err = webHandler.boxService.SetupBoxForUser(c.Context(), user)
-	if (err != nil) {
+	if err != nil {
 		return c.Redirect("/web/dashboard/", fiber.StatusFound)
 	}
 

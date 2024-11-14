@@ -46,9 +46,18 @@ func (seeder *Seeder) Seed() error {
 	stage3 := models.NewStage("Stage 3", false)
 	box.Stages = append(box.Stages, *stage1, *stage2, *stage3)
 
-	card1 := models.NewCard("Card 1 Front", "Card 1 Back", stage1.ID)
-	card2 := models.NewCard("Card 2 Front", "Card 2 Back", stage1.ID)
-	card3 := models.NewCard("Card 3 Front", "Card 3 Back", stage3.ID)
+	card1, err := models.NewCard("Card 1 Front", "Card 1 Back", "", stage1.IDString())
+	if (err != nil) {
+		return err
+	}
+	card2, err := models.NewCard("Card 2 Front", "Card 2 Back", "", stage1.IDString())
+	if (err != nil) {
+		return err
+	}
+	card3, err := models.NewCard("Card 3 Front", "Card 3 Back", "", stage3.IDString())
+	if (err != nil) {
+		return err
+	}
 
 	box.Cards = append(box.Cards, *card1, *card2, *card3)
 

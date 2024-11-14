@@ -6,14 +6,22 @@
     </header>
 
     <main class="container my-5">
-        
-
         <div class="row my-5 justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h3>Add a New Card to "{{.BoxName}}"</h3>
-                        <form action="/web/dashboard/box/{{.BoxID}}/card" method="POST">
+                        <h3>Add a New Card to "{{.Box.Name}}"</h3>
+                        {{if .Message}}
+                            <div class="alert alert-success" role="alert">
+                                {{.Message}}
+                            </div>
+                        {{end}}
+                        {{if .ErrorMessage}}
+                            <div class="alert alert-danger" role="alert">
+                                {{.ErrorMessage}}
+                            </div>
+                        {{end}}
+                        <form action="/web/dashboard/box/{{.Box.IDString}}/card" method="POST">
                             <div class="mb-3">
                                 <label for="cardFront" class="form-label">Front</label>
                                 <input type="text" class="form-control" id="cardFront" name="front" placeholder="Enter front text" required>
@@ -21,6 +29,10 @@
                             <div class="mb-3">
                                 <label for="cardBack" class="form-label">Back</label>
                                 <input type="text" class="form-control" id="cardBack" name="back" placeholder="Enter back text" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cardBack" class="form-label">Extra Information</label>
+                                <textarea class="form-control" id="cardExtra" name="extra" placeholder="Enter Extra Information for your card" required></textarea>
                             </div>
                             <!-- <div class="mb-3" id="repeaterContainer">
                                 <label for="cardKey" class="form-label">Key-Value Pairs</label>
@@ -35,7 +47,7 @@
                                 <label for="cardStage" class="form-label">Stage</label>
                                 <select class="form-select" id="cardStage" name="stageId" required>
                                     <option disabled value="">select one stage</option>
-                                    {{range .Stages}}
+                                    {{range .Box.Stages}}
                                         <option 
                                             {{if .IsDefault}}
                                                 selected
