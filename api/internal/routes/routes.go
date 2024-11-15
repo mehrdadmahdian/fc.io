@@ -31,9 +31,11 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup := webGroup.Group("/dashboard")
 	dashboardGroup.Use(WebAuthMiddleware)
 	dashboardGroup.Get("/", WebHandler.Dashboard)
+
+	dashboardGroup.Get("/box/:boxId", WebHandler.ShowBox)
+
 	dashboardGroup.Get("/box/:boxId/card/create", WebHandler.CreateCard)
 	dashboardGroup.Post("/box/:boxId/card", WebHandler.StoreCard)
-	dashboardGroup.Get("/box/:boxId/card/:cardId", WebHandler.ShowCard)
 }
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
