@@ -19,6 +19,7 @@ func (handler *WebHandler) CreateCard(c *fiber.Ctx) error {
 
 	return c.Render("dashboard/boxes/cards/create", fiber.Map{
 		"Box": box,
+		"csrfToken": c.Locals("csrfToken"),	
 	})
 }
 

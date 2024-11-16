@@ -14,10 +14,14 @@ func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.Containe
 
 func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
 	WebAuthMiddleware := middlewares.WebAuthMiddleware(applicationContainer)
+	CSPMiddleware := middlewares.CSPMiddleware(applicationContainer)
+	CheckCSRFMiddleware := middlewares.CheckCSRFMiddelware(applicationContainer)
+	GenerateCSRFMiddleware := middlewares.GenerateCSRFMiddleware(applicationContainer)
 
 	WebHandler := applicationContainer.WebHandler
 
 	webGroup := fiberApp.Group("/web")
+	webGroup.Use(CSPMiddleware)
 	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), WebHandler.Index)
 	webGroup.Get("/health-check", WebHandler.Healthcheck)
 	webGroup.Get("/auth/health-check", WebAuthMiddleware, WebHandler.AuthHealthcheck)
@@ -30,6 +34,7 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 
 	dashboardGroup := webGroup.Group("/dashboard")
 	dashboardGroup.Use(WebAuthMiddleware)
+	dashboardGroup.Use(CSPMiddleware, GenerateCSRFMiddleware, CheckCSRFMiddleware)
 	dashboardGroup.Get("/", WebHandler.Dashboard)
 
 	dashboardGroup.Get("/box/:boxId", WebHandler.ShowBox)
@@ -39,8 +44,12 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 }
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
+	ApiCSPMiddleware := middlewares.CSPMiddleware(applicationContainer)
 	AuthMiddleware := middlewares.AuthMiddleware(applicationContainer)
+
 	apiGroup := fiberApp.Group("/api")
+	apiGroup.Use(ApiCSPMiddleware)
+
 	apiGroup.Get("/health-check", api_handlers.Healthcheck)
 
 	authHandler := applicationContainer.ApiAuthHandler
