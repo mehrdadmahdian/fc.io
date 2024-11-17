@@ -10,13 +10,13 @@ var (
 )
 
 type ServiceCreationError struct {
-	ServiceName string
-	Err error
+	ServiceName          string
+	Err                  error
 	OriginalErrorMessage string
 }
 
 func (e *ServiceCreationError) Error() string {
-	return fmt.Sprintf("failed to create service '%s': %v", e.ServiceName, e.Err)
+	return fmt.Sprintf("failed to create service '%s': %v | original error: %s", e.ServiceName, e.Err, e.OriginalErrorMessage)
 }
 
 // Unwrap returns the underlying error

@@ -18,7 +18,7 @@ func NewWebHandler(
 ) (*WebHandler, error) {
 	return &WebHandler{
 		authService: authService,
-		boxService: boxService,
+		boxService:  boxService,
 	}, nil
 }
 
@@ -29,5 +29,6 @@ func (handler *WebHandler) Index(c *fiber.Ctx) error {
 }
 
 func (handler *WebHandler) Healthcheck(c *fiber.Ctx) error {
+	panic("panic happended here")
 	return c.Render("checks/health-check", nil)
 }

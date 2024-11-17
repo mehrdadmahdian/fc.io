@@ -10,11 +10,14 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/web_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
+	logger "github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 )
 
 type Container struct {
+	LoggerService  *logger_service.LoggerService
 	MongoService   *mongo_service.MongoService
 	RedisService   *redis_service.RedisService
 	AuthService    *auth_service.AuthService
@@ -25,6 +28,15 @@ type Container struct {
 }
 
 func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
+	loggerService, err := logger.NewLoggerService(ctx, "logs/api.log")
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "loggerService",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
 	mongoService, err := mongo_service.NewMongoService(ctx, Cfg.MongoURI)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -78,7 +90,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 			OriginalErrorMessage: err.Error(),
 		}
 	}
-	
+
 	boxService, err := box_service.NewBoxService(boxRepository)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -107,6 +119,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 	}
 
 	return &Container{
+		LoggerService:  loggerService,
 		MongoService:   mongoService,
 		RedisService:   redisService,
 		AuthService:    authService,

@@ -13,15 +13,15 @@ func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.Containe
 }
 
 func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
+	WebHandler := applicationContainer.WebHandler
+	
 	WebAuthMiddleware := middlewares.WebAuthMiddleware(applicationContainer)
 	CSPMiddleware := middlewares.CSPMiddleware(applicationContainer)
 	CheckCSRFMiddleware := middlewares.CheckCSRFMiddelware(applicationContainer)
 	GenerateCSRFMiddleware := middlewares.GenerateCSRFMiddleware(applicationContainer)
+	ErrorHandlingMiddleware := middlewares.ErrorHandlingMiddleware(applicationContainer)
 
-	WebHandler := applicationContainer.WebHandler
-
-	webGroup := fiberApp.Group("/web")
-	webGroup.Use(CSPMiddleware)
+	webGroup := fiberApp.Group("/web").Use(ErrorHandlingMiddleware, CSPMiddleware)
 	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), WebHandler.Index)
 	webGroup.Get("/health-check", WebHandler.Healthcheck)
 	webGroup.Get("/auth/health-check", WebAuthMiddleware, WebHandler.AuthHealthcheck)

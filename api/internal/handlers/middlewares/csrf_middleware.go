@@ -41,9 +41,7 @@ func CheckCSRFMiddelware(Container *application.Container) fiber.Handler {
 		key := "csrf_token:" + u.IDString() + ":" + decodedToken
 
 		storedToken, err := Container.RedisService.Client().Get(c.Context(), key).Result()
-		fmt.Println(err)
-		fmt.Println(storedToken)
-		fmt.Println(key)
+	
 		if err != nil || decodedToken != storedToken {
 			return c.Status(fiber.StatusForbidden).SendString("Invalid CSRF token: " + err.Error())
 		} else if err != nil {

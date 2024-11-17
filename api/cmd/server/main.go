@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html/v2"
 	"github.com/mehrdadmahdian/fc.io/config"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
@@ -40,10 +39,6 @@ func main() {
 		Prefork: false,
 	})
 
-	fiber.Use(recover.New(recover.Config{
-		Next:              nil,
-		EnableStackTrace:  true,
-	}))
 	fiber.Static("/public", "./public")
 
 	routes.SetupRoutes(fiber, application)
