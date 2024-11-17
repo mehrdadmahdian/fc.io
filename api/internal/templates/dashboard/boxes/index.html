@@ -16,33 +16,21 @@
         <thead class="table-dark">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Role</th>
-                <th scope="col">Status</th>
+                <th scope="col">xxx</th>
+                <th scope="col">xxx</th>
+                <th scope="col">xxx</th>
+                <th scope="col">xxx</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <th scope="row">1</th>
-                <td>John Doe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
-                <td><span class="badge bg-success">Active</span></td>
-            </tr>
-            <tr>
-                <th scope="row">2</th>
-                <td>Jane Smith</td>
-                <td>janesmith@example.com</td>
-                <td>Editor</td>
-                <td><span class="badge bg-warning text-dark">Pending</span></td>
-            </tr>
-            <tr>
-                <th scope="row">3</th>
-                <td>Robert Brown</td>
-                <td>robertbrown@example.com</td>
-                <td>Viewer</td>
-                <td><span class="badge bg-danger">Inactive</span></td>
+                {{range .Box.Cards}}
+                    <th>{{.front}}</th>
+                    <td>John Doe</td>
+                    <td>johndoe@example.com</td>
+                    <td>Admin</td>
+                    <td>Admin</td>
+                {{end}}
             </tr>
         </tbody>
     </table>

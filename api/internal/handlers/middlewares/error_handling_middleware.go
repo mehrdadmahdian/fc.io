@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"runtime/debug"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
@@ -15,7 +16,6 @@ func ErrorHandlingMiddleware(container *application.Container) fiber.Handler {
 		defer func() {
 			if r := recover(); r != nil {
 				stackTrace := string(debug.Stack())
-
 				logger.Log(
 					logger_service.ERROR,
 					"panic recovered",
@@ -28,7 +28,8 @@ func ErrorHandlingMiddleware(container *application.Container) fiber.Handler {
 					},
 				)
 				_ = c.Status(fiber.StatusInternalServerError).Render("errors/500", fiber.Map{
-					"ErrorMessage": "Internal Server Error",
+					"ErrorMessage": r,
+					"StackTrace": strings.Split(stackTrace, "\n"),
 				})
 			}
 		}()

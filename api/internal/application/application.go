@@ -82,6 +82,24 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
+	cardRepository, err := repositories.NewCardRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "cardRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	stageRepository, err := repositories.NewStageRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "stageRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
 	authService, err := auth_service.NewAuthService(userRepository, Cfg.Auth)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -91,7 +109,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	boxService, err := box_service.NewBoxService(boxRepository)
+	boxService, err := box_service.NewBoxService(boxRepository, cardRepository)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "boxService",

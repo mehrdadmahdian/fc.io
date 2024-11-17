@@ -57,7 +57,7 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 	}
 
 	err = handler.boxService.AddCardToBox(c.Context(), box, card)
-	if (err != nil) {
+	if (err != nil) {	
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": fmt.Sprintf("can not add card to the box."),
 			"Box":          box,

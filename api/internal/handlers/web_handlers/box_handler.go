@@ -13,13 +13,17 @@ func (handler *WebHandler) StoreBox(c *fiber.Ctx) error {
 }
 
 func (handler *WebHandler) ShowBox(c *fiber.Ctx) error {
-	box, err := handler.boxService.GetBox(c.Context(), c.Params("boxID"))
+	mybox, err := handler.boxService.GetBox(c.Context(), c.Params("boxID"))
+	if err != nil {
+		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
+	}
+
+	box, err := handler.boxService.GetBoxCards(c.Context(), mybox)
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
 
 	return c.Render("dashboard/boxes/index", fiber.Map{
-		"Box": box,
-		//"cards": cards,
+		"Cards": box,
 	})
 }

@@ -11,12 +11,19 @@
         <div class="text-center">
             <h1 class="display-4">500</h1>
             <h2>Internal Server Error</h2>
-            <!-- <p>
+            <p>
                 {{if .ErrorMessage}}
                     {{.ErrorMessage}}
                 {{end}}
                 
-            </p> -->
+            </p>
+            <hr>
+            <p>
+                {{if .StackTrace}}
+                    {{.StackTrace}}
+                {{end}}
+                
+            </p>
         </div>
     </div>
 </body>

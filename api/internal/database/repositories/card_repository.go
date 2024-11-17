@@ -14,7 +14,7 @@ type CardRepository struct {
 }
 
 func NewCardRepository(mongoService *internal_mongo.MongoService) (*CardRepository, error) {
-	collection := mongoService.Client().Database("flashcards").Collection("boxes")
+	collection := mongoService.Client().Database("flashcards").Collection("cards")
 
 	return &CardRepository{
 		mongoService: mongoService,
@@ -28,11 +28,11 @@ func (cardRepository *CardRepository) FindById(id int) (*models.Card, error) {
 	return &card, nil
 }
 
-func (cardRepository *CardRepository) InsertCard(ctx context.Context, box *models.Card) (*models.Card, error) {
-	_, err := cardRepository.collection.InsertOne(ctx, box)
+func (cardRepository *CardRepository) Insert(ctx context.Context, card *models.Card) (*models.Card, error) {
+	_, err := cardRepository.collection.InsertOne(ctx, card)
 	if err != nil {
 		return nil, err
 	}
 
-	return box, nil
+	return card, nil
 }

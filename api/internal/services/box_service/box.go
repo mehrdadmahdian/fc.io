@@ -8,19 +8,24 @@ import (
 )
 
 type BoxService struct {
-	boxRepository *repositories.BoxRepository
+	boxRepository  *repositories.BoxRepository
+	cardRepository *repositories.CardRepository
 }
 
-
-func NewBoxService(boxRepository *repositories.BoxRepository) (*BoxService, error) {
+func NewBoxService(boxRepository *repositories.BoxRepository, cardRepository *repositories.CardRepository) (*BoxService, error) {
 	return &BoxService{
-		boxRepository: boxRepository,
+		boxRepository:   boxRepository,
+		cardRepository:  cardRepository,
+		stageRepository: stageRepository,
 	}, nil
 }
 
 func (boxService *BoxService) SetupBoxForUser(ctx context.Context, user *models.User) error {
 	box := models.NewBox("Box 1", user.ID)
-	box.Stages = models.GetListOfBasicStages()
+	stages, err := models.GetListOfBasicStages(box.IDString())
+	if err != nil {
+		return err
+	}
 	box.Cards = make([]models.Card, 0)
 
 	_, err := boxService.boxRepository.InsertBox(context.TODO(), box)
@@ -49,4 +54,13 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 		return nil, err
 	}
 	return boxes, nil
+}
+
+func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box) (*models.Box, error) {
+	box, err := boxService.boxRepository.GetAllCardsOfTheBox(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return box, nil
 }
