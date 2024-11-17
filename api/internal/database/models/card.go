@@ -13,7 +13,13 @@ type Card struct {
 	Extra   string             `bson:"extra"`
 }
 
-func NewCard(front string, back string, Extra string, boxID string, stageID string) (*Card, error) {
+func NewCard(
+	boxID string,
+	stageID string,
+	front string,
+	back string,
+	Extra string,
+) (*Card, error) {
 	stageObjectId, err := StringToObjectID(stageID)
 	if err != nil {
 		return nil, err
@@ -23,7 +29,6 @@ func NewCard(front string, back string, Extra string, boxID string, stageID stri
 	if err != nil {
 		return nil, err
 	}
-
 
 	return &Card{
 		ID:      primitive.NewObjectID(),
@@ -37,4 +42,12 @@ func NewCard(front string, back string, Extra string, boxID string, stageID stri
 
 func (model *Card) IDString() string {
 	return model.ID.Hex()
+}
+
+type CardWithStage struct {
+	ID        primitive.ObjectID `bson:"_id"`
+	Front     string             `bson:"front"`
+	Back      string             `bson:"back"`
+	Extra     string             `bson:"extra"`
+	StageName string             `bson:"stage_name"`
 }

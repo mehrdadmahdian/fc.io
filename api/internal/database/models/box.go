@@ -12,12 +12,12 @@ type Box struct {
 func NewBox(name string, userID primitive.ObjectID) *Box {
 	return &Box{
 		ID:          primitive.NewObjectID(),
-		UserID:      userID,
 		Name:        name,
 		Description: "",
+		UserID:      userID,
 	}
 }
 
 func (model *Box) IDString() string {
-    return model.ID.Hex()
+	return model.ID.Hex()
 }

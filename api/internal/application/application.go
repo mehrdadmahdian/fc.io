@@ -109,7 +109,12 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	boxService, err := box_service.NewBoxService(boxRepository, cardRepository)
+	boxService, err := box_service.NewBoxService(
+		boxRepository,
+		cardRepository,
+		stageRepository,
+	)
+	
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "boxService",

@@ -5,6 +5,7 @@ import (
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -30,3 +31,31 @@ func (stageRepository *StageRepository) Insert(ctx context.Context, stage *model
 
 	return stage, nil
 }
+
+func (stageRepository *StageRepository) GetAllForBox(ctx context.Context, box *models.Box) ([]*models.Stage, error) {
+    var stages []*models.Stage
+
+    filter := bson.M{"box_id": box.ID}
+
+    cursor, err := stageRepository.collection.Find(ctx, filter)
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+
+    for cursor.Next(ctx) {
+        var stage models.Stage
+        if err := cursor.Decode(&stage); err != nil {
+            return nil, err
+        }
+        stages = append(stages, &stage)
+    }
+
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
+    return stages, nil
+}
+
+

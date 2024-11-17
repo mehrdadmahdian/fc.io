@@ -2,17 +2,23 @@ package box_service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
 )
 
 type BoxService struct {
-	boxRepository  *repositories.BoxRepository
-	cardRepository *repositories.CardRepository
+	boxRepository   *repositories.BoxRepository
+	cardRepository  *repositories.CardRepository
+	stageRepository *repositories.StageRepository
 }
 
-func NewBoxService(boxRepository *repositories.BoxRepository, cardRepository *repositories.CardRepository) (*BoxService, error) {
+func NewBoxService(
+	boxRepository *repositories.BoxRepository,
+	cardRepository *repositories.CardRepository,
+	stageRepository *repositories.StageRepository,
+) (*BoxService, error) {
 	return &BoxService{
 		boxRepository:   boxRepository,
 		cardRepository:  cardRepository,
@@ -21,16 +27,22 @@ func NewBoxService(boxRepository *repositories.BoxRepository, cardRepository *re
 }
 
 func (boxService *BoxService) SetupBoxForUser(ctx context.Context, user *models.User) error {
-	box := models.NewBox("Box 1", user.ID)
+	box := models.NewBox(fmt.Sprintf("Default Box for %s", user.Name), user.ID)
+	_, err := boxService.boxRepository.InsertBox(context.TODO(), box)
+	if err != nil {
+		return err
+	}
+
 	stages, err := models.GetListOfBasicStages(box.IDString())
 	if err != nil {
 		return err
 	}
-	box.Cards = make([]models.Card, 0)
-
-	_, err := boxService.boxRepository.InsertBox(context.TODO(), box)
-	if err != nil {
-		return err
+	for _, stage := range stages {
+		_, err := boxService.stageRepository.Insert(context.TODO(), &stage)
+		if err != nil {
+			// todo: box should be remove
+			return err
+		}
 	}
 
 	return nil
@@ -45,7 +57,11 @@ func (boxService *BoxService) GetBox(ctx context.Context, boxId string) (*models
 }
 
 func (boxService *BoxService) AddCardToBox(ctx context.Context, box *models.Box, card *models.Card) error {
-	return boxService.boxRepository.AddCardToBox(ctx, box.ID, card)
+	_, err := boxService.cardRepository.Insert(ctx, card)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.User) ([]*models.Box, error) {
@@ -56,11 +72,20 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 	return boxes, nil
 }
 
-func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box) (*models.Box, error) {
-	box, err := boxService.boxRepository.GetAllCardsOfTheBox(ctx, box)
+func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box) ([]*models.CardWithStage, error) {
+	cardsWithStage, err := boxService.boxRepository.GetAllCardsOfTheBox(ctx, box)
 	if err != nil {
 		return nil, err
 	}
 
-	return box, nil
+	return cardsWithStage, nil
+}
+
+func (boxService *BoxService) GetBoxStages(ctx context.Context, box *models.Box) ([]*models.Stage, error) {
+	stages, err := boxService.stageRepository.GetAllForBox(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return stages, nil
 }

@@ -48,7 +48,7 @@
                                 <label for="cardStage" class="form-label">Stage</label>
                                 <select class="form-select" id="cardStage" name="stageId" required>
                                     <option disabled value="">select one stage</option>
-                                    {{range .Box.Stages}}
+                                    {{range .Stages}}
                                         <option 
                                             {{if .IsDefault}}
                                                 selected
