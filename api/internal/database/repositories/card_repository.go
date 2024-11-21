@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
@@ -39,47 +38,46 @@ func (cardRepository *CardRepository) Insert(ctx context.Context, card *models.C
 	return card, nil
 }
 
-func (boxRepository *BoxRepository) GetAllCardsOfTheBox(ctx context.Context, box *models.Box) ([]*models.CardWithStage, error) {
+func (cardRepository *CardRepository) GetAllCardsOfTheBox(ctx context.Context, box *models.Box) ([]*models.Card, error) {
 	pipeline := mongo.Pipeline{
-		{{Key: "$match", Value: bson.D{{Key: "box_id", Value: box.ID}}}},
-
-		{{Key: "$lookup", Value: bson.D{
-			{Key: "from", Value: "stages"},
-			{Key: "localField", Value: "stage_id"},
-			{Key: "foreignField", Value: "_id"},
-			{Key: "as", Value: "stage"},
+		{{Key: "$match", Value: bson.M{"box_id": box.ID}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "boxes",
+			"localField":   "box_id",
+			"foreignField": "_id",
+			"as":           "box",
 		}}},
-
-		{{Key: "$unwind", Value: bson.D{{Key: "path", Value: "$stage"}, {Key: "preserveNullAndEmptyArrays", Value: true}}}},
-
-		{{Key: "$project", Value: bson.D{
-			{Key: "_id", Value: 1},
-			{Key: "front", Value: 1},
-			{Key: `back`, Value: 1},
-			{Key: "extra", Value: 1},
-			{Key: "stage_id", Value: 1},
-			{Key: "stage_name", Value: "$stage.name"},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "stages",
+			"localField":   "stage_id",
+			"foreignField": "_id",
+			"as":           "stage",
+		}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "labels",
+			"localField":   "label_ids",
+			"foreignField": "_id",
+			"as":           "labels",
+		}}},
+		{{Key: "$unwind", Value: bson.M{
+			"path": "$box",
+			"preserveNullAndEmptyArrays": true,
+		}}},
+		{{Key: "$unwind", Value: bson.M{
+			"path": "$stage",
+			"preserveNullAndEmptyArrays": true,
 		}}},
 	}
 
-	cursor, err := boxRepository.collection.Aggregate(ctx, pipeline)
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
 	if err != nil {
-		return nil, fmt.Errorf("error executing aggregation: %v", err)
+		return nil, err
 	}
 	defer cursor.Close(ctx)
 
-	var cards []*models.CardWithStage
-	for cursor.Next(ctx) {
-		var card models.CardWithStage
-		if err := cursor.Decode(&card); err != nil {
-			return nil, fmt.Errorf("error decoding card: %v", err)
-		}
-		cards = append(cards, &card)
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
 	}
-
-	if err := cursor.Err(); err != nil {
-		return nil, fmt.Errorf("cursor iteration error: %v", err)
-	}
-
 	return cards, nil
 }

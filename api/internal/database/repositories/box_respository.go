@@ -34,22 +34,6 @@ func (boxRepository *BoxRepository) InsertBox(ctx context.Context, box *models.B
 	return box, nil
 }
 
-func (BoxRepository *BoxRepository) AddCardToBox(ctx context.Context, boxID primitive.ObjectID, card *models.Card) error {
-	filter := bson.M{"_id": boxID}
-	update := bson.M{
-		"$push": bson.M{
-			"cards": card,
-		},
-	}
-
-	_, err := BoxRepository.collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (boxRepository *BoxRepository) GetAllBoxesForUser(ctx context.Context, user *models.User) ([]*models.Box, error) {
 	var boxes []*models.Box
 	cursor, err := boxRepository.collection.Find(ctx, bson.M{"user_id": user.ID}, options.Find().SetProjection(bson.M{

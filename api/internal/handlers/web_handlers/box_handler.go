@@ -18,12 +18,12 @@ func (handler *WebHandler) ShowBox(c *fiber.Ctx) error {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
 
-	box, err := handler.boxService.GetBoxCards(c.Context(), mybox)
+	cards, err := handler.boxService.GetCards(c.Context(), mybox)
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
 
 	return c.Render("dashboard/boxes/index", fiber.Map{
-		"Cards": box,
+		"cards": cards,
 	})
 }

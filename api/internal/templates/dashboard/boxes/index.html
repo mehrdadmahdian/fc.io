@@ -8,7 +8,7 @@
     <main class="container my-5">
         <div class="card shadow p-4">
             <h3>Box Info</h3>
-            <p>Some Box Information</p>
+            <p>Some Box Information goes here</p>
         </div>
         <br>
         <h2 class="mb-4">Sample Data Table</h2>
@@ -16,22 +16,32 @@
         <thead class="table-dark">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">xxx</th>
-                <th scope="col">xxx</th>
-                <th scope="col">xxx</th>
-                <th scope="col">xxx</th>
+                <th scope="col">front</th>
+                <th scope="col">back</th>   
+                <th scope="col">extra</th>
+                <th scope="col">stage</th>
+                <th scope="col">labels</th>
             </tr>
         </thead>
         <tbody>
+            {{range .cards}}
             <tr>
-                {{range .Box.Cards}}
-                    <th>{{.front}}</th>
-                    <td>John Doe</td>
-                    <td>johndoe@example.com</td>
-                    <td>Admin</td>
-                    <td>Admin</td>
+                    <td>
+                        <!-- {{.IDString}} -->
+                    </th>
+                    <td>{{.Front}}</td>
+                    <td>{{.Back}}</td>
+                    <td>{{.Extra}}</td>
+                    <td>{{.Stage.Name}}</td>
+                    <td>
+                        {{range .Labels}}
+                            <span class="badge badge-danger">{{.Name}}</span>
+
+                        {{end}}
+
+                    </td>
+                </tr>
                 {{end}}
-            </tr>
         </tbody>
     </table>
     </main>

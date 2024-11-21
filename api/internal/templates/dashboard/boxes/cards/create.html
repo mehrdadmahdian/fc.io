@@ -57,7 +57,15 @@
                                         </option>
                                     {{end}}
                                 </select>
-                            </div>                
+                            </div>   
+                            <div class="mb-3">
+                                <label for="labelIds" class="form-label">Stage</label>
+                                <select class="form-select" id="labelIds" name="labelIds[]" >
+                                    {{range .Labels}}
+                                        <option value="{{.IDString}}">{{.Name}}</option>
+                                    {{end}}
+                                </select>
+                            </div>              
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary">Add Card</button>
                             </div>

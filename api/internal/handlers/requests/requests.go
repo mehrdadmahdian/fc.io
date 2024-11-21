@@ -21,4 +21,5 @@ type StoreCardRequest struct {
 	Back    string `json:"back" validate:"required"`
 	Extra   string `json:"extra"`
 	StageId string `json:"stageId" validate:"required"`
+	LabelIds []string `json:"labelIds" validate:"required"`
 }

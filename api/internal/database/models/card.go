@@ -5,17 +5,24 @@ import (
 )
 
 type Card struct {
-	ID      primitive.ObjectID `bson:"_id,omitempty"`
-	BoxID   primitive.ObjectID `bson:"box_id"`
-	StageID primitive.ObjectID `bson:"stage_id"`
-	Front   string             `bson:"front"`
-	Back    string             `bson:"back"`
-	Extra   string             `bson:"extra"`
+	ID       primitive.ObjectID   `bson:"_id,omitempty"`
+	BoxID    primitive.ObjectID   `bson:"box_id"`
+	StageID  primitive.ObjectID   `bson:"stage_id"`
+	LabelIDs []primitive.ObjectID `bson:"label_ids"`
+	Front    string               `bson:"front"`
+	Back     string               `bson:"back"`
+	Extra    string               `bson:"extra"`
+
+	//embeded
+	Box    *Box     `bson:box,omitempty`
+	Stage  *Stage   `bson:stage,omitempty`
+	Labels *[]Label `bson:labels,omitempty`
 }
 
 func NewCard(
 	boxID string,
 	stageID string,
+	labelIDs []string,
 	front string,
 	back string,
 	Extra string,
@@ -30,10 +37,20 @@ func NewCard(
 		return nil, err
 	}
 
+	labelObjectIds := []primitive.ObjectID{}
+	for _, labelId := range labelIDs {
+		objectid, err := StringToObjectID(labelId)
+		if (err != nil) {
+			return nil, err
+		}
+		labelObjectIds = append(labelObjectIds, objectid)
+	}
+
 	return &Card{
 		ID:      primitive.NewObjectID(),
-		BoxID:   stageObjectId,
-		StageID: boxObjectId,
+		BoxID:   boxObjectId,
+		StageID: stageObjectId,
+		LabelIDs: labelObjectIds,
 		Front:   front,
 		Back:    back,
 		Extra:   Extra,
@@ -50,4 +67,8 @@ type CardWithStage struct {
 	Back      string             `bson:"back"`
 	Extra     string             `bson:"extra"`
 	StageName string             `bson:"stage_name"`
+}
+
+func (model *CardWithStage) IDString() string {
+	return model.ID.Hex()
 }

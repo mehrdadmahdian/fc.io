@@ -7,6 +7,9 @@ type Box struct {
 	UserID      primitive.ObjectID `bson:"user_id"`
 	Name        string             `bson:"name"`
 	Description string             `bson:"description"`
+
+	//embeded
+	User *User `bson:user,omitempty`
 }
 
 func NewBox(name string, userID primitive.ObjectID) *Box {

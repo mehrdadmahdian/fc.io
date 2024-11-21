@@ -12,17 +12,20 @@ type BoxService struct {
 	boxRepository   *repositories.BoxRepository
 	cardRepository  *repositories.CardRepository
 	stageRepository *repositories.StageRepository
+	labelRepository *repositories.LabelRepository
 }
 
 func NewBoxService(
 	boxRepository *repositories.BoxRepository,
 	cardRepository *repositories.CardRepository,
 	stageRepository *repositories.StageRepository,
+	labelRepository *repositories.LabelRepository,
 ) (*BoxService, error) {
 	return &BoxService{
 		boxRepository:   boxRepository,
 		cardRepository:  cardRepository,
 		stageRepository: stageRepository,
+		labelRepository: labelRepository,
 	}, nil
 }
 
@@ -56,7 +59,7 @@ func (boxService *BoxService) GetBox(ctx context.Context, boxId string) (*models
 	return box, nil
 }
 
-func (boxService *BoxService) AddCardToBox(ctx context.Context, box *models.Box, card *models.Card) error {
+func (boxService *BoxService) AddCard(ctx context.Context, card *models.Card) error {
 	_, err := boxService.cardRepository.Insert(ctx, card)
 	if err != nil {
 		return err
@@ -72,13 +75,13 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 	return boxes, nil
 }
 
-func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box) ([]*models.CardWithStage, error) {
-	cardsWithStage, err := boxService.boxRepository.GetAllCardsOfTheBox(ctx, box)
+func (boxService *BoxService) GetCards(ctx context.Context, box *models.Box) ([]*models.Card, error) {
+	cards, err := boxService.cardRepository.GetAllCardsOfTheBox(ctx, box)
 	if err != nil {
 		return nil, err
 	}
 
-	return cardsWithStage, nil
+	return cards, nil
 }
 
 func (boxService *BoxService) GetBoxStages(ctx context.Context, box *models.Box) ([]*models.Stage, error) {
@@ -88,4 +91,13 @@ func (boxService *BoxService) GetBoxStages(ctx context.Context, box *models.Box)
 	}
 
 	return stages, nil
+}
+
+func (boxService *BoxService) GetBoxLabels(ctx context.Context, box *models.Box) ([]*models.Label, error) {
+	labels, err := boxService.labelRepository.GetAllForBox(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return labels, nil
 }

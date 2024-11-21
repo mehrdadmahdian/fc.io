@@ -7,6 +7,9 @@ type Stage struct {
 	BoxID     primitive.ObjectID `bson:"box_id"`
 	Name      string             `bson:"name"`
 	IsDefault bool               `bson:"isDefault"`
+
+	//embeded
+	Box    *Box     `bson:box,omitempty`
 }
 
 const (

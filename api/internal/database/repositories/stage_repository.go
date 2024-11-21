@@ -33,29 +33,27 @@ func (stageRepository *StageRepository) Insert(ctx context.Context, stage *model
 }
 
 func (stageRepository *StageRepository) GetAllForBox(ctx context.Context, box *models.Box) ([]*models.Stage, error) {
-    var stages []*models.Stage
+	var stages []*models.Stage
 
-    filter := bson.M{"box_id": box.ID}
+	filter := bson.M{"box_id": box.ID}
 
-    cursor, err := stageRepository.collection.Find(ctx, filter)
-    if err != nil {
-        return nil, err
-    }
-    defer cursor.Close(ctx)
+	cursor, err := stageRepository.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
 
-    for cursor.Next(ctx) {
-        var stage models.Stage
-        if err := cursor.Decode(&stage); err != nil {
-            return nil, err
-        }
-        stages = append(stages, &stage)
-    }
+	for cursor.Next(ctx) {
+		var stage models.Stage
+		if err := cursor.Decode(&stage); err != nil {
+			return nil, err
+		}
+		stages = append(stages, &stage)
+	}
 
-    if err := cursor.Err(); err != nil {
-        return nil, err
-    }
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
 
     return stages, nil
 }
-
-
