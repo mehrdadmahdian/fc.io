@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
@@ -28,7 +27,7 @@ func NewCardRepository(mongoService *internal_mongo.MongoService) (*CardReposito
 
 func (cardRepository *CardRepository) FindById(ctx context.Context, id string) (*models.Card, error) {
 	objectId, err := models.StringToObjectID(id)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
@@ -101,12 +100,12 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 	currentTime := time.Now()
 
 	filter := bson.M{
+		"box_id": box.ID,
 		"review": bson.M{"$ne": nil},
 		"review.next_due_date": bson.M{
-			"$ne": nil,
+			"$ne":  nil,
 			"$lte": currentTime,
 		},
-		"box_id": box.ID,
 	}
 
 	sort := bson.D{{"review.next_due_date", 1}}
@@ -119,27 +118,29 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 	).Decode(&card)
 
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+            return nil, nil
+        }
 		return nil, err
 	}
-	fmt.Println(card)
+
 	return &card, nil
 }
-
 
 func (cardRepository *CardRepository) UpdateCardReview(
 	ctx context.Context,
 	card *models.Card,
 	nextReviewDate time.Time,
-	interval int, 
+	interval int,
 	easeFactor float64,
-	reviewRecord *models.ReviewRecord,
-)  error {
+	reviewRecord *models.ReviewHistoryRecord,
+) error {
 	update := bson.M{
 		"$set": bson.M{
-			"review.next_due_date": nextReviewDate,
-			"review.current_interval": interval,
-			"review.ease_factor": easeFactor,
-			"review.reviews_count": card.Review.ReviewsCount + 1,
+			"review.next_due_date":    nextReviewDate,
+			"review.interval": interval,
+			"review.ease_factor":      easeFactor,
+			"review.reviews_count":    card.Review.ReviewsCount + 1,
 		},
 		"$push": bson.M{
 			"review.review_history": reviewRecord,
@@ -151,12 +152,10 @@ func (cardRepository *CardRepository) UpdateCardReview(
 			"updated_at": true,
 		},
 	}
-
 	filter := bson.M{"_id": card.ID}
-
 	_, err := cardRepository.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}
 	return nil
-}	
+}

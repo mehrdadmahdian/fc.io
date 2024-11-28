@@ -43,6 +43,7 @@
   </header>
 
   <div class="container">
+    {{if .Card }}
     <div class="mb-3">
       <button class="btn btn-secondary" onclick="history.back()">Back</button>
     </div>
@@ -56,13 +57,17 @@
     <div class="text-center mt-4">
       <form method="POST" action="/web/dashboard/box/{{.Box.IDString}}/submit-review" class="text-center mt-4">
         <input type="hidden" name="cardId" id="card-id" value="{{.Card.IDString}}">
-        <button type="submit" name="action" class="btn btn-danger mx-2" value="1">Again</button>
-        <button type="submit" name="action" class="btn btn-warning mx-2" value="2">Hard</button>
-        <button type="submit" name="action" class="btn btn-success mx-2" value="3">Good</button>
-        <button type="submit" name="action" class="btn btn-primary mx-2" value="4">Easy</button>
+        <button type="submit" name="action" class="btn btn-danger mx-2" value="4">Again</button>
+        <button type="submit" name="action" class="btn btn-warning mx-2" value="3">Hard</button>
+        <button type="submit" name="action" class="btn btn-success mx-2" value="2">Good</button>
+        <button type="submit" name="action" class="btn btn-primary mx-2" value="1">Easy</button>
+        <button type="submit" name="action" class="btn btn-primary mx-2" value="0">know It</button>
       </form>
     </div>
   </div>
+  {{else}}
+    <p>no card available </p>
+  {{end}}
   {{ template "dashboard/footer" . }}
 </body>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> 

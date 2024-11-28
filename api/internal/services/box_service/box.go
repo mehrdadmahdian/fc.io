@@ -104,12 +104,12 @@ func (boxService *BoxService) GetBoxLabels(ctx context.Context, box *models.Box)
 }
 
 func (boxService *BoxService) GetFirstEligibleCardToReview(ctx context.Context, box *models.Box) (*models.Card, error) {
-	labels, err := boxService.cardRepository.GetFirstEligibleCardToReview(ctx, box)
+	card, err := boxService.cardRepository.GetFirstEligibleCardToReview(ctx, box)
 	if err != nil {
 		return nil, err
 	}
 
-	return labels, nil
+	return card, nil
 }
 
 func (boxService *BoxService) SubmitReview(
@@ -122,19 +122,40 @@ func (boxService *BoxService) SubmitReview(
 		return err
 	}
 
-	reviewRecord := &models.ReviewRecord{
-		Date:   time.Now(),
-		Action: action,
+	currentInterval := card.Review.Interval
+	if (currentInterval == 0) {
+		currentInterval = 1
+	}
+	currentEaseFactor := card.Review.EaseFactor
+	if (currentEaseFactor == 0.0) {
+		currentEaseFactor = 2.5
 	}
 
-	nextReviewDate := time.Now().Add(time.Duration(card.Review.CurrentInterval) * 24 * time.Hour)
+	var NewInterval int
+	var NewEaseFactor float64
+	var nextReviewDate time.Time
+	if (action != 0) {
+		NewInterval = int(float64(currentInterval) * currentEaseFactor)
+		NewEaseFactor = currentEaseFactor + (0.1 - float64(4 -action)*(0.08+float64(4-action)*0.02))
+		nextReviewDate = time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
+	}
+
+	reviewHistoryRecord := &models.ReviewHistoryRecord{
+		Date:   time.Now(),
+		Action: action,
+		OldInterval: currentInterval,
+		OldEaseFactor: currentEaseFactor,
+		NewInterval: NewInterval,
+		NewEaseFactor: NewEaseFactor,
+	}
+
 	err = boxService.cardRepository.UpdateCardReview(
 		ctx,
 		card,
 		nextReviewDate,
-		1,
-		2.5,
-		reviewRecord,
+		NewInterval,
+		NewEaseFactor,
+		reviewHistoryRecord,
 	)
 	if err != nil {
 		return err
