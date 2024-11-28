@@ -14,7 +14,7 @@ func SetupRoutes(fiberApp *fiber.App, applicationContainer *application.Containe
 
 func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
 	WebHandler := applicationContainer.WebHandler
-	
+
 	WebAuthMiddleware := middlewares.WebAuthMiddleware(applicationContainer)
 	CSPMiddleware := middlewares.CSPMiddleware(applicationContainer)
 	CheckCSRFMiddleware := middlewares.CheckCSRFMiddelware(applicationContainer)
@@ -41,6 +41,9 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 
 	dashboardGroup.Get("/box/:boxId/card/create", WebHandler.CreateCard)
 	dashboardGroup.Post("/box/:boxId/card", WebHandler.StoreCard)
+
+	dashboardGroup.Get("/box/:boxId/review", WebHandler.ShowReview)
+	dashboardGroup.Post("/box/:boxId/submit-review", WebHandler.SubmitReview)
 }
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {

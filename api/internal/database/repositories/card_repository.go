@@ -2,11 +2,14 @@ package repositories
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type CardRepository struct {
@@ -23,8 +26,20 @@ func NewCardRepository(mongoService *internal_mongo.MongoService) (*CardReposito
 	}, nil
 }
 
-func (cardRepository *CardRepository) FindById(id int) (*models.Card, error) {
+func (cardRepository *CardRepository) FindById(ctx context.Context, id string) (*models.Card, error) {
+	objectId, err := models.StringToObjectID(id)
+	if (err != nil) {
+		return nil, err
+	}
+
 	var card models.Card
+	err = cardRepository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&card)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
 
 	return &card, nil
 }
@@ -60,11 +75,11 @@ func (cardRepository *CardRepository) GetAllCardsOfTheBox(ctx context.Context, b
 			"as":           "labels",
 		}}},
 		{{Key: "$unwind", Value: bson.M{
-			"path": "$box",
+			"path":                       "$box",
 			"preserveNullAndEmptyArrays": true,
 		}}},
 		{{Key: "$unwind", Value: bson.M{
-			"path": "$stage",
+			"path":                       "$stage",
 			"preserveNullAndEmptyArrays": true,
 		}}},
 	}
@@ -81,3 +96,67 @@ func (cardRepository *CardRepository) GetAllCardsOfTheBox(ctx context.Context, b
 	}
 	return cards, nil
 }
+
+func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.Context, box *models.Box) (*models.Card, error) {
+	currentTime := time.Now()
+
+	filter := bson.M{
+		"review": bson.M{"$ne": nil},
+		"review.next_due_date": bson.M{
+			"$ne": nil,
+			"$lte": currentTime,
+		},
+		"box_id": box.ID,
+	}
+
+	sort := bson.D{{"review.next_due_date", 1}}
+
+	var card models.Card
+	err := cardRepository.collection.FindOne(
+		context.Background(),
+		filter,
+		options.FindOne().SetSort(sort),
+	).Decode(&card)
+
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(card)
+	return &card, nil
+}
+
+
+func (cardRepository *CardRepository) UpdateCardReview(
+	ctx context.Context,
+	card *models.Card,
+	nextReviewDate time.Time,
+	interval int, 
+	easeFactor float64,
+	reviewRecord *models.ReviewRecord,
+)  error {
+	update := bson.M{
+		"$set": bson.M{
+			"review.next_due_date": nextReviewDate,
+			"review.current_interval": interval,
+			"review.ease_factor": easeFactor,
+			"review.reviews_count": card.Review.ReviewsCount + 1,
+		},
+		"$push": bson.M{
+			"review.review_history": reviewRecord,
+		},
+		"$setOnInsert": bson.M{
+			"review.last_review_date": time.Now(),
+		},
+		"$currentDate": bson.M{
+			"updated_at": true,
+		},
+	}
+
+	filter := bson.M{"_id": card.ID}
+
+	_, err := cardRepository.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}	

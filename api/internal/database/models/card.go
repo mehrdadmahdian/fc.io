@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,6 +19,31 @@ type Card struct {
 	Box    *Box     `bson:box,omitempty`
 	Stage  *Stage   `bson:stage,omitempty`
 	Labels *[]Label `bson:labels,omitempty`
+
+	// Review Data
+	Review Review `bson:"review"`
+
+	// Metadata
+	CreatedAt time.Time `bson:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at"`
+}
+	
+type Review struct {
+	LastReviewDate  *time.Time `bson:"last_review_date"`
+	NextDueDate     *time.Time `bson:"next_due_date"`
+	CurrentInterval int      `bson:"current_interval"`
+	EaseFactor      float64  `bson:"ease_factor"`
+	ReviewsCount    int      `bson:"reviews_count"`
+	ReviewHistory   []ReviewRecord `bson:"review_history"`
+}
+	
+type ReviewRecord struct {
+	Date   time.Time `bson:"date"`
+	Action int       `bson:"action"`
+	OldInterval  int       `bson:"old_interval"`
+	OldEaseFactor  float64       `bson:"old_ease_factor"`
+	NewInterval  int       `bson:"new_interval"`
+	NewEaseFactor  float64       `bson:"old_ease_factor"`
 }
 
 func NewCard(
@@ -46,14 +73,25 @@ func NewCard(
 		labelObjectIds = append(labelObjectIds, objectid)
 	}
 
+	nextDueDate := time.Now().Add(24 * time.Hour)
 	return &Card{
-		ID:      primitive.NewObjectID(),
-		BoxID:   boxObjectId,
-		StageID: stageObjectId,
-		LabelIDs: labelObjectIds,
-		Front:   front,
-		Back:    back,
-		Extra:   Extra,
+		ID:           primitive.NewObjectID(),
+		BoxID:        boxObjectId,
+		StageID:      stageObjectId,
+		LabelIDs: 	  labelObjectIds,
+		Front:        front,
+		Back:         back,
+		Extra:        Extra,
+		CreatedAt:    time.Now(),
+		UpdatedAt:   time.Now(),
+		Review: Review{
+			LastReviewDate: nil,
+			NextDueDate:    &nextDueDate,
+			CurrentInterval: 0,
+			EaseFactor:      2.5,
+			ReviewsCount:    0,
+			ReviewHistory:   []ReviewRecord{},
+		},
 	}, nil
 }
 

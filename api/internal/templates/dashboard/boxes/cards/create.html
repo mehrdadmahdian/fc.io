@@ -6,6 +6,9 @@
     </header>
 
     <main class="container my-5">
+        <div class="mb-3">
+            <button class="btn btn-secondary" onclick="history.back()">Back</button>
+        </div>
         <div class="row my-5 justify-content-center">
             <div class="col-md-8">
                 <div class="card shadow">
@@ -25,15 +28,15 @@
                             <input type="hidden" name="csrf_token" value="{{.csrfToken}}">
                             <div class="mb-3">
                                 <label for="cardFront" class="form-label">Front</label>
-                                <input type="text" class="form-control" id="cardFront" name="front" placeholder="Enter front text" required>
+                                <input type="text" class="form-control" id="cardFront" name="front" placeholder="front..." required>
                             </div>
                             <div class="mb-3">
                                 <label for="cardBack" class="form-label">Back</label>
-                                <input type="text" class="form-control" id="cardBack" name="back" placeholder="Enter back text" required>
+                                <input type="text" class="form-control" id="cardBack" name="back" placeholder="back..." required>
                             </div>
                             <div class="mb-3">
-                                <label for="cardBack" class="form-label">Extra Information</label>
-                                <textarea class="form-control" id="cardExtra" name="extra" placeholder="Enter Extra Information for your card"></textarea>
+                                <label for="cardBack" class="form-label">write extra info...</label>
+                                <textarea rows="5" class="form-control" id="cardExtra" name="extra" placeholder="extra info ... "></textarea>
                             </div>
                             <!-- <div class="mb-3" id="repeaterContainer">
                                 <label for="cardKey" class="form-label">Key-Value Pairs</label>

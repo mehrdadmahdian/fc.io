@@ -6,6 +6,9 @@
     </header>
 
     <main class="container my-5">
+        <div class="mb-3">
+            <button class="btn btn-secondary" onclick="history.back()">Back</button>
+        </div>
         <div class="card shadow p-4">
             <h3>Overview</h3>
             <p>Welcome, {{.User.Name}}! Here you can manage your account, view your data, and explore insights tailored just for you.</p>
@@ -24,6 +27,7 @@
                         </p>
                         <a href="/web/dashboard/box/{{.IDString}}" class="btn btn-primary justify-content-end">View Box</a>
                         <a href="/web/dashboard/box/{{.IDString}}/card/create" class="btn btn-warning justify-content-end">Add Card</a>
+                        <a href="/web/dashboard/box/{{.IDString}}/review" class="btn btn-success justify-content-end">Review </a>
                     </div>
                 </div>
             </div>

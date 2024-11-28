@@ -3,6 +3,7 @@ package box_service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
@@ -100,4 +101,44 @@ func (boxService *BoxService) GetBoxLabels(ctx context.Context, box *models.Box)
 	}
 
 	return labels, nil
+}
+
+func (boxService *BoxService) GetFirstEligibleCardToReview(ctx context.Context, box *models.Box) (*models.Card, error) {
+	labels, err := boxService.cardRepository.GetFirstEligibleCardToReview(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return labels, nil
+}
+
+func (boxService *BoxService) SubmitReview(
+	ctx context.Context,
+	cardId string,
+	action int,
+) error {
+	card, err := boxService.cardRepository.FindById(ctx, cardId)
+	if err != nil {
+		return err
+	}
+
+	reviewRecord := &models.ReviewRecord{
+		Date:   time.Now(),
+		Action: action,
+	}
+
+	nextReviewDate := time.Now().Add(time.Duration(card.Review.CurrentInterval) * 24 * time.Hour)
+	err = boxService.cardRepository.UpdateCardReview(
+		ctx,
+		card,
+		nextReviewDate,
+		1,
+		2.5,
+		reviewRecord,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

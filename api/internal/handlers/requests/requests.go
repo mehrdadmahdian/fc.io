@@ -23,3 +23,8 @@ type StoreCardRequest struct {
 	StageId string `json:"stageId" validate:"required"`
 	LabelIds []string `json:"labelIds" validate:"required"`
 }
+
+type SubmitReviewRequest struct {
+	CardId   string `json:"cardId" validate:"required"`
+	Action   int `json:"action" validate:"required"`
+}
