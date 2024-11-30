@@ -115,7 +115,7 @@ func (boxService *BoxService) GetFirstEligibleCardToReview(ctx context.Context, 
 func (boxService *BoxService) SubmitReview(
 	ctx context.Context,
 	cardId string,
-	action int,
+	difficulty int,
 ) error {
 	card, err := boxService.cardRepository.FindById(ctx, cardId)
 	if err != nil {
@@ -135,13 +135,17 @@ func (boxService *BoxService) SubmitReview(
 	var NewEaseFactor float64
 	var nextReviewDate time.Time
 	
-	NewInterval = int(float64(currentInterval) * currentEaseFactor)
-	NewEaseFactor = currentEaseFactor + (0.1 - float64(4 -action)*(0.08+float64(4-action)*0.02))
+	NewInterval, NewEaseFactor = calculateNewIntervalAndEaseFactor(
+		currentInterval, 
+		currentEaseFactor,
+		difficulty,
+	)
+	
 	nextReviewDate = time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
 
 	reviewHistoryRecord := &models.ReviewHistoryRecord{
 		Date:   time.Now(),
-		Action: action,
+		Action: difficulty,
 		OldInterval: currentInterval,
 		OldEaseFactor: currentEaseFactor,
 		NewInterval: NewInterval,
@@ -161,4 +165,31 @@ func (boxService *BoxService) SubmitReview(
 	}
 
 	return nil
+}
+
+func calculateNewIntervalAndEaseFactor(currentInterval int, easeFactor float64, difficulty int) (int, float64) {
+	multipliers := map[int]float64{
+		4: 0.5,
+		3: 1.0,
+		2: 3.0,
+		1: 10.0,
+	}
+
+	k := 0.1
+
+	if difficulty < 1 || difficulty > 4 {
+		return currentInterval, easeFactor
+	}
+
+	multiplier := multipliers[difficulty]
+	newInterval := float64(currentInterval) * easeFactor * multiplier
+
+	newEaseFactor := easeFactor + k*float64(difficulty-3)
+
+
+	if newEaseFactor < 1.3 {
+		newEaseFactor = 1.3
+	}
+
+	return int(newInterval), newEaseFactor
 }

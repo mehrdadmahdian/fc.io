@@ -1,7 +1,19 @@
 #!/bin/sh
+echo "Environment is: $APP_ENV"
 
-# Substitute environment variables in Nginx configuration
-envsubst '$SERVER_NAME $UI_SERVER_PORT $API_SERVER_PORT' < /etc/nginx/conf.d/app.conf.template > /etc/nginx/conf.d/app.conf
+case "$APP_ENV" in
+  production)
+    TEMPLATE_FILE="/etc/nginx/conf.d/app.conf.prod.template"
+    ;;
+  development)
+    TEMPLATE_FILE="/etc/nginx/conf.d/app.conf.dev.template"
+    ;;
+  *)
+    echo "Unknown environment: $APP_ENV" >&2
+    exit 1
+    ;;
+esac
 
-# Start Nginx
+envsubst '$SERVER_NAME $API_SERVER_PORT' < "$TEMPLATE_FILE" > /etc/nginx/conf.d/app.conf
+
 exec nginx -g 'daemon off;'
