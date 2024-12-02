@@ -1,40 +1,160 @@
 {{ template "dashboard/header" . }}
 <style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+  }
+
+  .card-container {
+    max-width: 400px;
+    margin: 50px auto;
+    perspective: 1000px; /* 3D effect for flip */
+  }
+
+  .flashcard {
+    width: 100%;
+    height: 300px;
+    transform-style: preserve-3d; /* Necessary for the 3D flip effect */
+    transition: transform 0.8s ease-in-out;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+
+  /* Flip the front side */
+  .flashcard.flip .front {
+    transform: rotateY(180deg); /* Rotate the front face 180 degrees */
+  }
+
+  .flashcard.flip .back {
+    transform: rotateY(0deg); /* Make the back face visible */
+  }
+
+  /* Front and Back Faces */
+  .flashcard .front,
+  .flashcard .back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Hide the back face when rotating */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 12px;
+  }
+
+  /* Front Face Styling */
+  .flashcard .front {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 20px;
+  }
+
+  /* Back Face Styling */
+  .flashcard .back {
+    background-color: #ffffff;
+    color: #555;
+    padding: 20px;
+    text-align: center;
+    transform: rotateY(180deg); /* Initially hide the back face */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* To separate answer and extra information */
+  }
+
+  .flashcard .back hr {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px solid #ddd;
+  }
+
+  .flashcard .back p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #888;
+  }
+
+  .btn {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 50px;
+    width: 120px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 10px;
+  }
+
+  .btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .btn-danger {
+    background-color: #f44336;
+    border: none;
+  }
+
+  .btn-danger:hover {
+    background-color: #e53935;
+  }
+
+  .btn-warning {
+    background-color: #ff9800;
+    border: none;
+  }
+
+  .btn-warning:hover {
+    background-color: #fb8c00;
+  }
+
+  .btn-success {
+    background-color: #4caf50;
+    border: none;
+  }
+
+  .btn-success:hover {
+    background-color: #43a047;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .text-center {
+    margin-top: 30px;
+  }
+
+  .mb-3 {
+    margin-bottom: 20px;
+  }
+
+  .my-2 {
+    margin: 10px 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
     .card-container {
-      max-width: 400px;
-      margin: 50px auto;
-      perspective: 1000px;
+      max-width: 90%;
     }
+
     .flashcard {
+      height: 250px;
+    }
+
+    .btn {
       width: 100%;
-      height: 200px;
-      transform-style: preserve-3d;
-      transition: transform 0.6s;
+      font-size: 14px;
     }
-    .flashcard.flip {
-      transform: rotateY(180deg);
-    }
-    .flashcard .front,
-    .flashcard .back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    .flashcard .front {
-      background-color: #f8f9fa;
-    }
-    .flashcard .back {
-      background-color: #e9ecef;
-      transform: rotateY(180deg);
-    }
-  </style>
+  }
+</style>
+
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -49,29 +169,38 @@
     </div>
     <div class="card-container">
       <div class="flashcard" id="flashcard">
-        <div class="front" id="card-question">{{.Card.Front}}</div>
-        <div class="back" id="card-answer">{{.Card.Back}}</div>
+        <div class="front" id="card-question">
+          {{.Card.Front}} <!-- Front: the question -->
+        </div>
+        <div class="back" id="card-answer">
+          <div>{{.Card.Back}}</div> <!-- Back: the answer -->
+          <hr>
+          <p>{{.Card.Extra}}</p> <!-- Extra info placed on the back -->
+        </div>
       </div>
     </div>
 
     <div class="text-center mt-4">
       <form method="POST" action="/web/dashboard/box/{{.Box.IDString}}/submit-review" class="text-center mt-4">
         <input type="hidden" name="cardId" id="card-id" value="{{.Card.IDString}}">
-        <button type="submit" name="action" class="btn btn-danger mx-2" value="4">Again</button>
-        <button type="submit" name="action" class="btn btn-warning mx-2" value="3">Hard</button>
-        <button type="submit" name="action" class="btn btn-success mx-2" value="2">Good</button>
-        <button type="submit" name="action" class="btn btn-primary mx-2" value="1">Easy</button>
-        <button type="submit" name="action" class="btn btn-primary mx-2" value="0">I know It</button>
+        <button type="submit" name="action" class="btn btn-danger my-2" value="4">Again</button>
+        <button type="submit" name="action" class="btn btn-warning my-2" value="3">Hard</button>
+        <button type="submit" name="action" class="btn btn-success my-2" value="2">Good</button>
+        <button type="submit" name="action" class="btn btn-primary my-2" value="1">Easy</button>
+        <button type="submit" name="action" class="btn btn-primary my-2" value="0">I know It</button>
       </form>
     </div>
   </div>
   {{else}}
-    <p>no card available </p>
+    <p class="text-center">No card available</p>
   {{end}}
+
   {{ template "dashboard/footer" . }}
 </body>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> 
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+  // Handle the flip on click
   $('#flashcard').click(function () { 
     $(this).toggleClass('flip');
   });

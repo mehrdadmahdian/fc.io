@@ -133,7 +133,7 @@ func (boxService *BoxService) SubmitReview(
 
 	var NewInterval int
 	var NewEaseFactor float64
-	var nextReviewDate time.Time
+	var nextReviewDate *time.Time
 	
 	NewInterval, NewEaseFactor = calculateNewIntervalAndEaseFactor(
 		currentInterval, 
@@ -141,7 +141,12 @@ func (boxService *BoxService) SubmitReview(
 		difficulty,
 	)
 	
-	nextReviewDate = time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
+	if (difficulty == 0) {
+		nextReviewDate = nil
+	} else {
+		val := time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
+		nextReviewDate = &val
+	}
 
 	reviewHistoryRecord := &models.ReviewHistoryRecord{
 		Date:   time.Now(),

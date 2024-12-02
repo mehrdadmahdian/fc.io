@@ -130,7 +130,7 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 func (cardRepository *CardRepository) UpdateCardReview(
 	ctx context.Context,
 	card *models.Card,
-	nextReviewDate time.Time,
+	nextReviewDate *time.Time,
 	interval int,
 	easeFactor float64,
 	reviewRecord *models.ReviewHistoryRecord,
