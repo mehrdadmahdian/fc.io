@@ -174,22 +174,22 @@ func (boxService *BoxService) SubmitReview(
 
 func calculateNewIntervalAndEaseFactor(currentInterval int, easeFactor float64, difficulty int) (int, float64) {
 	multipliers := map[int]float64{
-		4: 0.5,
-		3: 1.0,
-		2: 3.0,
-		1: 10.0,
+		3: 0.5, // repeat
+		2: 1.0, // hard
+		1: 10.0, // easy
 	}
 
-	k := 0.1
-
-	if difficulty < 1 || difficulty > 4 {
+	if difficulty < 1 || difficulty > 3 {
 		return currentInterval, easeFactor
 	}
 
 	multiplier := multipliers[difficulty]
-	newInterval := float64(currentInterval) * easeFactor * multiplier
+	newInterval := float64(currentInterval) * easeFactor * multiplier 
+	// 1*2.5*0.5 = 1
+	// 1*2.5*1 = 2
+	// 1*2.5*10 = 25
 
-	newEaseFactor := easeFactor + k*float64(difficulty-3)
+	newEaseFactor := easeFactor
 
 
 	if newEaseFactor < 1.3 {
