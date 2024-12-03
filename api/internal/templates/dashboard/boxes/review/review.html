@@ -159,20 +159,17 @@
 <body class="d-flex flex-column min-vh-100 bg-light">
 
   <header class="bg-dark text-white text-center p-3">
-      <h2>Flashcards.io | Review</h2>
+      <h2>Review</h2>
   </header>
 
   <div class="container">
     {{if .Card }}
-    <div class="mb-3">
-      <button class="btn btn-secondary" onclick="history.back()">Back</button>
-    </div>
     <div class="card-container">
       <div class="flashcard" id="flashcard">
         <div class="front" id="card-question">
           {{.Card.Front}} <!-- Front: the question -->
         </div>
-        <div class="back" id="card-answer">
+        <div class="back" id="card-answer" style="background: lightgrey;">
           <div>{{.Card.Back}}</div> <!-- Back: the answer -->
           <hr>
           <p>{{.Card.Extra}}</p> <!-- Extra info placed on the back -->
