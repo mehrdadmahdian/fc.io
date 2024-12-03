@@ -21,8 +21,8 @@ func LoadConfig() (*Config, error) {
 		ServerAddr: ":" + getEnv("API_SERVER_PORT", ""),
 		Auth: map[string]interface{}{
 			"jwtSecret": []byte(getEnv("JWT_SECRET", "")),
-			"tokenExpiryDuration": 24 * time.Hour,
-			"refreshTokenExpiryDuration": 24 * 7 * time.Hour,
+			"tokenExpiryDuration": 24 * 7 * time.Hour,
+			"refreshTokenExpiryDuration": 24 * 30 * time.Hour,
 		},
 	}
 
