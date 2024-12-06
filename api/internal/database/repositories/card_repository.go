@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
@@ -143,7 +144,7 @@ func (cardRepository *CardRepository) GetCountOfRemainingCardsForReview(ctx cont
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(count)
 	return &count, nil
 }
 
