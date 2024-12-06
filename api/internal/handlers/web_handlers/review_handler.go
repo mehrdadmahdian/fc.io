@@ -15,11 +15,16 @@ func (handler *WebHandler) ShowReview(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
+	remainingCount, err := handler.boxService.GetCountOfRemainingCardsForReview(c.Context(), box)
+	if err != nil {
+		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
+	}
 
 	return c.Render("dashboard/boxes/review/review", fiber.Map{
 		"User": c.Locals("user"),
 		"Box":  box,
 		"Card": card,
+		"RemainingCount": remainingCount,
 	})
 }
 
