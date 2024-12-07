@@ -3,6 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>{{.Title}} - Flashcards.io</title>
     <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-nav {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #0d6efd;
+        }
+
+        .nav-link.active {
+            color: #0d6efd;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #1e293b;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            overflow: hidden;
+            transition: height 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .mobile-menu.show {
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .mobile-menu-content {
+            padding: 1rem;
+        }
+
+        .mobile-menu .nav-link {
+            display: block;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .mobile-menu .nav-link:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-menu .logout-btn {
+            background: white;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .main-content {
+            padding-top: 60px;
+        }
+
+        .logout-form {
+            margin: 0;
+            padding: 0;
+            display: inline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #1e293b;
+            font-weight: 500;
+            padding: 0;
+            cursor: pointer;
+            transition: color 0.2s;
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+        }
+
+        .logout-btn:hover {
+            color: #0d6efd;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .logout-btn {
+                border-bottom: 1px solid #eee;
+            }
+        }
+    </style>
 </head>
+<body>
+    <nav class="dashboard-nav">
+        <div class="nav-content">
+            <a href="/web" class="brand">Flashcards.io</a>
+            
+            <!-- Desktop Menu -->
+            <div class="nav-menu">
+                <a href="/web/dashboard" class="nav-link {{if eq .Active "dashboard"}}active{{end}}">Dashboard</a>
+                <a href="/web/dashboard/boxes" class="nav-link {{if eq .Active "boxes"}}active{{end}}">My Boxes</a>
+                <a href="/web/dashboard/stats" class="nav-link {{if eq .Active "stats"}}active{{end}}">Statistics</a>
+                <a href="/web/dashboard/profile" class="nav-link">Profile</a>
+                <form action="/web/auth/logout" method="POST" class="logout-form">
+                    <button type="submit" class="nav-link logout-btn">Logout</button>
+                </form>
+            </div>
+
+            <!-- Hamburger Button -->
+            <button class="hamburger" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <a href="/web/dashboard" class="nav-link {{if eq .Active "dashboard"}}active{{end}}">
+                <i class="fas fa-home me-2"></i>Dashboard
+            </a>
+            <a href="/web/dashboard/boxes" class="nav-link {{if eq .Active "boxes"}}active{{end}}">
+                <i class="fas fa-box me-2"></i>My Boxes
+            </a>
+            <a href="/web/dashboard/stats" class="nav-link {{if eq .Active "stats"}}active{{end}}">
+                <i class="fas fa-chart-bar me-2"></i>Statistics
+            </a>
+            <a href="/web/dashboard/profile" class="nav-link">
+                <i class="fas fa-user me-2"></i>Profile
+            </a>
+            <form action="/web/auth/logout" method="POST" class="logout-form">
+                <button type="submit" class="nav-link logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+<script>
+function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const icon = document.querySelector('.hamburger i');
+    
+    menu.classList.toggle('show');
+    
+    if (menu.classList.contains('show')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+        document.body.style.overflow = 'hidden';
+    } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+        document.body.style.overflow = '';
+    }
+}
+
+// Close menu when clicking a link
+document.querySelectorAll('.mobile-menu .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        toggleMenu();
+    });
+});
+
+// Close menu on window resize
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        const menu = document.getElementById('mobileMenu');
+        const icon = document.querySelector('.hamburger i');
+        menu.classList.remove('show');
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+        document.body.style.overflow = '';
+    }
+});
+</script>
+</body>
+</html>

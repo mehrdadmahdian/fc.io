@@ -1,40 +1,209 @@
 {{ template "dashboard/header" . }}
-<body class="d-flex flex-column min-vh-100 bg-light">
+<style>
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-    <header class="bg-dark text-white text-center p-3">
-        <h2>Flashcards.io Dashboard</h2>
-    </header>
+    .dashboard-container {
+        flex: 1;
+        padding: 2rem;
+        background: #f8f9fa;
+    }
 
-    <main class="container my-5">
-        <div class="mb-3">
-            <button class="btn btn-secondary" onclick="history.back()">Back</button>
+    .dashboard-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #0d6efd;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .boxes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .box-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .box-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .box-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .box-content {
+        padding: 1.5rem;
+    }
+
+    .box-footer {
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-custom {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+    }
+
+    .progress-bar-custom {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 1rem;
+    }
+
+    .progress-value {
+        height: 100%;
+        background: #0d6efd;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .create-box-card {
+        border: 2px dashed #dee2e6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .create-box-card:hover {
+        border-color: #0d6efd;
+        background: rgba(13, 110, 253, 0.02);
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>Welcome, {{.User.Name}}!</h2>
+        <p class="text-muted">Here's an overview of your flashcard boxes</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">{{len .Boxes}}</div>
+            <div class="stat-label">Total Boxes</div>
         </div>
-        <div class="card shadow p-4">
-            <h3>Overview</h3>
-            <p>Welcome, {{.User.Name}}! Here you can manage your account, view your data, and explore insights tailored just for you.</p>
+        <div class="stat-card">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Cards Due Today</div>
         </div>
-        <br>
+        <div class="stat-card">
+            <div class="stat-value">87%</div>
+            <div class="stat-label">Review Success Rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">156</div>
+            <div class="stat-label">Total Cards</div>
+        </div>
+    </div>
 
-        <!-- Cards Section for Boxes -->
-        <div class="row my-12">
-            {{range .Boxes}}
-            <div class="col-md-12">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">{{.Name}}</h5>
-                        <p class="card-text">
-                            An explanation of he box which needs to be added to the box
-                        </p>
-                        <a href="/web/dashboard/box/{{.IDString}}" class="btn btn-primary justify-content-end">View Box</a>
-                        <a href="/web/dashboard/box/{{.IDString}}/card/create" class="btn btn-warning justify-content-end">Add Card</a>
-                        <a href="/web/dashboard/box/{{.IDString}}/review" class="btn btn-success justify-content-end">Review </a>
-                    </div>
+    <!-- Boxes Grid -->
+    <div class="boxes-grid">
+        {{range .Boxes}}
+        <div class="box-card">
+            <div class="box-header">
+                <h5 class="mb-0">{{.Name}}</h5>
+                <div class="progress-bar-custom">
+                    <div class="progress-value" style="width: 75%"></div>
                 </div>
             </div>
-            {{end}}
+            <div class="box-content">
+                <p class="text-muted">{{if .Description}}{{.Description}}{{else}}No description available{{end}}</p>
+                <div class="d-flex justify-content-between text-muted">
+                    <small>15 cards due</small>
+                    <small>75% completion</small>
+                </div>
+            </div>
+            <div class="box-footer">
+                <span class="badge bg-success">Active</span>
+                <div class="action-buttons">
+                    <a href="/web/dashboard/box/{{.IDString}}/card/create" class="btn btn-custom btn-outline-primary">Add Card</a>
+                    <a href="/web/dashboard/box/{{.IDString}}/review" class="btn btn-custom btn-primary">Review</a>
+                    <a href="/web/dashboard/box/{{.IDString}}" class="btn btn-custom btn-light">Details</a>
+                </div>
+            </div>
         </div>
-    </main>
+        {{end}}
 
-    {{ template "dashboard/footer" . }}
-</body>
-</html>
+        <!-- Create New Box Card -->
+        <div class="box-card create-box-card" onclick="location.href='/web/dashboard/box/create'">
+            <div class="mb-3">
+                <i class="fas fa-plus-circle fa-2x text-primary"></i>
+            </div>
+            <h5>Create New Box</h5>
+            <p class="text-muted">Start a new collection of flashcards</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // Add any additional JavaScript functionality here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips, etc.
+    });
+</script>

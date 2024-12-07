@@ -62,12 +62,12 @@ func (cardRepository *CardRepository) GetAllCardsOfTheBox(ctx context.Context, b
 			"foreignField": "_id",
 			"as":           "box",
 		}}},
-		{{Key: "$lookup", Value: bson.M{
-			"from":         "stages",
-			"localField":   "stage_id",
-			"foreignField": "_id",
-			"as":           "stage",
-		}}},
+		// {{Key: "$lookup", Value: bson.M{
+		// 	"from":         "stages",
+		// 	"localField":   "stage_id",
+		// 	"foreignField": "_id",
+		// 	"as":           "stage",
+		// }}},
 		{{Key: "$lookup", Value: bson.M{
 			"from":         "labels",
 			"localField":   "label_ids",

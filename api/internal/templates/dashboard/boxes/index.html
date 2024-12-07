@@ -22,7 +22,6 @@
                 <th scope="col">front</th>
                 <th scope="col">back</th>   
                 <th scope="col">extra</th>
-                <th scope="col">stage</th>
                 <th scope="col">labels</th>
             </tr>
         </thead>
@@ -35,11 +34,9 @@
                     <td>{{.Front}}</td>
                     <td>{{.Back}}</td>
                     <td>{{.Extra}}</td>
-                    <td>{{.Stage.Name}}</td>
                     <td>
                         {{range .Labels}}
                             <span class="badge badge-danger">{{.Name}}</span>
-
                         {{end}}
 
                     </td>
@@ -49,6 +46,5 @@
     </table>
     </main>
 
-    {{ template "dashboard/footer" . }}
 </body>
 </html>

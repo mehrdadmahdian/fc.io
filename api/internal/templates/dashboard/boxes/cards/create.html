@@ -1,105 +1,354 @@
 {{ template "dashboard/header" . }}
-<body class="d-flex flex-column min-vh-100 bg-light">
+<style>
+    .card-creator {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
 
-    <header class="bg-dark text-white text-center p-3">
-        <h2>Flashcards.io | Add New Card</h2>
-    </header>
+    .card-preview {
+        perspective: 1000px;
+        height: 300px;
+        margin-bottom: 2rem;
+        display: none; /* Hidden by default */
+    }
 
-    <main class="container my-5">
-        <div class="mb-3">
-            <button class="btn btn-secondary" onclick="history.back()">Back</button>
+    .preview-card {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+        cursor: pointer;
+    }
+
+    .preview-card.flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-back {
+        transform: rotateY(180deg);
+    }
+
+    .preview-content {
+        font-size: 1.25rem;
+        text-align: center;
+        white-space: pre-wrap;
+        max-height: 100%;
+        overflow-y: auto;
+    }
+
+    .editor-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .label-chip {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        margin: 0.25rem;
+        background: #e9ecef;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .label-chip:hover {
+        background: #dee2e6;
+    }
+
+    .label-chip.selected {
+        background: var(--bs-primary);
+        color: white;
+    }
+
+    .rich-editor {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 1rem;
+        min-height: 100px;
+    }
+
+    .toolbar {
+        padding: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .toolbar button {
+        padding: 0.25rem 0.5rem;
+        background: none;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .toolbar button:hover {
+        background: #f8f9fa;
+    }
+
+    .quick-tips {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 300px;
+        display: none;
+        z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .card-creator {
+            margin: 1rem auto;
+        }
+
+        .editor-section {
+            padding: 1rem;
+        }
+
+        .toolbar {
+            flex-wrap: wrap;
+        }
+
+        .quick-tips {
+            width: calc(100% - 40px);
+            bottom: 10px;
+            right: 20px;
+        }
+    }
+</style>
+
+<div class="card-creator">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Create New Card</h2>
+        <div>
+            <button class="btn btn-outline-primary me-2" onclick="togglePreview()">
+                <i class="fas fa-eye me-2"></i>Preview
+            </button>
+            <button class="btn btn-outline-secondary" onclick="history.back()">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
         </div>
-        <div class="row my-5 justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h3>Add a New Card to {{.Box.Name}}</h3>
-                        {{if .Message}}
-                            <div class="alert alert-success" role="alert">
-                                {{.Message}}
-                            </div>
-                        {{end}}
-                        {{if .ErrorMessage}}
-                            <div class="alert alert-danger" role="alert">
-                                {{.ErrorMessage}}
-                            </div>
-                        {{end}}
-                        <form action="/web/dashboard/box/{{.Box.IDString}}/card" method="POST">
-                            <input type="hidden" name="csrf_token" value="{{.csrfToken}}">
-                            <div class="mb-3">
-                                <label for="cardFront" class="form-label">Front</label>
-                                <input type="text" class="form-control" id="cardFront" name="front" placeholder="front..." required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cardBack" class="form-label">Back</label>
-                                <input type="text" class="form-control" id="cardBack" name="back" placeholder="back..." required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cardBack" class="form-label">write extra info...</label>
-                                <textarea rows="5" class="form-control" id="cardExtra" name="extra" placeholder="extra info ... "></textarea>
-                            </div>
-                            <!-- <div class="mb-3" id="repeaterContainer">
-                                <label for="cardKey" class="form-label">Key-Value Pairs</label>
-                                <div class="d-flex mb-2">
-                                    <input type="text" class="form-control me-2" name="key[]" placeholder="Text Key" required>
-                                    <input type="text" class="form-control" name="value[]" placeholder="Text Value" required>
-                                    <button type="button" class="btn btn-danger removeRepeater">Remove</button>
-                                </div>
-                                <button type="button" id="addRepeater" class="btn btn-link">+ Add Another Key-Value Pair</button>
-                            </div> -->
-                            <div class="mb-3">
-                                <label for="cardStage" class="form-label">Stage</label>
-                                <select class="form-select" id="cardStage" name="stageId" required>
-                                    <option disabled value="">select one stage</option>
-                                    {{range .Stages}}
-                                        <option 
-                                            {{if .IsDefault}}
-                                                selected
-                                            {{end}}
-                                            value="{{.IDString}}">{{.Name}}
-                                        </option>
-                                    {{end}}
-                                </select>
-                            </div>   
-                            <div class="mb-3">
-                                <label for="labelIds" class="form-label">Labels</label>
-                                <select class="form-select" id="labelIds" name="labelIds[]" >
-                                    {{range .Labels}}
-                                        <option value="{{.IDString}}">{{.Name}}</option>
-                                    {{end}}
-                                </select>
-                            </div>              
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Add Card</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    </div>
+
+    <!-- Card Preview (Hidden by default) -->
+    <div class="card-preview" id="cardPreview">
+        <div class="preview-card" id="previewCard">
+            <div class="card-face card-front">
+                <div class="preview-content" id="frontPreview">Front content will appear here</div>
+            </div>
+            <div class="card-face card-back">
+                <div class="preview-content" id="backPreview">Back content will appear here</div>
             </div>
         </div>
-    </main>
+    </div>
 
-    {{ template "dashboard/footer" . }}
-</body>
+    <!-- Card Editor -->
+    <div class="editor-section">
+        <form action="/web/dashboard/box/{{.Box.IDString}}/card/store" method="POST">
+            <!-- Front Side -->
+            <div class="mb-4">
+                <label class="form-label">Front Side</label>
+                <div class="rich-editor">
+                    <!-- <div class="toolbar"> -->
+                        <!-- <button type="button" onclick="formatText('bold')">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" onclick="formatText('italic')">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" onclick="insertList('bullet')">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                    </div> -->
+                    <textarea 
+                        class="form-control border-0" 
+                        name="front" 
+                        rows="4" 
+                        oninput="updatePreview(this, 'frontPreview')"
+                        placeholder="Enter the question or front side content"
+                        autofocus></textarea>
+                </div>
+            </div>
+
+            <!-- Back Side -->
+            <div class="mb-4">
+                <label class="form-label">Back Side</label>
+                <div class="rich-editor">
+                    <!-- <div class="toolbar">
+                        <button type="button" onclick="formatText('bold')">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" onclick="formatText('italic')">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" onclick="insertList('bullet')">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                    </div> -->
+                    <textarea 
+                        class="form-control border-0" 
+                        name="back" 
+                        rows="4" 
+                        oninput="updatePreview(this, 'backPreview')"
+                        placeholder="Enter the answer or back side content"></textarea>
+                </div>
+            </div>
+
+            <!-- Additional Notes -->
+            <div class="mb-4">
+                <label class="form-label">Additional Notes (Optional)</label>
+                <div class="rich-editor">
+                    <!-- <div class="toolbar">
+                        <button type="button" onclick="formatText('bold')">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button type="button" onclick="formatText('italic')">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button type="button" onclick="insertList('bullet')">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                    </div> -->
+                    <textarea 
+                        class="form-control border-0" 
+                        name="extra" 
+                        rows="3"
+                        placeholder="Add context, hints, or additional information (optional)"></textarea>
+                </div>
+            </div>
+
+            <!-- Labels (Multiple Select with Chips) -->
+            <div class="mb-4">
+                <label class="form-label d-flex justify-content-between">
+                    Labels
+                    <i class="fas fa-question-circle text-muted" 
+                       style="cursor: pointer;"
+                       onclick="toggleTips()"></i>
+                </label>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    {{range .Labels}}
+                    <div class="label-chip" 
+                         onclick="toggleLabel(this)" 
+                         data-label-id="{{.IDString}}"
+                         id="label-{{.IDString}}">
+                        {{.Name}}
+                    </div>
+                    {{end}}
+                </div>
+                <div id="labelInputs"></div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Save & Next <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Floating Tips -->
+<div class="quick-tips" id="quickTips">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Tips for Better Cards</h6>
+        <i class="fas fa-times" style="cursor: pointer;" onclick="toggleTips()"></i>
+    </div>
+    <ul class="mb-0 small">
+        <li>Keep questions clear and concise</li>
+        <li>Break complex topics into multiple cards</li>
+        <li>Use formatting to highlight important points</li>
+        <li>Add labels for better organization</li>
+    </ul>
+</div>
+
 <script>
-    document.getElementById('addRepeater').addEventListener('click', function() {
-        const container = document.getElementById('repeaterContainer');
-        
-        const newPair = document.createElement('div');
-        newPair.classList.add('d-flex', 'mb-2');
-        newPair.innerHTML = `
-            <input type="text" class="form-control me-2" name="key[]" placeholder="Text Key" required>
-            <input type="text" class="form-control" name="value[]" placeholder="Text Value" required>
-        `;
-        
-        container.insertBefore(newPair, this);
-    });
+function togglePreview() {
+    const preview = document.getElementById('cardPreview');
+    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+}
 
-    document.addEventListener('click', function(event) {
-        if (event.target && event.target.classList.contains('removeRepeater')) {
-            const pair = event.target.closest('.d-flex');
-            pair.remove();
+function updatePreview(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.textContent = input.value;
+}
+
+let selectedLabels = new Set();
+
+function toggleLabel(element) {
+    const labelId = element.dataset.labelId;
+    const labelInputs = document.getElementById('labelInputs');
+    
+    if (selectedLabels.has(labelId)) {
+        selectedLabels.delete(labelId);
+        element.classList.remove('selected');
+        const input = document.getElementById(`label-input-${labelId}`);
+        if (input) input.remove();
+    } else {
+        selectedLabels.add(labelId);
+        element.classList.add('selected');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'labelIds[]';
+        input.value = labelId;
+        input.id = `label-input-${labelId}`;
+        labelInputs.appendChild(input);
+    }
+}
+
+function toggleTips() {
+    const tips = document.getElementById('quickTips');
+    tips.style.display = tips.style.display === 'none' ? 'block' : 'none';
+    
+    // Auto-hide after 5 seconds
+    if (tips.style.display === 'block') {
+        setTimeout(() => {
+            tips.style.display = 'none';
+        }, 5000);
+    }
+}
+
+function formatText(command) {
+    document.execCommand(command, false, null);
+}
+
+function insertList(type) {
+    document.execCommand(type === 'bullet' ? 'insertUnorderedList' : 'insertOrderedList', false, null);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey || e.metaKey) {
+        if (e.key === 'Enter') { // Ctrl/Cmd + Enter to save
+            e.preventDefault();
+            document.querySelector('button[value="save"]').click();
         }
-    });
+        if (e.key === 'p') { // Ctrl/Cmd + P to toggle preview
+            e.preventDefault();
+            togglePreview();
+        }
+    }
+});
 </script>
-</html>

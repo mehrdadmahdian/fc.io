@@ -40,7 +40,8 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup.Get("/box/:boxId", WebHandler.ShowBox)
 
 	dashboardGroup.Get("/box/:boxId/card/create", WebHandler.CreateCard)
-	dashboardGroup.Post("/box/:boxId/card", WebHandler.StoreCard)
+	dashboardGroup.Post("/box/:boxId/card/store", WebHandler.StoreCard)
+
 
 	dashboardGroup.Get("/box/:boxId/review", WebHandler.ShowReview)
 	dashboardGroup.Post("/box/:boxId/submit-review", WebHandler.SubmitReview)

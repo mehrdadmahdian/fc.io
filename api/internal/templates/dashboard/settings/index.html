@@ -1,0 +1,182 @@
+{{ template "dashboard/header" . }}
+<style>
+    .settings-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .settings-nav {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .settings-nav .nav-link {
+        color: #666;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .settings-nav .nav-link:hover {
+        background: #f8f9fa;
+    }
+
+    .settings-nav .nav-link.active {
+        background: #e9ecef;
+        color: var(--bs-primary);
+        font-weight: 500;
+    }
+
+    .settings-content {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .setting-section {
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .setting-section:last-child {
+        padding-bottom: 0;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+</style>
+
+<div class="settings-container">
+    <div class="row g-4">
+        <!-- Settings Navigation -->
+        <div class="col-md-3">
+            <div class="settings-nav">
+                <div class="nav flex-column nav-pills">
+                    <a class="nav-link active" href="#general" data-bs-toggle="pill">General</a>
+                    <a class="nav-link" href="#notifications" data-bs-toggle="pill">Notifications</a>
+                    <a class="nav-link" href="#privacy" data-bs-toggle="pill">Privacy</a>
+                    <a class="nav-link" href="#subscription" data-bs-toggle="pill">Subscription</a>
+                    <a class="nav-link" href="#security" data-bs-toggle="pill">Security</a>
+                    <a class="nav-link" href="#integrations" data-bs-toggle="pill">Integrations</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="col-md-9">
+            <div class="settings-content tab-content">
+                <!-- General Settings -->
+                <div class="tab-pane fade show active" id="general">
+                    <h3 class="mb-4">General Settings</h3>
+                    
+                    <div class="setting-section">
+                        <h5 class="mb-3">Language & Region</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Language</label>
+                            <select class="form-select">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Time Zone</label>
+                            <select class="form-select">
+                                <option value="UTC">UTC</option>
+                                <option value="EST">Eastern Time</option>
+                                <option value="PST">Pacific Time</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h5 class="mb-3">Study Preferences</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Daily Review Goal</label>
+                            <input type="number" class="form-control" value="50">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Review Order</label>
+                            <select class="form-select">
+                                <option>Due Date (Ascending)</option>
+                                <option>Random</option>
+                                <option>Difficulty (Descending)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h5 class="mb-3">Theme</h5>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="theme" checked>
+                                <label class="form-check-label">Light</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="theme">
+                                <label class="form-check-label">Dark</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="theme">
+                                <label class="form-check-label">System Default</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Settings -->
+                <div class="tab-pane fade" id="notifications">
+                    <h3 class="mb-4">Notification Preferences</h3>
+                    
+                    <div class="setting-section">
+                        <h5 class="mb-3">Email Notifications</h5>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Daily Review Reminders</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Weekly Progress Reports</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox">
+                                <label class="form-check-label">Achievement Notifications</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h5 class="mb-3">Push Notifications</h5>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                                <label class="form-check-label">Enable Push Notifications</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quiet Hours</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <input type="time" class="form-control" value="22:00">
+                                </div>
+                                <div class="col-auto">to</div>
+                                <div class="col">
+                                    <input type="time" class="form-control" value="07:00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add other settings sections -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ template "dashboard/footer" . }} 

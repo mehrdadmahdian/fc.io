@@ -12,7 +12,6 @@ const DefaultEaseFactor float64= 2.5
 type Card struct {
 	ID        primitive.ObjectID   `bson:"_id,omitempty"`
 	BoxID     primitive.ObjectID   `bson:"box_id"`
-	StageID   primitive.ObjectID   `bson:"stage_id"`
 	LabelIDs  []primitive.ObjectID `bson:"label_ids"`
 	Front     string               `bson:"front"`
 	Back      string               `bson:"back"`
@@ -23,7 +22,6 @@ type Card struct {
 
 	//embeded
 	Box    *Box     `bson:box,omitempty`
-	Stage  *Stage   `bson:stage,omitempty`
 	Labels *[]Label `bson:labels,omitempty`
 }
 
@@ -47,17 +45,11 @@ type ReviewHistoryRecord struct {
 
 func NewCard(
 	boxID string,
-	stageID string,
 	labelIDs []string,
 	front string,
 	back string,
 	Extra string,
 ) (*Card, error) {
-	stageObjectId, err := StringToObjectID(stageID)
-	if err != nil {
-		return nil, err
-	}
-
 	boxObjectId, err := StringToObjectID(boxID)
 	if err != nil {
 		return nil, err
@@ -78,7 +70,6 @@ func NewCard(
 	return &Card{
 		ID:        primitive.NewObjectID(),
 		BoxID:     boxObjectId,
-		StageID:   stageObjectId,
 		LabelIDs:  labelObjectIds,
 		Front:     front,
 		Back:      back,

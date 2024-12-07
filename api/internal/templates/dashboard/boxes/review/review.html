@@ -1,205 +1,197 @@
 {{ template "dashboard/header" . }}
 <style>
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+  .review-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
   }
 
-  .card-container {
-    max-width: 400px;
-    margin: 50px auto;
-    perspective: 1000px; /* 3D effect for flip */
+  .stats-bar {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
   }
 
   .flashcard {
-    width: 100%;
-    height: 300px;
-    transform-style: preserve-3d; /* Necessary for the 3D flip effect */
-    transition: transform 0.8s ease-in-out;
+    background: white;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    min-height: 300px;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
     cursor: pointer;
+    margin-bottom: 2rem;
   }
 
-  /* Flip the front side */
-  .flashcard.flip .front {
-    transform: rotateY(180deg); /* Rotate the front face 180 degrees */
+  .flashcard.flipped {
+    transform: rotateY(180deg);
   }
 
-  .flashcard.flip .back {
-    transform: rotateY(0deg); /* Make the back face visible */
-  }
-
-  /* Front and Back Faces */
-  .flashcard .front,
-  .flashcard .back {
+  .card-face {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden; /* Hide the back face when rotating */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    border-radius: 12px;
-  }
-
-  /* Front Face Styling */
-  .flashcard .front {
-    background-color: #f8f9fa;
-    color: #333;
-    padding: 20px;
-  }
-
-  /* Back Face Styling */
-  .flashcard .back {
-    background-color: #ffffff;
-    color: #555;
-    padding: 20px;
-    text-align: center;
-    transform: rotateY(180deg); /* Initially hide the back face */
+    backface-visibility: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* To separate answer and extra information */
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
   }
 
-  .flashcard .back hr {
-    margin: 20px 0;
-    border: 0;
-    border-top: 1px solid #ddd;
+  .card-back {
+    transform: rotateY(180deg);
+    background: #f8f9fa;
   }
 
-  .flashcard .back p {
-    margin-top: 10px;
-    font-size: 18px;
-    color: #888;
+  .card-content {
+    font-size: 1.5rem;
+    text-align: center;
+    line-height: 1.6;
   }
 
-  .btn {
-    font-size: 16px;
-    font-weight: 600;
-    padding: 12px 20px;
-    border-radius: 50px;
-    width: 120px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin: 10px;
+  .review-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
   }
 
-  .btn:hover {
-    transform: translateY(-3px);
-  }
-
-  .btn-danger {
-    background-color: #f44336;
+  .review-btn {
+    padding: 1rem;
     border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
   }
 
-  .btn-danger:hover {
-    background-color: #e53935;
+  .btn-repeat {
+    background: #dc3545;
+    color: white;
   }
 
-  .btn-warning {
-    background-color: #ff9800;
-    border: none;
+  .btn-hard {
+    background: #ffc107;
+    color: #333;
   }
 
-  .btn-warning:hover {
-    background-color: #fb8c00;
+  .btn-easy {
+    background: #0d6efd;
+    color: white;
   }
 
-  .btn-success {
-    background-color: #4caf50;
-    border: none;
+  .btn-archive {
+    background: #198754;
+    color: white;
   }
 
-  .btn-success:hover {
-    background-color: #43a047;
+  .review-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
 
-  .btn-primary {
-    background-color: #007bff;
-    border: none;
-  }
-
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-
-  .text-center {
-    margin-top: 30px;
-  }
-
-  .mb-3 {
-    margin-bottom: 20px;
-  }
-
-  .my-2 {
-    margin: 10px 0;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .card-container {
-      max-width: 90%;
-    }
-
-    .flashcard {
-      height: 250px;
-    }
-
-    .btn {
-      width: 100%;
-      font-size: 14px;
-    }
+  .keyboard-hint {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 1rem;
   }
 </style>
 
-</head>
-<body class="d-flex flex-column min-vh-100 bg-light">
-
-  <header class="bg-dark text-white text-center p-3">
-      <h2>Review</h2>
-  </header>
-
-  <div class="container">
-    <span>{{.RemainingCount}}</span>
-    {{if .Card }}
-    <div class="card-container">
-      <div class="flashcard" id="flashcard">
-        <div class="front" id="card-question">
-          {{.Card.Front}} <!-- Front: the question -->
-        </div>
-        <div class="back" id="card-answer" style="background: lightgrey;">
-          <div>{{.Card.Back}}</div> <!-- Back: the answer -->
-          <hr>
-          <p>{{.Card.Extra}}</p> <!-- Extra info placed on the back -->
-        </div>
-      </div>
+<div class="review-container">
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-label">Remaining Cards</div>
+      <div class="stat-value">{{.RemainingCount}}</div>
     </div>
-
-    <div class="text-center mt-4">
-      <form method="POST" action="/web/dashboard/box/{{.Box.IDString}}/submit-review" class="text-center mt-4">
-        <input type="hidden" name="cardId" id="card-id" value="{{.Card.IDString}}">
-        <button type="submit" name="action" class="btn btn-danger my-2" value="3">Repeat</button>
-        <button type="submit" name="action" class="btn btn-warning my-2" value="2">Hard</button>
-        <button type="submit" name="action" class="btn btn-primary my-2" value="1">Easy</button>
-        <button type="submit" name="action" class="btn btn-success my-2" value="0">Archive</button>
-      </form>
+    <div class="stat-item">
+      <div class="stat-label">Current Box</div>
+      <div class="stat-value">{{.Box.Name}}</div>
     </div>
   </div>
+
+  <!-- Flashcard -->
+  {{if .Card}}
+  <div class="flashcard" id="flashcard">
+    <div class="card-face card-front">
+      <div class="card-content">{{.Card.Front}}</div>
+    </div>
+    <div class="card-face card-back">
+      <div class="card-content">{{.Card.Back}}</div>
+      {{if .Card.Extra}}
+        <div class="card-extra mt-4">
+          <small class="text-muted">Additional Info:</small>
+          <p>{{.Card.Extra}}</p>
+        </div>
+      {{end}}
+    </div>
+  </div>
+
+  <!-- Review Buttons -->
+  <form method="POST" action="/web/dashboard/box/{{.Box.IDString}}/submit-review" class="review-buttons">
+    <input type="hidden" name="cardId" value="{{.Card.IDString}}">
+    <button type="submit" name="action" value="3" class="review-btn btn-repeat">Repeat (1)</button>
+    <button type="submit" name="action" value="2" class="review-btn btn-hard">Hard (2)</button>
+    <button type="submit" name="action" value="1" class="review-btn btn-easy">Easy (3)</button>
+    <button type="submit" name="action" value="0" class="review-btn btn-archive">Archive (4)</button>
+  </form>
+
+  <div class="keyboard-hint">
+    Press <kbd>Space</kbd> to flip card | Use <kbd>1</kbd>-<kbd>4</kbd> for quick review
+  </div>
   {{else}}
-    <p class="text-center">No card available</p>
+  <div class="alert alert-success text-center">
+    <h4>🎉 Great job!</h4>
+    <p>You've completed all reviews for now.</p>
+    <a href="/web/dashboard" class="btn btn-primary mt-3">Back to Dashboard</a>
+  </div>
   {{end}}
+</div>
 
-  {{ template "dashboard/footer" . }}
-</body>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-  // Handle the flip on click
-  $('#flashcard').click(function () { 
-    $(this).toggleClass('flip');
+document.addEventListener('DOMContentLoaded', function() {
+  const flashcard = document.getElementById('flashcard');
+  
+  // Flip card on click or spacebar
+  function toggleCard() {
+    flashcard.classList.toggle('flipped');
+  }
+
+  flashcard.addEventListener('click', toggleCard);
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      toggleCard();
+    }
+    
+    // Number keys for quick review
+    if (e.key >= '1' && e.key <= '4') {
+      const buttons = document.querySelectorAll('.review-btn');
+      buttons[e.key - 1].click();
+    }
   });
+});
 </script>
-</html>

@@ -3,71 +3,433 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
+    <meta name="description" content="Flashcards.io - Master any subject with our advanced spaced repetition system. Create, study, and track your progress with smart flashcards.">
+    <meta name="keywords" content="flashcards, spaced repetition, learning, memory, study, education, smart flashcards">
+    <meta property="og:title" content="Flashcards.io - Smart Learning Through Spaced Repetition">
+    <meta property="og:description" content="Master any subject with our advanced spaced repetition system. Create, study, and track your progress with smart flashcards.">
+    <meta property="og:type" content="website">
+    <title>Flashcards.io - Smart Learning Through Spaced Repetition</title>
     <link href="/public/css/bootstrap.min.css" rel="stylesheet">
-    <script src="/public/js/jquery-3.6.0.min.js"></script>
-    <script>
-        console.log("asdasd")
-        const isLoggedIn = {{if .User}}true{{else}}false{{end}};
-        console.log(isLoggedIn)
-    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        .hero {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
-            padding: 100px 20px;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0099ff 100%);
+            --secondary-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
-        .footer {
-            background-color: #343a40;
+
+        body {
+            padding-top: 60px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #1e293b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #0d6efd;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
             color: white;
-            padding: 20px 0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 0;
+            background: var(--secondary-gradient);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: url('/public/img/pattern.svg') center/cover;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        /* Features */
+        .features {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            padding: 6rem 0;
+            background: var(--secondary-gradient);
+        }
+
+        .preview-image {
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            padding: 1.5rem 0;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* Updated Mobile Menu Styles */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        .mobile-menu a, 
+        .mobile-menu button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+            text-decoration: none;
+            text-align: left;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .mobile-menu a:hover,
+        .mobile-menu button:hover {
+            background-color: #f8f9fa;
+        }
+
+        .mobile-menu a:last-child,
+        .mobile-menu button:last-child {
+            margin-bottom: 0;
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: #1e293b;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            body.menu-open {
+                overflow: hidden;
+            }
         }
     </style>
 </head>
-<body class="d-flex flex-column min-vh-100">
-
-    <!-- Header -->
-    <header class="p-3 bg-dark text-white text-center">
-        <h2>Flashcards.io</h2>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero text-center">
-        <h1>Discover Your Dashboard</h1>
-        <p class="lead">Easily access your profile, manage settings, and explore insights in one place.</p>
-        <button id="actionButton" class="btn btn-light btn-lg mt-4">Loading...</button>
-    </section>
-
-    <!-- Main Content -->
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>About Our Platform</h3>
-                <p>Our application provides a comprehensive suite of tools to help you manage your data and track progress. From intuitive dashboards to secure data storage, we have everything you need to stay organized and efficient.</p>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">Flashcards.io</a>
+            
+            <div class="navbar-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
                 {{if .User}}
+                    <a href="/web/dashboard" class="nav-link">Dashboard</a>
+                    <form action="/web/auth/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="nav-link" style="background: none; border: none; cursor: pointer;">Logout</button>
+                    </form>
                 {{else}}
-                    <a href="/web/auth/register" class="btn btn-primary">Wanted to Join!</a>
+                    <a href="/web/auth/login" class="nav-link">Login</a>
+                    <a href="/web/auth/register" class="btn-primary">Get Started</a>
                 {{end}}
             </div>
-            
+
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+        {{if .User}}
+            <a href="/web/dashboard" class="nav-link">Dashboard</a>
+            <form action="/web/auth/logout" method="POST">
+                <button type="submit" class="nav-link">Logout</button>
+            </form>
+        {{else}}
+            <a href="/web/auth/login" class="nav-link">Login</a>
+            <a href="/web/auth/register" class="nav-link btn-primary">Get Started</a>
+        {{end}}
     </div>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Master Any Subject with Smart Flashcards</h1>
+                <p>Advanced spaced repetition system that adapts to your learning pace. Create, study, and track your progress efficiently.</p>
+                <a href="/web/auth/register" class="btn-primary btn-lg">Start Learning Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Smart Learning</h3>
+                        <p>Our spaced repetition algorithm adapts to your performance, optimizing your study schedule for maximum retention.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>Progress Tracking</h3>
+                        <p>Monitor your learning journey with detailed statistics and insights about your study patterns.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>Study Anywhere</h3>
+                        <p>Access your flashcards on any device. Your progress syncs automatically across all platforms.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview">
+        <div class="container">
+            <img src="/public/img/dashboard-preview.png" alt="Flashcards.io Dashboard" class="preview-image">
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="footer text-center mt-auto">
-        <p>&copy; 2024 Flashcards.io | <a href="/privacy" class="text-white">Privacy Policy</a></p>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="/privacy" class="footer-link">Privacy Policy</a>
+                    <a href="/terms" class="footer-link">Terms of Service</a>
+                    <a href="/contact" class="footer-link">Contact</a>
+                    <a href="https://twitter.com/flashcardsio" class="footer-link" target="_blank">Twitter</a>
+                </div>
+                <div class="copyright">
+                    © 2024 Flashcards.io. All rights reserved.
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script>
-        const actionButton = document.getElementById("actionButton");
-
-        if (isLoggedIn) {
-            actionButton.textContent = "Go to Dashboard";
-            actionButton.onclick = () => window.location.href = "/web/dashboard";
-        } else {
-            actionButton.textContent = "Login";
-            actionButton.onclick = () => window.location.href = "/web/auth/login";
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.querySelector('.menu-toggle i');
+            const body = document.body;
+            
+            menu.classList.toggle('active');
+            body.classList.toggle('menu-open');
+            
+            if (menu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
         }
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.mobile-menu a, .mobile-menu button').forEach(item => {
+            item.addEventListener('click', () => {
+                toggleMenu();
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('mobileMenu');
+            const toggle = document.querySelector('.menu-toggle');
+            
+            if (menu.classList.contains('active') && 
+                !menu.contains(e.target) && 
+                !toggle.contains(e.target)) {
+                toggleMenu();
+            }
+        });
+
+        // Close menu on window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                const menu = document.getElementById('mobileMenu');
+                const icon = document.querySelector('.menu-toggle i');
+                const body = document.body;
+                
+                menu.classList.remove('active');
+                body.classList.remove('menu-open');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
     </script>
 </body>
 </html>

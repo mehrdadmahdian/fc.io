@@ -16,7 +16,6 @@ func (handler *WebHandler) CreateCard(c *fiber.Ctx) error {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
 
-	stages, err := handler.boxService.GetBoxStages(c.Context(), box)
 	labels, err := handler.boxService.GetBoxLabels(c.Context(), box)
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
@@ -24,7 +23,6 @@ func (handler *WebHandler) CreateCard(c *fiber.Ctx) error {
 
 	return c.Render("dashboard/boxes/cards/create", fiber.Map{
 		"Box":       box,
-		"Stages":    stages,
 		"Labels":    labels,
 		"csrfToken": c.Locals("csrfToken"),
 	})
@@ -33,7 +31,6 @@ func (handler *WebHandler) CreateCard(c *fiber.Ctx) error {
 func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 	//todo: check there is card already for that.
 	box, err := handler.boxService.GetBox(context.TODO(), c.Params("boxID"))
-	stages, err := handler.boxService.GetBoxStages(c.Context(), box)
 	labels, err := handler.boxService.GetBoxLabels(c.Context(), box)
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
@@ -47,7 +44,6 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": "Can not parse the request",
 			"Box":          box,
-			"Stages":    stages,
 			"Labels":    labels,
 			"csrfToken": c.Locals("csrfToken"),
 		})
@@ -58,7 +54,6 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": utils.MapToString(*validationErros),
 			"Box":          box,
-			"Stages":    stages,
 			"Labels":    labels,
 			"csrfToken": c.Locals("csrfToken"),
 		})
@@ -66,7 +61,6 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 
 	card, err := models.NewCard(
 		box.IDString(),
-		request.StageId,
 		request.LabelIds,
 		request.Front,
 		request.Back,
@@ -82,7 +76,6 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": fmt.Sprintf("can not add card to the box."),
 			"Box":          box,
-			"Stages":    stages,
 			"Labels":    labels,
 			"csrfToken": c.Locals("csrfToken"),
 		})
@@ -91,7 +84,6 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 	return c.Render("dashboard/boxes/cards/create", fiber.Map{
 		"Message": "card added to box successfully",
 		"Box":     box,
-		"Stages":    stages,
 		"Labels":    labels,
 		"csrfToken": c.Locals("csrfToken"),
 	})
