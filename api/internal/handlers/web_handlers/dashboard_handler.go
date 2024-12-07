@@ -12,14 +12,26 @@ func (handler *WebHandler) Dashboard(c *fiber.Ctx) error {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": "user model is not set"})
 	}
 
-	boxes, err := handler.boxService.RenderUserBoxes(c.Context(), u)
+	boxInfos, err := handler.boxService.RenderUserBoxes(c.Context(), u)
 	if err != nil {
 		return c.Render("errors/500", fiber.Map{"ErrorMessage": err})
 	}
 
+	var totalCards int
+    var cardsDueToday int
+    for _, boxInfo := range boxInfos {
+        totalCards += boxInfo.CountOfTotalCards
+        cardsDueToday += boxInfo.CountOfCardsDueToday
+	}
+	
+
 	return c.Render("dashboard/index", fiber.Map{
-		"User":  c.Locals("user"),
-		"Boxes": boxes,
+		"User": c.Locals("user"),
+		"Boxes":   boxInfos,
+		"countOfBoxes": len(boxInfos),
+		"countOfCardsDueToday": cardsDueToday,
+		"totalCards":           totalCards,
+		"successRate":           0,
 	})
 
 }

@@ -148,6 +148,20 @@ func (cardRepository *CardRepository) GetCountOfRemainingCardsForReview(ctx cont
 	return &count, nil
 }
 
+func (cardRepository *CardRepository) GetCountOfAllCardsOfTheBox(ctx context.Context, box *models.Box) (*int64, error) {
+
+	filter := bson.M{
+		"box_id": box.ID,
+	}
+
+	count, err := cardRepository.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(count)
+	return &count, nil
+}
+
 func (cardRepository *CardRepository) UpdateCardReview(
 	ctx context.Context,
 	card *models.Card,

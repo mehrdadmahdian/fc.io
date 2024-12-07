@@ -68,12 +68,35 @@ func (boxService *BoxService) AddCard(ctx context.Context, card *models.Card) er
 	return nil
 }
 
-func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.User) ([]*models.Box, error) {
+func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.User) ([]*BoxInfo, error) {
 	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
-	return boxes, nil
+
+	var boxInfos []*BoxInfo
+	for _, box := range boxes {
+		countOfCardsDueToday, err := boxService.cardRepository.GetCountOfRemainingCardsForReview(ctx, box)
+		if err != nil {
+			return nil, err
+		}
+
+		boxCardsCount, err := boxService.cardRepository.GetCountOfAllCardsOfTheBox(ctx, box)
+		if err != nil {
+			return nil, err
+		}
+
+		// Create a new BoxInfo and append it
+		boxInfos = append(boxInfos, &BoxInfo{
+			Box:                 box,
+			CountOfCardsDueToday: int(*countOfCardsDueToday),
+			CountOfTotalCards:   int(*boxCardsCount),
+			SuccessRate:         0, // Placeholder for SuccessRate
+		})
+	}
+
+
+	return boxInfos, nil
 }
 
 func (boxService *BoxService) GetCards(ctx context.Context, box *models.Box) ([]*models.Card, error) {
