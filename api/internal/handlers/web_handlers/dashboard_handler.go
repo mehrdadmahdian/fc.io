@@ -23,7 +23,6 @@ func (handler *WebHandler) Dashboard(c *fiber.Ctx) error {
         totalCards += boxInfo.CountOfTotalCards
         cardsDueToday += boxInfo.CountOfCardsDueToday
 	}
-	
 
 	return c.Render("dashboard/index", fiber.Map{
 		"User": c.Locals("user"),
