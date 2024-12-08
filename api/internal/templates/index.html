@@ -268,6 +268,43 @@
                 overflow: hidden;
             }
         }
+
+        .nav-lang {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-lang-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-lang-link:hover,
+        .nav-lang-link.active {
+            color: #0d6efd;
+        }
+
+        .nav-lang-separator {
+            color: #dee2e6;
+        }
+
+        /* Mobile styles */
+        .mobile-lang-selector {
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-lang-selector .nav-lang-link {
+                font-size: 1rem;
+                padding: 0.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -288,6 +325,13 @@
                     <a href="/web/auth/login" class="nav-link">Login</a>
                     <a href="/web/auth/register" class="btn-primary">Get Started</a>
                 {{end}}
+                
+                <!-- Language selector moved to the end -->
+                <div class="nav-lang ms-3 border-start ps-3">
+                    <a href="#" onclick="setLanguage('en')" class="nav-lang-link {{ if eq .lang "en" }}active{{ end }}">EN</a>
+                    <span class="nav-lang-separator">|</span>
+                    <a href="#" onclick="setLanguage('fa')" class="nav-lang-link {{ if eq .lang "fa" }}active{{ end }}">FA</a>
+                </div>
             </div>
 
             <button class="menu-toggle" onclick="toggleMenu()">
@@ -308,6 +352,13 @@
             <a href="/web/auth/login" class="nav-link">Login</a>
             <a href="/web/auth/register" class="nav-link btn-primary">Get Started</a>
         {{end}}
+        
+        <!-- Language selector for mobile -->
+        <div class="mobile-lang-selector">
+            <a href="#" onclick="setLanguage('en')" class="nav-lang-link {{ if eq .lang "en" }}active{{ end }}">English</a>
+            <span class="nav-lang-separator">|</span>
+            <a href="#" onclick="setLanguage('fa')" class="nav-lang-link {{ if eq .lang "fa" }}active{{ end }}">فارسی</a>
+        </div>
     </div>
 
     <!-- Hero Section -->
@@ -430,6 +481,19 @@
                 icon.classList.add('fa-bars');
             }
         });
+
+        function setLanguage(lang) {
+            fetch('/set-language', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ language: lang })
+            }).then(() => {
+                window.location.reload();
+            });
+        }
     </script>
 </body>
 </html>
