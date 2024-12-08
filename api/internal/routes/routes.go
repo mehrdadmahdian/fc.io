@@ -37,6 +37,9 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup.Use(CSPMiddleware, GenerateCSRFMiddleware, CheckCSRFMiddleware)
 	dashboardGroup.Get("/", WebHandler.Dashboard)
 
+	dashboardGroup.Get("/profile", WebHandler.Profile)
+	dashboardGroup.Get("/settings", WebHandler.Settings)
+
 	dashboardGroup.Get("/box/:boxId", WebHandler.ShowBox)
 
 	dashboardGroup.Get("/box/:boxId/card/create", WebHandler.CreateCard)

@@ -35,3 +35,12 @@ func (handler *WebHandler) Dashboard(c *fiber.Ctx) error {
 	})
 
 }
+
+func (handler *WebHandler) Profile(c *fiber.Ctx) error {
+	return c.Render("dashboard/profile/index", fiber.Map{})
+}
+
+func (handler *WebHandler) Settings	(c *fiber.Ctx) error {
+	return c.Render("dashboard/settings/index", fiber.Map{})
+}
+
