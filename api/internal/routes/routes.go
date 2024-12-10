@@ -23,6 +23,7 @@ func setupWebRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 
 	webGroup := fiberApp.Group("/web").Use(ErrorHandlingMiddleware, CSPMiddleware)
 	webGroup.Get("/", middlewares.GetAuthenticatedUser(applicationContainer), WebHandler.Index)
+	webGroup.Get("/privacy", WebHandler.Privacy)
 	webGroup.Get("/health-check", WebHandler.Healthcheck)
 	webGroup.Get("/auth/health-check", WebAuthMiddleware, WebHandler.AuthHealthcheck)
 

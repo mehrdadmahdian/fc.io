@@ -9,14 +9,16 @@ function StatsCard({ icon, title, value, trend }) {
                 <i className={`fas ${icon}`}></i>
             </div>
             <div className="stats-info">
-                <h3 className="stats-value">{value}</h3>
-                <p className="stats-title">{t(title)}</p>
-                {trend && (
-                    <div className={`trend ${trend > 0 ? 'positive' : 'negative'}`}>
-                        <i className={`fas fa-arrow-${trend > 0 ? 'up' : 'down'}`}></i>
-                        <span>{Math.abs(trend)}%</span>
-                    </div>
-                )}
+                <h3>{t(title)}</h3>
+                <div className="stats-value">
+                    <span className="value">{value}</span>
+                    {trend && (
+                        <span className={`trend ${trend > 0 ? 'up' : 'down'}`}>
+                            <i className={`fas fa-arrow-${trend > 0 ? 'up' : 'down'}`}></i>
+                            {Math.abs(trend)}%
+                        </span>
+                    )}
+                </div>
             </div>
         </div>
     );

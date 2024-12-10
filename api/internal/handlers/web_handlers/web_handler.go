@@ -28,6 +28,12 @@ func (handler *WebHandler) Index(c *fiber.Ctx) error {
 	})
 }
 
+func (handler *WebHandler) Privacy(c *fiber.Ctx) error {
+	return c.Render("privacy", fiber.Map{
+		"User": c.Locals("user"),
+	})
+}
+
 func (handler *WebHandler) Healthcheck(c *fiber.Ctx) error {
 	return c.Render("checks/health-check", nil)
 }

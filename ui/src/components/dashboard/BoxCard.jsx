@@ -8,30 +8,30 @@ function BoxCard({ box }) {
         <div className="box-card">
             <div className="box-header">
                 <h3>{box.name}</h3>
-                <span className="badge bg-success">{t('dashboard.active')}</span>
+                <span className="badge bg-success">{t('dashboard.boxes.active')}</span>
             </div>
             <div className="box-content">
                 <p className="text-muted">{box.description}</p>
                 <div className="box-stats">
                     <div className="stat">
                         <span className="value">{box.totalCards}</span>
-                        <span className="label">{t('dashboard.totalCards')}</span>
+                        <span className="label">{t('dashboard.boxes.totalCards')}</span>
                     </div>
                     <div className="stat">
                         <span className="value">{box.dueCards}</span>
-                        <span className="label">{t('dashboard.dueToday')}</span>
+                        <span className="label">{t('dashboard.boxes.dueToday')}</span>
                     </div>
                 </div>
             </div>
             <div className="action-buttons">
                 <Link to={`/dashboard/box/${box.id}/card/create`} className="btn btn-outline-primary">
-                    {t('dashboard.addCard')}
+                    {t('dashboard.boxes.actions.addCard')}
                 </Link>
                 <Link to={`/dashboard/box/${box.id}/review`} className="btn btn-primary">
-                    {t('dashboard.review')}
+                    {t('dashboard.boxes.actions.review')}
                 </Link>
                 <Link to={`/dashboard/box/${box.id}`} className="btn btn-light">
-                    {t('dashboard.details')}
+                    {t('dashboard.boxes.actions.details')}
                 </Link>
             </div>
         </div>
