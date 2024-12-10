@@ -1,8 +1,9 @@
 {
   "nav": {
-    "features": "Features",
-    "pricing": "Pricing",
     "dashboard": "Dashboard",
+    "boxes": "My Boxes",
+    "profile": "Profile",
+    "settings": "Settings",
     "logout": "Logout"
   },
   "hero": {
@@ -32,22 +33,27 @@
   },
   "dashboard": {
     "welcome": "Welcome to Your Dashboard",
-    "overview": "Here's an overview of your flashcard boxes",
+    "overview": "Here's an overview of your learning progress",
     "stats": {
       "boxes": "Total Boxes",
       "cards": "Total Cards",
       "accuracy": "Review Accuracy",
-      "streak": "Day Streak"
+      "streak": "Day Streak",
+      "todayDue": "Due Today",
+      "mastered": "Mastered"
     },
-    "yourBoxes": "Your Flashcard Boxes",
-    "createBox": "Create New Box",
-    "createNewBox": "Create New Box",
-    "createBoxDesc": "Start a new collection of flashcards",
-    "active": "Active",
-    "totalCards": "Total Cards",
-    "dueToday": "Due Today",
-    "addCard": "Add Card",
-    "review": "Review",
-    "details": "Details"
+    "boxes": {
+      "title": "Your Flashcard Boxes",
+      "create": "Create New Box",
+      "createDesc": "Start a new collection of flashcards",
+      "active": "Active",
+      "totalCards": "Total Cards",
+      "dueToday": "Due Today",
+      "actions": {
+        "addCard": "Add Card",
+        "review": "Review",
+        "details": "Details"
+      }
+    }
   }
 } 
