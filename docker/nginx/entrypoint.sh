@@ -14,6 +14,6 @@ case "$APP_ENV" in
     ;;
 esac
 
-envsubst '$SERVER_NAME $API_SERVER_PORT' < "$TEMPLATE_FILE" > /etc/nginx/conf.d/app.conf
+envsubst '$SERVER_NAME $API_SERVER_PORT $UI_SERVER_PORT' < "$TEMPLATE_FILE" > /etc/nginx/conf.d/app.conf
 
 exec nginx -g 'daemon off;'

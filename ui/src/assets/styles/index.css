@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+} 
+
+/* Add RTL support */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .navbar-links {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .feature-card {
+    text-align: right;
+} 

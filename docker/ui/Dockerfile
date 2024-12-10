@@ -1,18 +1,52 @@
 FROM node:18-alpine AS base
 
 WORKDIR /app
+
+# First, copy only package files
 COPY ./ui/package.json ./ui/package-lock.json* ./
-RUN npm install --legacy-peer-deps
+
+# Clear npm cache and remove any existing node_modules
+RUN npm cache clean --force && \
+    rm -rf node_modules
+
+# Install dependencies with specific ajv version
+RUN npm install --legacy-peer-deps && \
+    npm install ajv@8.12.0 --save-exact
+
+# Copy the rest of the application
 COPY ./ui /app
 
 EXPOSE 3000
 
-FROM base AS development
-RUN echo "Building the development environment..."
-CMD ["npm", "run", "serve", "--", "--port", "3000"]
+# Base development stage
+FROM node:18-alpine AS development
 
-FROM base AS production
-RUN echo "Building the production environment..."
+WORKDIR /app
+
+# Install dependencies first (better layer caching)
+COPY ./ui/package.json ./ui/package-lock.json* ./
+RUN npm install
+
+# Copy the rest of the application code
+COPY ./ui .
+
+# Environment setup
+ENV NODE_ENV=development
+ENV WATCHPACK_POLLING=true
+ENV CHOKIDAR_USEPOLLING=true
+ENV FAST_REFRESH=true
+
+# Expose port
+EXPOSE 3000
+
+# Start in development mode
+CMD ["npm", "start"]
+
+# Production stage (if needed)
+FROM development AS production
+ENV NODE_ENV=production
 RUN npm run build
 RUN npm install -g serve
-CMD ["sh", "-c", "serve -s dist -l 3000"]
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+CMD ["serve", "-s", "build", "-l", "3000"]

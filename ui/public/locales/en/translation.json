@@ -1,0 +1,53 @@
+{
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Master Any Subject with Smart Flashcards",
+    "subtitle": "Advanced spaced repetition system that adapts to your learning pace. Create, study, and track your progress efficiently.",
+    "cta": "Start Learning Now"
+  },
+  "features": {
+    "smartLearning": {
+      "title": "Smart Learning",
+      "description": "Our spaced repetition algorithm adapts to your performance, optimizing your study schedule for maximum retention."
+    },
+    "progressTracking": {
+      "title": "Progress Tracking",
+      "description": "Monitor your learning journey with detailed statistics and insights about your study patterns."
+    },
+    "studyAnywhere": {
+      "title": "Study Anywhere",
+      "description": "Access your flashcards on any device. Your progress syncs automatically across all platforms."
+    }
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "copyright": "© 2024 Flashcards.io. All rights reserved."
+  },
+  "dashboard": {
+    "welcome": "Welcome to Your Dashboard",
+    "overview": "Here's an overview of your flashcard boxes",
+    "stats": {
+      "boxes": "Total Boxes",
+      "cards": "Total Cards",
+      "accuracy": "Review Accuracy",
+      "streak": "Day Streak"
+    },
+    "yourBoxes": "Your Flashcard Boxes",
+    "createBox": "Create New Box",
+    "createNewBox": "Create New Box",
+    "createBoxDesc": "Start a new collection of flashcards",
+    "active": "Active",
+    "totalCards": "Total Cards",
+    "dueToday": "Due Today",
+    "addCard": "Add Card",
+    "review": "Review",
+    "details": "Details"
+  }
+} 
