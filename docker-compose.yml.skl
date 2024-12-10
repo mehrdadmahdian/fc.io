@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   nginx:
     build: 
@@ -38,6 +39,24 @@ services:
       - mongodb
     networks:
       fc-network:
+  ui:
+    build:
+      context: .
+      dockerfile: docker/ui/Dockerfile
+      target: development
+    container_name: ui-container
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - REACT_APP_API_URL=${API_URL}
   redis:
     image: redis:latest
     container_name: redis-container
