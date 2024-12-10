@@ -9,7 +9,6 @@ import '../assets/styles/Dashboard.css';
 
 // Fake data for development
 const fakeData = {
-
     stats: {
         totalBoxes: { value: 12, trend: 8 },
         totalCards: { value: 486, trend: 15 },
@@ -32,8 +31,7 @@ const fakeData = {
             totalCards: 32,
             dueCards: 5,
             lastReviewed: "2024-02-09"
-        },
-        // Add more fake boxes as needed
+        }
     ]
 };
 
@@ -79,9 +77,9 @@ function Dashboard() {
 
                 <div className="boxes-section">
                     <div className="section-header">
-                        <h3>{t('dashboard.yourBoxes')}</h3>
+                        <h3>{t('dashboard.boxes.title')}</h3>
                         <Link to="/dashboard/box/create" className="btn btn-primary">
-                            {t('dashboard.createBox')}
+                            {t('dashboard.boxes.create')}
                         </Link>
                     </div>
 
@@ -92,14 +90,14 @@ function Dashboard() {
                         <Link to="/dashboard/box/create" className="box-card create-box">
                             <div className="create-box-content">
                                 <i className="fas fa-plus-circle"></i>
-                                <h3>{t('dashboard.createNewBox')}</h3>
-                                <p>{t('dashboard.createBoxDesc')}</p>
+                                <h3>{t('dashboard.boxes.create')}</h3>
+                                <p>{t('dashboard.boxes.createDesc')}</p>
                             </div>
                         </Link>
                     </div>
                 </div>
             </div>
-            <Footer className="dashboard-footer" />
+            <Footer />
         </div>
     );
 }

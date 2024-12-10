@@ -10,11 +10,16 @@ i18n
   .init({
     fallbackLng: 'en',
     supportedLngs: ['en', 'fa'],
+    debug: true,
     interpolation: {
       escapeValue: false,
     },
     backend: {
       loadPath: '/locales/{{lng}}/translation.json',
+    },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
     },
   });
 

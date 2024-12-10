@@ -4,7 +4,8 @@
     "boxes": "My Boxes",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "language": "Language"
   },
   "hero": {
     "title": "Master Any Subject with Smart Flashcards",
@@ -46,14 +47,25 @@
       "title": "Your Flashcard Boxes",
       "create": "Create New Box",
       "createDesc": "Start a new collection of flashcards",
+      "empty": "No boxes yet. Create your first box to start learning!",
       "active": "Active",
+      "inactive": "Inactive",
       "totalCards": "Total Cards",
       "dueToday": "Due Today",
+      "lastReview": "Last Review",
+      "progress": "Progress",
       "actions": {
         "addCard": "Add Card",
         "review": "Review",
-        "details": "Details"
+        "details": "Details",
+        "edit": "Edit Box",
+        "delete": "Delete Box"
       }
+    },
+    "alerts": {
+      "welcome": "Welcome back! You have {{count}} cards due for review today.",
+      "streak": "Great job! You've maintained a {{count}} day study streak!",
+      "newAchievement": "Congratulations! You've unlocked a new achievement!"
     }
   }
 } 
