@@ -12,7 +12,7 @@ function Footer() {
                         <a href="https://twitter.com/flashcardsio" className="footer-link" target="_blank" rel="noopener noreferrer">Twitter</a>
                     </div>
                     <div className="copyright">
-                        © 2024 Flashcards.io. All rights reserved.
+                        © 2024 "No Name Defined Yet Website". All rights reserved.
                     </div>
                 </div>
             </div>

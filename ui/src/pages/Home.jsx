@@ -22,7 +22,7 @@ function Home() {
             {/* Navigation */}
             <nav className="navbar">
                 <div className="navbar-container">
-                    <Link to="/" className="navbar-brand">Flashcards.io</Link>
+                    <Link to="/" className="navbar-brand">NoName.io</Link>
                     <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
                         <Link to="/features" className="nav-link">{t('nav.features')}</Link>
                         <Link to="/pricing" className="nav-link">{t('nav.pricing')}</Link>
