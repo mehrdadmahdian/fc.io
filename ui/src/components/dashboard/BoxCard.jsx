@@ -24,7 +24,7 @@ function BoxCard({ box }) {
                 </div>
             </div>
             <div className="action-buttons">
-                <Link to={`/dashboard/box/${box.id}/card/create`} className="btn btn-outline-primary">
+                <Link to={`/dashboard/box/${box.id}/cards/create`} className="btn btn-outline-primary">
                     {t('dashboard.boxes.actions.addCard')}
                 </Link>
                 <Link to={`/dashboard/box/${box.id}/review`} className="btn btn-primary">

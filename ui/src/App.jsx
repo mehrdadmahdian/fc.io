@@ -1,17 +1,30 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Review from './pages/Review';
-import Home from './pages/Home';
+import AddCard from './pages/AddCard';
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/dashboard/box/:boxId/review" element={<Review />} />
-      {/* Add more routes as needed */}
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            <Route path="/dashboard" element={<ProtectedRoute />}>
+                <Route index element={<Dashboard />} />
+                <Route path="box/:boxId/review" element={<Review />} />
+                <Route path="box/:boxId/cards/create" element={<AddCard />} />
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+    );
 }
 
 export default App; 

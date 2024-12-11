@@ -44,8 +44,14 @@ function Dashboard() {
             <Navigation />
             <div className="dashboard-container">
                 <div className="dashboard-header">
-                    <h2>{t('dashboard.welcome')}</h2>
-                    <p className="text-muted">{t('dashboard.overview')}</p>
+                    <h2>{t('dashboard.title')}</h2>
+                    <Link 
+                        to="/dashboard/cards/new" 
+                        className="add-card-btn"
+                    >
+                        <i className="fas fa-plus"></i>
+                        {t('dashboard.addCard')}
+                    </Link>
                 </div>
 
                 <div className="stats-grid">
