@@ -67,5 +67,52 @@
       "streak": "Great job! You've maintained a {{count}} day study streak!",
       "newAchievement": "Congratulations! You've unlocked a new achievement!"
     }
+  },
+  "review": {
+    "title": "Review {{boxName}}",
+    "question": "Question",
+    "answer": "Answer",
+    "additionalInfo": "Additional Information",
+    "example": "Example",
+    "notes": "Notes",
+    "clickToReveal": "Click to reveal answer",
+    "actions": {
+      "edit": "Edit Card",
+      "archive": "Archive",
+      "study": "Move to Study",
+      "flag": "Flag Card",
+      "info": "Card Info"
+    },
+    "responses": {
+      "again": "Again",
+      "hard": "Hard",
+      "good": "Good",
+      "easy": "Easy",
+      "next": "Next"
+    },
+    "shortcuts": {
+      "again": "Press 1 or A",
+      "hard": "Press 2 or H",
+      "good": "Press 3 or G",
+      "easy": "Press 4 or E",
+      "showAnswer": "Press Space"
+    },
+    "stats": {
+      "title": "Card Statistics",
+      "totalReviews": "Total Reviews",
+      "successRate": "Success Rate",
+      "streak": "Current Streak",
+      "bestStreak": "Best Streak",
+      "lastReviews": "Review History",
+      "created": "Created",
+      "lastReview": "Last Review",
+      "results": {
+        "easy": "Easy",
+        "good": "Good",
+        "hard": "Hard",
+        "again": "Again"
+      }
+    },
+    "progress": "Card {{current}} of {{total}}"
   }
 } 

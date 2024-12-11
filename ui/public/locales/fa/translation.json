@@ -69,5 +69,64 @@
       "streak": "عالی! شما {{count}} روز متوالی مطالعه داشته‌اید!",
       "newAchievement": "تبریک! شما یک دستاورد جدید باز کردید!"
     }
+  },
+    "review": {
+    "title": "مرور {{boxName}}",
+    "question": "سوال",
+    "answer": "پاسخ",
+    "additionalInfo": "اطلاعات تکمیلی",
+    "example": "مثال",
+    "notes": "یادداشت‌ها",
+    "clickToReveal": "برای نمایش پاسخ کلیک کنید",
+    "actions": {
+      "edit": "ویرایش کارت",
+      "archive": "بایگانی",
+      "study": "انتقال به مطالعه",
+      "stats": "آمار کارت"
+    },
+    "responses": {
+      "again": "دوباره",
+      "hard": "سخت",
+      "good": "خوب",
+      "easy": "آسان",
+      "next": "بعدی"
+    },
+    "shortcuts": {
+      "again": "کلید ۱ یا A",
+      "hard": "کلید ۲ یا H",
+      "good": "کلید ۳ یا G",
+      "easy": "کلید ۴ یا E",
+      "showAnswer": "کلید Space"
+    },
+    "stats": {
+      "title": "آمار کارت",
+      "totalReviews": "تعداد مرورها",
+      "successRate": "نرخ موفقیت",
+      "streak": "توالی فعلی",
+      "bestStreak": "بهترین توالی",
+      "lastReviews": "تاریخچه مرور",
+      "created": "تاریخ ایجاد",
+      "lastReview": "آخرین مرور",
+      "averageTime": "میانگین زمان پاسخ",
+      "results": {
+        "easy": "آسان",
+        "good": "خوب",
+        "hard": "سخت",
+        "again": "دوباره"
+      }
+    },
+    "progress": {
+      "current": "کارت {{current}} از {{total}}",
+      "completed": "مرور تکمیل شد",
+      "remaining": "{{count}} کارت باقی‌مانده"
+    },
+    "errors": {
+      "noCards": "کارتی برای مرور وجود ندارد",
+      "loadFailed": "خطا در بارگذاری کارت‌ها"
+    },
+    "confirmations": {
+      "archive": "آیا از بایگانی این کارت اطمینان دارید؟",
+      "moveToStudy": "آیا می‌خواهید این کارت را به بخش مطالعه منتقل کنید؟"
+    }
   }
 } 
