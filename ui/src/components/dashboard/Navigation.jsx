@@ -1,16 +1,37 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function Navigation() {
-    const { t, i18n } = useTranslation();
     const location = useLocation();
+    const { t, i18n } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     useEffect(() => {
         document.documentElement.dir = i18n.language === 'fa' ? 'rtl' : 'ltr';
-    }, [i18n.language]);
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const userMenuWrapper = document.querySelector('.user-menu-wrapper');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+
+            if (userMenuWrapper && !userMenuWrapper.contains(event.target) && 
+                mobileMenuBtn && !mobileMenuBtn.contains(event.target)) {
+                setIsUserMenuOpen(false);
+                setIsMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    if (location.pathname === '/') {
+        return null;
+    }
 
     const changeLanguage = async (lng) => {
         try {
@@ -35,22 +56,6 @@ function Navigation() {
         setIsUserMenuOpen(!isUserMenuOpen);
         setIsMenuOpen(false);
     };
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            const userMenuWrapper = document.querySelector('.user-menu-wrapper');
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-
-            if (userMenuWrapper && !userMenuWrapper.contains(event.target) && 
-                mobileMenuBtn && !mobileMenuBtn.contains(event.target)) {
-                setIsUserMenuOpen(false);
-                setIsMenuOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     return (
         <nav className="dashboard-nav">
