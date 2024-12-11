@@ -70,9 +70,9 @@ function Navigation() {
                     <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
                         <i className="fas fa-home"></i> {t('nav.dashboard')}
                     </Link>
-                    <Link to="/dashboard/boxes" className={`nav-link ${location.pathname.includes('/boxes') ? 'active' : ''}`}>
+                    {/* <Link to="/dashboard/boxes" className={`nav-link ${location.pathname.includes('/boxes') ? 'active' : ''}`}>
                         <i className="fas fa-box"></i> {t('nav.boxes')}
-                    </Link>
+                    </Link> */}
                 </div>
 
                 {/* Language selector */}

@@ -1,0 +1,36 @@
+{
+  "profile": {
+    "title": "Profile Settings",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Change Password",
+    "currentPassword": "Current Password",
+    "currentPasswordPlaceholder": "Enter current password",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "saveChanges": "Save Changes"
+  },
+  "settings": {
+    "title": "Settings",
+    "preferences": "App Preferences",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language",
+    "theme": "Theme",
+    "themeDesc": "Choose light or dark mode",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System Default",
+    "notifications": "Notifications",
+    "emailNotifications": "Email Notifications",
+    "emailNotificationsDesc": "Receive updates and important information via email",
+    "studyReminders": "Study Reminders",
+    "studyRemindersDesc": "Get notifications when it's time to review your cards",
+    "privacy": "Privacy",
+    "publicProfile": "Public Profile",
+    "publicProfileDesc": "Allow other users to see your profile and study progress",
+    "saveChanges": "Save Changes"
+  }
+} 

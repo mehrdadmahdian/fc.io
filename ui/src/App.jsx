@@ -8,6 +8,8 @@ import Review from './pages/Review';
 import AddCard from './pages/AddCard';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 function App() {
     return (
@@ -22,6 +24,8 @@ function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="box/:boxId/review" element={<Review />} />
                 <Route path="box/:boxId/cards/new" element={<AddCard />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="settings" element={<Settings />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
