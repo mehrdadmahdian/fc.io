@@ -6,6 +6,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Review from './pages/Review';
 import AddCard from './pages/AddCard';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 function App() {
@@ -15,11 +16,12 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             
             <Route path="/dashboard" element={<ProtectedRoute />}>
                 <Route index element={<Dashboard />} />
                 <Route path="box/:boxId/review" element={<Review />} />
-                <Route path="box/:boxId/cards/create" element={<AddCard />} />
+                <Route path="box/:boxId/cards/new" element={<AddCard />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />
