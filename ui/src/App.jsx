@@ -23,7 +23,7 @@ function App() {
             <Route path="/dashboard" element={<ProtectedRoute />}>
                 <Route index element={<Dashboard />} />
                 <Route path="box/:boxId/review" element={<Review />} />
-                <Route path="box/:boxId/cards/new" element={<AddCard />} />
+                <Route path="box/:boxId/cards/create" element={<AddCard />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="settings" element={<Settings />} />
             </Route>

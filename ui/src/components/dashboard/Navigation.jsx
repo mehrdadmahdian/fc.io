@@ -70,9 +70,20 @@ function Navigation() {
                     <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
                         <i className="fas fa-home"></i> {t('nav.dashboard')}
                     </Link>
-                    {/* <Link to="/dashboard/boxes" className={`nav-link ${location.pathname.includes('/boxes') ? 'active' : ''}`}>
-                        <i className="fas fa-box"></i> {t('nav.boxes')}
-                    </Link> */}
+                    <Link to="/dashboard/profile" className={`nav-link ${location.pathname === '/dashboard/profile' ? 'active' : ''}`}>
+                        <i className="fas fa-user-circle"></i> {t('nav.profile')}
+                    </Link>
+                    <Link to="/dashboard/settings" className={`nav-link ${location.pathname === '/dashboard/settings' ? 'active' : ''}`}>
+                        <i className="fas fa-cog"></i> {t('nav.settings')}
+                    </Link>
+                    <div className="dropdown-divider"></div>
+                    <Link 
+                        to="/auth/logout" 
+                        className="nav-link logout-link"
+                    >
+                        <i className="fas fa-sign-out-alt"></i>
+                        <span className="nav-link-text">{t('nav.logout')}</span>
+                    </Link>
                 </div>
 
                 {/* Language selector */}
@@ -83,29 +94,6 @@ function Navigation() {
                     <button onClick={() => changeLanguage('fa')} className={`lang-btn ${i18n.language === 'fa' ? 'active' : ''}`}>
                         FA
                     </button>
-                </div>
-
-                {/* User menu */}
-                <div className="user-menu-wrapper">
-                    <button onClick={toggleUserMenu} className="user-menu-btn">
-                        <i className="fas fa-user"></i>
-                        <span>John Doe</span>
-                        <i className={`fas fa-chevron-${isUserMenuOpen ? 'up' : 'down'}`}></i>
-                    </button>
-                    {isUserMenuOpen && (
-                        <div className="user-dropdown">
-                            <Link to="/dashboard/profile" className="dropdown-item">
-                                <i className="fas fa-user-circle"></i> {t('nav.profile')}
-                            </Link>
-                            <Link to="/dashboard/settings" className="dropdown-item">
-                                <i className="fas fa-cog"></i> {t('nav.settings')}
-                            </Link>
-                            <div className="dropdown-divider"></div>
-                            <Link to="/auth/logout" className="dropdown-item">
-                                <i className="fas fa-sign-out-alt"></i> {t('nav.logout')}
-                            </Link>
-                        </div>
-                    )}
                 </div>
 
                 {/* Mobile menu button */}
@@ -129,7 +117,6 @@ function Navigation() {
                             <i className="fas fa-cog"></i> {t('nav.settings')}
                         </Link>
                         <div className="menu-item language-section">
-                            <span className="language-label">{t('nav.language')}</span>
                             <div className="language-buttons">
                                 <button 
                                     onClick={() => changeLanguage('en')} 
@@ -145,8 +132,13 @@ function Navigation() {
                                 </button>
                             </div>
                         </div>
-                        <Link to="/auth/logout" className="menu-item logout" onClick={toggleMenu}>
-                            <i className="fas fa-sign-out-alt"></i> {t('nav.logout')}
+                        <Link 
+                            to="/auth/logout" 
+                            className="menu-item logout"
+                            onClick={toggleMenu}
+                        >
+                            <i className="fas fa-sign-out-alt"></i>
+                            <span className="menu-item-text">{t('nav.logout')}</span>
                         </Link>
                     </div>
                 </div>
