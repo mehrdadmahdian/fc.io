@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
+import PageTransition from '../components/layout/PageTransition';
 import '../assets/styles/Auth.css';
 
 function Register() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { register } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -13,39 +16,30 @@ function Register() {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         if (formData.password !== formData.confirmPassword) {
             setError(t('auth.errors.passwordMismatch'));
+            setIsLoading(false);
             return;
         }
 
         try {
-            // TODO: Replace with your actual API call
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Registration failed');
+            const success = await register(formData);
+            if (success) {
+                navigate('/dashboard');
+            } else {
+                setError(t('auth.errors.registrationFailed'));
             }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            navigate('/dashboard');
         } catch (err) {
             setError(t('auth.errors.registrationFailed'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -57,77 +51,131 @@ function Register() {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2>{t('auth.register')}</h2>
-                
-                {error && (
-                    <div className="auth-error">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="form-group">
-                        <label htmlFor="name">{t('auth.name')}</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">{t('auth.email')}</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
+        <PageTransition>
+            <div className="auth-container register-container">
+                <div className="auth-content">
+                    <div className="auth-left">
+                        <div className="auth-welcome">
+                            <h1>{t('auth.register')}</h1>
+                            <p className="auth-subtitle">{t('auth.registerSubtitle')}</p>
+                            <div className="auth-features">
+                                <div className="auth-feature">
+                                    <i className="fas fa-brain"></i>
+                                    <span>Smart Learning Algorithm</span>
+                                </div>
+                                <div className="auth-feature">
+                                    <i className="fas fa-chart-line"></i>
+                                    <span>Progress Tracking</span>
+                                </div>
+                                <div className="auth-feature">
+                                    <i className="fas fa-mobile-alt"></i>
+                                    <span>Study Anywhere</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">{t('auth.password')}</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            minLength={6}
-                        />
+                    <div className="auth-right">
+                        <div className="auth-form-container">
+                            {error && (
+                                <div className="auth-error">
+                                    {error}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className="auth-form">
+                                <div className="form-group">
+                                    <label htmlFor="name">
+                                        <i className="fas fa-user"></i>
+                                        {t('auth.name')}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.name')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="email">
+                                        <i className="fas fa-envelope"></i>
+                                        {t('auth.email')}
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.email')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="password">
+                                        <i className="fas fa-lock"></i>
+                                        {t('auth.password')}
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.password')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="confirmPassword">
+                                        <i className="fas fa-lock"></i>
+                                        {t('auth.confirmPassword')}
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.confirmPassword')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    className="auth-submit"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <><i className="fas fa-spinner fa-spin"></i> {t('common.loading')}</>
+                                    ) : (
+                                        <>{t('auth.registerButton')}</>
+                                    )}
+                                </button>
+                            </form>
+
+                            <div className="auth-links">
+                                <Link to="/auth/login" className="auth-link">
+                                    <i className="fas fa-arrow-left"></i>
+                                    {t('auth.haveAccount')}
+                                </Link>
+                            </div>
+                        </div>
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">{t('auth.confirmPassword')}</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            minLength={6}
-                        />
-                    </div>
-
-                    <button type="submit" className="auth-submit">
-                        {t('auth.registerButton')}
-                    </button>
-                </form>
-
-                <div className="auth-links">
-                    <Link to="/">{t('auth.haveAccount')}</Link>
                 </div>
             </div>
-        </div>
+        </PageTransition>
     );
 }
 

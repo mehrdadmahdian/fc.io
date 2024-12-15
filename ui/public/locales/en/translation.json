@@ -149,6 +149,32 @@
       "password": "Enter your password",
       "confirmPassword": "Confirm your password",
       "name": "Enter your full name"
+    },
+    "welcome": {
+      "title": "Welcome to Flashcards",
+      "subtitle": "Join thousands of students who use our smart flashcard system to learn effectively",
+      "features": {
+        "spaced": {
+          "title": "Spaced Repetition",
+          "description": "Learn efficiently with proven methods"
+        },
+        "progress": {
+          "title": "Track Progress",
+          "description": "Monitor your learning journey"
+        },
+        "anywhere": {
+          "title": "Study Anywhere",
+          "description": "Access your cards on any device"
+        }
+      }
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue your learning journey"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Start your learning journey today"
     }
   },
   "cookies": {

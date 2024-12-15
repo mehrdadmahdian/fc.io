@@ -73,7 +73,7 @@ func (handler *AuthHandler) Register(c *fiber.Ctx) error {
 	return nil
 }
 
-func (handler *AuthHandler) RefreshToken(c *fiber.Ctx) error {
+func (handler *AuthHandler) Refresh(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.RefreshTokenRequest))
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)

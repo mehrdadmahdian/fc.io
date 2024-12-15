@@ -20,7 +20,7 @@ func Healthcheck(c *fiber.Ctx) error {
 	return c.JSON(responseData)
 }
 
-func AuthCheck(c *fiber.Ctx) error {
+func Check(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	userModel, ok := user.(*models.User)
 	if !ok {

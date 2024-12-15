@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import PageTransition from '../components/layout/PageTransition';
 import '../assets/styles/Auth.css';
 
 function Login() {
@@ -42,60 +43,108 @@ function Login() {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2>{t('auth.login')}</h2>
-                
-                {error && (
-                    <div className="auth-error">
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="form-group">
-                        <label htmlFor="email">{t('auth.email')}</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder={t('auth.placeholders.email')}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">{t('auth.password')}</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder={t('auth.placeholders.password')}
-                            required
-                            disabled={isLoading}
-                        />
+        <PageTransition>
+            <div className="auth-container">
+                <div className="auth-content">
+                    <div className="auth-left">
+                        <div className="auth-welcome">
+                            <h1>{t('auth.welcome.title')}</h1>
+                            <p className="auth-subtitle">{t('auth.login.subtitle')}</p>
+                            <div className="auth-features">
+                                <div className="auth-feature">
+                                    <i className="fas fa-sync"></i>
+                                    <div className="feature-text">
+                                        <h3>{t('auth.welcome.features.spaced.title')}</h3>
+                                        <p>{t('auth.welcome.features.spaced.description')}</p>
+                                    </div>
+                                </div>
+                                <div className="auth-feature">
+                                    <i className="fas fa-chart-line"></i>
+                                    <div className="feature-text">
+                                        <h3>{t('auth.welcome.features.progress.title')}</h3>
+                                        <p>{t('auth.welcome.features.progress.description')}</p>
+                                    </div>
+                                </div>
+                                <div className="auth-feature">
+                                    <i className="fas fa-mobile-alt"></i>
+                                    <div className="feature-text">
+                                        <h3>{t('auth.welcome.features.anywhere.title')}</h3>
+                                        <p>{t('auth.welcome.features.anywhere.description')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <button 
-                        type="submit" 
-                        className="auth-submit"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? t('common.loading') : t('auth.loginButton')}
-                    </button>
-                </form>
+                    <div className="auth-right">
+                        <div className="auth-form-container">
+                            {error && (
+                                <div className="auth-error">
+                                    {error}
+                                </div>
+                            )}
 
-                <div className="auth-links">
-                    <Link to="/register">{t('auth.needAccount')}</Link>
-                    <Link to="/forgot-password">{t('auth.forgotPassword')}</Link>
+                            <form onSubmit={handleSubmit} className="auth-form">
+                                <div className="form-group">
+                                    <label htmlFor="email">
+                                        <i className="fas fa-envelope"></i>
+                                        {t('auth.email')}
+                                    </label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.email')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="password">
+                                        <i className="fas fa-lock"></i>
+                                        {t('auth.password')}
+                                    </label>
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        placeholder={t('auth.placeholders.password')}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    className="auth-submit"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <><i className="fas fa-spinner fa-spin"></i> {t('common.loading')}</>
+                                    ) : (
+                                        <>{t('auth.loginButton')}</>
+                                    )}
+                                </button>
+                            </form>
+
+                            <div className="auth-links">
+                                <Link to="/register" className="auth-link">
+                                    {t('auth.needAccount')}
+                                </Link>
+                                <Link to="/forgot-password" className="auth-link">
+                                    {t('auth.forgotPassword')}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </PageTransition>
     );
 }
 
