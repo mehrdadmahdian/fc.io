@@ -150,5 +150,17 @@
       "confirmPassword": "Confirm your password",
       "name": "Enter your full name"
     }
+  },
+  "cookies": {
+    "message": "We use cookies to enhance your experience and analyze our traffic. By continuing to use this website, you agree to our use of cookies.",
+    "accept": "Accept all cookies",
+    "decline": "Decline",
+    "settings": "Cookie Settings",
+    "policy": {
+      "title": "Cookie Policy",
+      "essential": "Essential Cookies",
+      "analytics": "Analytics Cookies",
+      "marketing": "Marketing Cookies"
+    }
   }
 } 

@@ -1,13 +1,17 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+import '../../assets/styles/Navigation.css';
 
 function Navigation() {
     const location = useLocation();
     const { t, i18n } = useTranslation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const navigate = useNavigate();
+    const { logout } = useAuth();
 
     useEffect(() => {
         document.documentElement.dir = i18n.language === 'fa' ? 'rtl' : 'ltr';
@@ -57,6 +61,11 @@ function Navigation() {
         setIsMenuOpen(false);
     };
 
+    const handleLogout = async () => {
+        await logout();
+        navigate('/');
+    };
+
     return (
         <nav className="dashboard-nav">
             <div className="nav-container">
@@ -67,9 +76,7 @@ function Navigation() {
 
                 {/* Navigation items */}
                 <div className="main-links">
-                    <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
-                        <i className="fas fa-home"></i> {t('nav.dashboard')}
-                    </Link>
+                   
                     <Link to="/dashboard/profile" className={`nav-link ${location.pathname === '/dashboard/profile' ? 'active' : ''}`}>
                         <i className="fas fa-user-circle"></i> {t('nav.profile')}
                     </Link>
@@ -77,13 +84,13 @@ function Navigation() {
                         <i className="fas fa-cog"></i> {t('nav.settings')}
                     </Link>
                     <div className="dropdown-divider"></div>
-                    <Link 
-                        to="/auth/logout" 
+                    <button 
+                        onClick={handleLogout}
                         className="nav-link logout-link"
                     >
                         <i className="fas fa-sign-out-alt"></i>
                         <span className="nav-link-text">{t('nav.logout')}</span>
-                    </Link>
+                    </button>
                 </div>
 
                 {/* Language selector */}
@@ -132,14 +139,14 @@ function Navigation() {
                                 </button>
                             </div>
                         </div>
-                        <Link 
-                            to="/auth/logout" 
+                        <button 
+                            onClick={handleLogout}
                             className="menu-item logout"
                             onClick={toggleMenu}
                         >
                             <i className="fas fa-sign-out-alt"></i>
                             <span className="menu-item-text">{t('nav.logout')}</span>
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>

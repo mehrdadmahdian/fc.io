@@ -1,38 +1,36 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
 import '../assets/styles/Auth.css';
 
 function Login() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
         
         try {
-            // Fake successful login
-            // In production, this would be an actual API call
-            const fakeToken = 'fake-jwt-token-' + Date.now();
-            localStorage.setItem('token', fakeToken);
-            localStorage.setItem('user', JSON.stringify({
-                id: 1,
-                name: 'Test User',
-                email: formData.email
-            }));
-            
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            navigate('/dashboard');
+            const success = await login(formData);
+            if (success) {
+                navigate('/dashboard');
+            } else {
+                setError(t('auth.errors.invalidCredentials'));
+            }
         } catch (err) {
             setError(t('auth.errors.invalidCredentials'));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -65,6 +63,7 @@ function Login() {
                             onChange={handleChange}
                             placeholder={t('auth.placeholders.email')}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -78,11 +77,16 @@ function Login() {
                             onChange={handleChange}
                             placeholder={t('auth.placeholders.password')}
                             required
+                            disabled={isLoading}
                         />
                     </div>
 
-                    <button type="submit" className="auth-submit">
-                        {t('auth.loginButton')}
+                    <button 
+                        type="submit" 
+                        className="auth-submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? t('common.loading') : t('auth.loginButton')}
                     </button>
                 </form>
 

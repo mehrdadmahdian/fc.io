@@ -44,8 +44,8 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 	}
 
 	dataMap := map[string]interface{}{
-		"access_token":  tokenStruct.Token,
-		"refresh_token": tokenStruct.RefreshToken,
+		"accessToken":  tokenStruct.Token,
+		"refreshToken": tokenStruct.RefreshToken,
 	}
 
 	return JsonSuccess(
