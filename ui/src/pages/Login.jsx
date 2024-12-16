@@ -133,10 +133,11 @@ function Login() {
                             </form>
 
                             <div className="auth-links">
-                                <Link to="/register" className="auth-link">
+                                <Link to="/auth/register" className="auth-link">
                                     {t('auth.needAccount')}
                                 </Link>
-                                <Link to="/forgot-password" className="auth-link">
+                                <br />
+                                <Link to="/auth/forgot-password" className="auth-link">
                                     {t('auth.forgotPassword')}
                                 </Link>
                             </div>

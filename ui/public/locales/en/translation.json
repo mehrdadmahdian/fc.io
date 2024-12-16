@@ -116,58 +116,6 @@
     "progress": "Card {{current}} of {{total}}"
   },
   "auth": {
-    "login": "Login",
-    "register": "Register",
-    "email": "Email",
-    "password": "Password",
-    "confirmPassword": "Confirm Password",
-    "name": "Full Name",
-    "loginButton": "Sign In",
-    "registerButton": "Create Account",
-    "needAccount": "Need an account? Register",
-    "haveAccount": "Already have an account? Login",
-    "forgotPassword": {
-      "title": "Reset Password",
-      "description": "Enter your email address and we'll send you instructions to reset your password.",
-      "submit": "Send Reset Link",
-      "sending": "Sending...",
-      "successMessage": "If an account exists with this email, you will receive password reset instructions.",
-      "errorMessage": "Failed to send reset instructions. Please try again.",
-      "backToLogin": "Back to Login"
-    },
-    "errors": {
-      "invalidCredentials": "Invalid email or password",
-      "passwordMismatch": "Passwords do not match",
-      "registrationFailed": "Registration failed. Please try again.",
-      "emailInUse": "Email is already in use",
-      "invalidEmail": "Please enter a valid email",
-      "requiredField": "This field is required",
-      "passwordTooShort": "Password must be at least 6 characters"
-    },
-    "placeholders": {
-      "email": "Enter your email",
-      "password": "Enter your password",
-      "confirmPassword": "Confirm your password",
-      "name": "Enter your full name"
-    },
-    "welcome": {
-      "title": "Welcome to Flashcards",
-      "subtitle": "Join thousands of students who use our smart flashcard system to learn effectively",
-      "features": {
-        "spaced": {
-          "title": "Spaced Repetition",
-          "description": "Learn efficiently with proven methods"
-        },
-        "progress": {
-          "title": "Track Progress",
-          "description": "Monitor your learning journey"
-        },
-        "anywhere": {
-          "title": "Study Anywhere",
-          "description": "Access your cards on any device"
-        }
-      }
-    },
     "login": {
       "title": "Welcome Back",
       "subtitle": "Sign in to continue your learning journey"
@@ -175,6 +123,24 @@
     "register": {
       "title": "Create Account",
       "subtitle": "Start your learning journey today"
+    },
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "loginButton": "Sign In",
+    "registerButton": "Sign Up",
+    "needAccount": "Don't have an account? Sign up",
+    "haveAccount": "Already have an account? Sign in",
+    "forgotPassword": "Forgot Password?",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "passwordMismatch": "Passwords do not match",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "placeholders": {
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "confirmPassword": "Confirm your password"
     }
   },
   "cookies": {
