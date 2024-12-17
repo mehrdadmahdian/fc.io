@@ -10,7 +10,12 @@ import BoxReview from './pages/box/Review';
 import AddCard from './pages/box/AddCard';
 
 const Routes = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
+
+    // Show nothing while checking authentication
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <RouterRoutes>

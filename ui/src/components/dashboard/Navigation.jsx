@@ -116,9 +116,6 @@ function Navigation() {
                         <Link to="/dashboard" className="menu-item" onClick={toggleMenu}>
                             <i className="fas fa-home"></i> {t('nav.dashboard')}
                         </Link>
-                        <Link to="/dashboard/boxes" className="menu-item" onClick={toggleMenu}>
-                            <i className="fas fa-box"></i> {t('nav.boxes')}
-                        </Link>
                         <Link to="/dashboard/profile" className="menu-item" onClick={toggleMenu}>
                             <i className="fas fa-user-circle"></i> {t('nav.profile')}
                         </Link>
