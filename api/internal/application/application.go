@@ -17,14 +17,14 @@ import (
 )
 
 type Container struct {
-	LoggerService  *logger_service.LoggerService
-	MongoService   *mongo_service.MongoService
-	RedisService   *redis_service.RedisService
-	AuthService    *auth_service.AuthService
-	BoxService     *box_service.BoxService
-	Seeder         *seeders.Seeder
-	ApiAuthHandler *api_handlers.AuthHandler
-	WebHandler     *web_handlers.WebHandler
+	LoggerService *logger_service.LoggerService
+	MongoService  *mongo_service.MongoService
+	RedisService  *redis_service.RedisService
+	AuthService   *auth_service.AuthService
+	BoxService    *box_service.BoxService
+	Seeder        *seeders.Seeder
+	ApiHandler    *api_handlers.ApiHandler
+	WebHandler    *web_handlers.WebHandler
 }
 
 func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
@@ -133,7 +133,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	authHandler, err := api_handlers.NewAuthHandler(authService, boxService, redisService)
+	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",
@@ -152,13 +152,13 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 	}
 
 	return &Container{
-		LoggerService:  loggerService,
-		MongoService:   mongoService,
-		RedisService:   redisService,
-		AuthService:    authService,
-		BoxService:     boxService,
-		Seeder:         seeder,
-		ApiAuthHandler: authHandler,
-		WebHandler:     webHandler,
+		LoggerService: loggerService,
+		MongoService:  mongoService,
+		RedisService:  redisService,
+		AuthService:   authService,
+		BoxService:    boxService,
+		Seeder:        seeder,
+		ApiHandler:    apiHandler,
+		WebHandler:    webHandler,
 	}, nil
 }

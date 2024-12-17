@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navigation from '../components/dashboard/Navigation';
@@ -7,39 +7,75 @@ import BoxCard from '../components/dashboard/BoxCard';
 import Footer from '../components/Footer';
 import '../assets/styles/Dashboard.css';
 import PageTransition from '../components/layout/PageTransition';
-
-// Fake data for development
-const fakeData = {
-    stats: {
-        totalBoxes: { value: 12, trend: 8 },
-        totalCards: { value: 486, trend: 15 },
-        reviewAccuracy: { value: 92, trend: -3 },
-        streak: { value: 7, trend: 2 }
-    },
-    boxes: [
-        {
-            id: 1,
-            name: "JavaScript Basics",
-            description: "Core concepts of JavaScript programming",
-            totalCards: 45,
-            dueCards: 8,
-            lastReviewed: "2024-02-10"
-        },
-        {
-            id: 2,
-            name: "React Hooks",
-            description: "Modern React hooks and state management",
-            totalCards: 32,
-            dueCards: 5,
-            lastReviewed: "2024-02-09"
-        }
-    ]
-};
+import { api } from '../services/api';
 
 function Dashboard() {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [data] = useState(fakeData);
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState({
+        stats: {
+            totalBoxes: { value: 0, trend: 0 },
+            totalCards: { value: 0, trend: 0 },
+            reviewAccuracy: { value: 0, trend: 0 },
+            streak: { value: 0, trend: 0 }
+        },
+        boxes: []
+    });
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setLoading(true);
+                const boxInfos = await api.get('/dashboard/boxes');
+                console.log(boxInfos);
+                data = boxInfos.data.data
+                console.log(data);
+                setData({
+                    stats: {
+                        totalBoxes: data?.stats?.totalBoxes || { value: 0, trend: 0 },
+                        totalCards: data?.stats?.totalCards || { value: 0, trend: 0 },
+                        reviewAccuracy: data?.stats?.reviewAccuracy || { value: 0, trend: 0 },
+                        streak: data?.stats?.streak || { value: 0, trend: 0 }
+                    },
+                    boxes: data?.boxes || []
+                });
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+                setData({
+                    stats: {
+                        totalBoxes: { value: 0, trend: 0 },
+                        totalCards: { value: 0, trend: 0 },
+                        reviewAccuracy: { value: 0, trend: 0 },
+                        streak: { value: 0, trend: 0 }
+                    },
+                    boxes: []
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    if (loading) {
+        return (
+            <PageTransition>
+                <div className="dashboard-layout">
+                    <Navigation />
+                    <main className="dashboard-main">
+                        <div className="dashboard-container">
+                            <div className="dashboard-header">
+                                <h1 className="dashboard-title">{t('dashboard.loading')}</h1>
+                            </div>
+                        </div>
+                    </main>
+                    <Footer />
+                </div>
+            </PageTransition>
+        );
+    }
 
     return (
         <PageTransition>
@@ -49,13 +85,6 @@ function Dashboard() {
                     <div className="dashboard-container">
                         <div className="dashboard-header">
                             <h1 className="dashboard-title">{t('dashboard.welcome')}</h1>
-                            <button 
-                                className="btn btn-primary"
-                                onClick={() => navigate('/boxes')}
-                            >
-                                <i className="fas fa-box"></i>
-                                {t('dashboard.viewBoxes')}
-                            </button>
                         </div>
 
                         <div className="stats-grid">

@@ -20,29 +20,29 @@ const Routes = () => {
     return (
         <RouterRoutes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
             
             {/* Protected routes */}
             <Route 
                 path="/dashboard" 
-                element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+                element={isAuthenticated ? <Dashboard /> : <Navigate to="/auth/login" />} 
             />
             <Route 
                 path="/dashboard/profile" 
-                element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+                element={isAuthenticated ? <Profile /> : <Navigate to="/auth/login" />} 
             />
             <Route 
                 path="/dashboard/settings" 
-                element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} 
+                element={isAuthenticated ? <Settings /> : <Navigate to="/auth/login" />} 
             />
             <Route 
                 path="/dashboard/box/:boxId/review" 
-                element={isAuthenticated ? <BoxReview /> : <Navigate to="/login" />} 
+                element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
             />
             <Route 
                 path="/dashboard/box/:boxId/cards/create" 
-                element={isAuthenticated ? <AddCard /> : <Navigate to="/login" />} 
+                element={isAuthenticated ? <AddCard /> : <Navigate to="/auth/login" />} 
             />
         </RouterRoutes>
     );

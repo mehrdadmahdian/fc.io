@@ -16,7 +16,7 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 
 	apiGroup.Get("/health-check", api_handlers.Healthcheck)
 
-	authHandler := applicationContainer.ApiAuthHandler
+	authHandler := applicationContainer.ApiHandler
 	authGroup := apiGroup.Group("/auth")
 	authGroup.Post("/login", authHandler.Login)
 	authGroup.Get("/refresh", authHandler.Refresh)
@@ -25,5 +25,6 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	authGroup.Get("/user", AuthMiddleware, authHandler.User)
 	authGroup.Get("/check", AuthMiddleware, api_handlers.Check)
 
-	apiGroup.Group("/boxes").Use(AuthMiddleware)
+	dashboardGroup := apiGroup.Group("/dashboard").Use(AuthMiddleware)
+	dashboardGroup.Get("/boxes", authHandler.GetBoxes)
 }

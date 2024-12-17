@@ -7,31 +7,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
-	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
-	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
-	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
-type AuthHandler struct {
-	authService  *auth_service.AuthService
-	boxService  *box_service.BoxService
-	redisService *redis_service.RedisService
-}
-
-func NewAuthHandler(
-	authService *auth_service.AuthService,
-	boxService *box_service.BoxService,
-	redisService *redis_service.RedisService,
-) (*AuthHandler, error) {
-	return &AuthHandler{
-		authService:  authService,
-		boxService:   boxService,
-		redisService: redisService,
-	}, nil
-}
-
-func (handler *AuthHandler) Login(c *fiber.Ctx) error {
+func (handler *ApiHandler) Login(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.LoginRequest))
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
@@ -63,7 +42,7 @@ func (handler *AuthHandler) Login(c *fiber.Ctx) error {
 	)
 }
 
-func (handler *AuthHandler) Logout(c *fiber.Ctx) error {
+func (handler *ApiHandler) Logout(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if !strings.HasPrefix(authHeader, "Bearer ") {
 		return JsonFailed(c, fiber.StatusUnauthorized, utils.PointerString("Missing or invalid Authorization header"), nil)
@@ -77,7 +56,7 @@ func (handler *AuthHandler) Logout(c *fiber.Ctx) error {
 	return nil
 }
 
-func (handler *AuthHandler) Register(c *fiber.Ctx) error {
+func (handler *ApiHandler) Register(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.RegisterRequest))
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
@@ -105,9 +84,10 @@ func (handler *AuthHandler) Register(c *fiber.Ctx) error {
 		c,
 		utils.PointerString("signed up successfully!"),
 		&dataMap,
-	)}
+	)
+}
 
-func (handler *AuthHandler) User(c *fiber.Ctx) error {
+func (handler *ApiHandler) User(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	userModel, ok := user.(*models.User)
 	if !ok {
@@ -130,7 +110,7 @@ func (handler *AuthHandler) User(c *fiber.Ctx) error {
 	)
 }
 
-func (handler *AuthHandler) Refresh(c *fiber.Ctx) error {
+func (handler *ApiHandler) Refresh(c *fiber.Ctx) error {
 	request, err := requests.ParseRequestBody(c, new(requests.RefreshTokenRequest))
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
