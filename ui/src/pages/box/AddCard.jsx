@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
-import Navigation from '../components/dashboard/Navigation';
-import LabelSelect from '../components/cards/LabelSelect';
-import '../assets/styles/AddCard.css';
+import Navigation from '../../components/dashboard/Navigation';
+import LabelSelect from '../../components/cards/LabelSelect';
+import '../../assets/styles/AddCard.css';
 
 function AddCard() {
     const { t } = useTranslation();

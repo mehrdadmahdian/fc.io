@@ -13,7 +13,7 @@ function Register() {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmationPassword: ''
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ function Register() {
         setError('');
         setIsLoading(true);
 
-        if (formData.password !== formData.confirmPassword) {
+        if (formData.password !== formData.confirmationPassword) {
             setError(t('auth.errors.passwordMismatch'));
             setIsLoading(false);
             return;
@@ -52,31 +52,26 @@ function Register() {
 
     return (
         <PageTransition>
-            <div className="auth-container register-container">
+            <div className="auth-container">
                 <div className="auth-content">
                     <div className="auth-left">
                         <div className="auth-welcome">
-                            <h1>{t('auth.register')}</h1>
-                            <p className="auth-subtitle">{t('auth.registerSubtitle')}</p>
-                            <div className="auth-features">
-                                <div className="auth-feature">
-                                    <i className="fas fa-brain"></i>
-                                    <span>Smart Learning Algorithm</span>
-                                </div>
-                                <div className="auth-feature">
-                                    <i className="fas fa-chart-line"></i>
-                                    <span>Progress Tracking</span>
-                                </div>
-                                <div className="auth-feature">
-                                    <i className="fas fa-mobile-alt"></i>
-                                    <span>Study Anywhere</span>
-                                </div>
+                            <div className="auth-logo">
+                                <i className="fas fa-brain"></i>
+                            </div>
+                            <h1>{t('auth.register.title')}</h1>
+                            <p className="auth-subtitle">{t('auth.register.subtitle')}</p>
+                            <div className="auth-quote">
+                                <i className="fas fa-quote-left"></i>
+                                <p>The journey of a thousand miles begins with a single step.</p>
+                                <span>- Lao Tzu</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="auth-right">
                         <div className="auth-form-container">
+                            <h2>{t('auth.register.title')}</h2>
                             {error && (
                                 <div className="auth-error">
                                     {error}
@@ -136,17 +131,17 @@ function Register() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="confirmPassword">
+                                    <label htmlFor="confirmationPassword">
                                         <i className="fas fa-lock"></i>
-                                        {t('auth.confirmPassword')}
+                                        {t('auth.confirmationPassword')}
                                     </label>
                                     <input
                                         type="password"
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        value={formData.confirmPassword}
+                                        id="confirmationPassword"
+                                        name="confirmationPassword"
+                                        value={formData.confirmationPassword}
                                         onChange={handleChange}
-                                        placeholder={t('auth.placeholders.confirmPassword')}
+                                        placeholder={t('auth.placeholders.confirmationPassword')}
                                         required
                                         disabled={isLoading}
                                     />
@@ -166,7 +161,7 @@ function Register() {
                             </form>
 
                             <div className="auth-links">
-                                <Link to="/auth/login" className="auth-link">
+                                <Link to="/login" className="auth-link">
                                     <i className="fas fa-arrow-left"></i>
                                     {t('auth.haveAccount')}
                                 </Link>

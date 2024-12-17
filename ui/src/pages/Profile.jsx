@@ -1,71 +1,39 @@
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
 import Navigation from '../components/dashboard/Navigation';
-import '../assets/styles/Profile.css';
+import PageTransition from '../components/layout/PageTransition';
+import '../assets/styles/Dashboard.css';
 
 function Profile() {
     const { t } = useTranslation();
+    const { user } = useAuth();
 
     return (
-        <div className="layout-container">
-            <Navigation />
-            <div className="profile-container">
-                <div className="profile-header">
-                    <h1>{t('profile.title')}</h1>
-                </div>
-                
-                <div className="profile-content">
-                    <div className="profile-section">
-                        <h2>{t('profile.personalInfo')}</h2>
-                        <div className="profile-form">
-                            <div className="form-group">
-                                <label>{t('profile.name')}</label>
-                                <input 
-                                    type="text" 
-                                    placeholder={t('profile.namePlaceholder')}
-                                    className="form-input"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>{t('profile.email')}</label>
-                                <input 
-                                    type="email" 
-                                    placeholder={t('profile.emailPlaceholder')}
-                                    className="form-input"
-                                />
+        <PageTransition>
+            <div className="dashboard-layout">
+                <Navigation />
+                <main className="dashboard-main">
+                    <div className="dashboard-container">
+                        <div className="dashboard-header">
+                            <h1 className="dashboard-title">{t('profile.title')}</h1>
+                        </div>
+                        <div className="dashboard-content">
+                            <div className="dashboard-box">
+                                <div className="profile-info">
+                                    <div className="profile-avatar">
+                                        <i className="fas fa-user"></i>
+                                    </div>
+                                    <div className="profile-details">
+                                        <h2>{user?.name}</h2>
+                                        <p>{user?.email}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div className="profile-section">
-                        <h2>{t('profile.password')}</h2>
-                        <div className="profile-form">
-                            <div className="form-group">
-                                <label>{t('profile.currentPassword')}</label>
-                                <input 
-                                    type="password" 
-                                    placeholder={t('profile.currentPasswordPlaceholder')}
-                                    className="form-input"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>{t('profile.newPassword')}</label>
-                                <input 
-                                    type="password" 
-                                    placeholder={t('profile.newPasswordPlaceholder')}
-                                    className="form-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="profile-actions">
-                        <button className="btn-primary">
-                            {t('profile.saveChanges')}
-                        </button>
-                    </div>
-                </div>
+                </main>
             </div>
-        </div>
+        </PageTransition>
     );
 }
 

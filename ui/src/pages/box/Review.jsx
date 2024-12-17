@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Navigation from '../components/dashboard/Navigation';
-import ReviewCard from '../components/review/ReviewCard';
-import ReviewProgress from '../components/review/ReviewProgress';
-import '../assets/styles/Review.css';
+import Navigation from '../../components/dashboard/Navigation';
+import ReviewCard from '../../components/review/ReviewCard';
+import ReviewProgress from '../../components/review/ReviewProgress';
+import '../../assets/styles/Review.css';
 
 function Review() {
     const { t } = useTranslation();

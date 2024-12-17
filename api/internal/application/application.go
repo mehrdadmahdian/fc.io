@@ -133,7 +133,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	authHandler, err := api_handlers.NewAuthHandler(authService, redisService)
+	authHandler, err := api_handlers.NewAuthHandler(authService, boxService, redisService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",

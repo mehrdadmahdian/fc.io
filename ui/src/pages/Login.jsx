@@ -141,7 +141,7 @@ function Login() {
                                     {t('auth.forgotPassword')}
                                 </Link>
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
             </div>

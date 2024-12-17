@@ -19,9 +19,10 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	authHandler := applicationContainer.ApiAuthHandler
 	authGroup := apiGroup.Group("/auth")
 	authGroup.Post("/login", authHandler.Login)
-	authGroup.Post("/logout", AuthMiddleware, authHandler.Logout)
 	authGroup.Get("/refresh", authHandler.Refresh)
 	authGroup.Post("/register", authHandler.Register)
+	authGroup.Post("/logout", AuthMiddleware, authHandler.Logout)
+	authGroup.Get("/user", AuthMiddleware, authHandler.User)
 	authGroup.Get("/check", AuthMiddleware, api_handlers.Check)
 
 	apiGroup.Group("/boxes").Use(AuthMiddleware)

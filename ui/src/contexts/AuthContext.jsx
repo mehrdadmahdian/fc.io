@@ -53,43 +53,62 @@ export const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
 
-    const checkAuthStatus = async () => {
+    useEffect(() => {
+        getUser();
+    }, []);
+
+    const getUser = async () => {
         const token = localStorage.getItem('accessToken');
         
         if (token) {
             setIsAuthenticated(true);
 
-            // try {
-            //     const response = await api.get('/auth/me');
-            //     if (response.data.data) {
-            //         setUser(response.data.data);
-            //         setIsAuthenticated(true);
-            //     } else {
-            //         alert('in upper else')
-            //         setIsAuthenticated(false);
-            //         localStorage.removeItem('accessToken');
-            //         localStorage.removeItem('refreshToken');
-            //     }
-            // } catch (error) {
-            //     setIsAuthenticated(false);
-            //     if (error.response?.status === 401) {
-            //         localStorage.removeItem('accessToken');
-            //         localStorage.removeItem('refreshToken');
-            //     }
-            // }
+            try {
+                const response = await api.get('/auth/user');
+                if (response.data.data) {
+                    setUser({
+                        id: response.data.data.userID,
+                        name: response.data.data.userName,
+                        email: response.data.data.userEmail 
+                    });
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                }
+            } catch (error) {
+                setIsAuthenticated(false);
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                }
+            }
         } else {
             setIsAuthenticated(false);
         }
         setIsLoading(false);
     };
 
-    useEffect(() => {
-        checkAuthStatus();
-    }, []);
-
     const login = async (credentials) => {
         try {
             const response = await api.post('/auth/login', credentials);
+            const { accessToken, refreshToken, user } = response.data.data;
+            
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            setUser(user);
+            setIsAuthenticated(true);
+            return true;
+        } catch (error) {
+            console.error('Login failed:', error);
+            return false;
+        }
+    };
+
+    const register = async (registerData) => {
+        try {
+            const response = await api.post('/auth/register', registerData);
             const { accessToken, refreshToken, user } = response.data.data;
             
             localStorage.setItem('accessToken', accessToken);
@@ -123,6 +142,7 @@ export const AuthProvider = ({ children }) => {
             user,
             login,
             logout,
+            register,
             api
         }}>
             {children}

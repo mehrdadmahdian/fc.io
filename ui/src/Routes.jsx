@@ -6,89 +6,41 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import BoxReview from './pages/box/Review';
+import AddCard from './pages/box/AddCard';
 
-// Protected Route wrapper
-const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated, isLoading } = useAuth();
+const Routes = () => {
+    const { isAuthenticated } = useAuth();
 
-    if (isLoading) {
-        return <div>Loading...</div>; // Or a proper loading component
-    }
-
-    if (!isAuthenticated) {
-        return <Navigate to="/auth/login" />;
-    }
-
-    return children;
-};
-
-// Public Route wrapper (redirects to dashboard if already logged in)
-const PublicRoute = ({ children }) => {
-    const { isAuthenticated, isLoading } = useAuth();
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (isAuthenticated) {
-        return <Navigate to="/dashboard" />;
-    }
-
-    return children;
-};
-
-function Routes() {
     return (
         <RouterRoutes>
-            {/* Public routes */}
             <Route path="/" element={<Home />} />
-            <Route 
-                path="/auth/login" 
-                element={
-                    <PublicRoute>
-                        <Login />
-                    </PublicRoute>
-                } 
-            />
-            <Route 
-                path="/auth/register" 
-                element={
-                    <PublicRoute>
-                        <Register />
-                    </PublicRoute>
-                } 
-            />
-
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
             {/* Protected routes */}
             <Route 
                 path="/dashboard" 
-                element={
-                    <ProtectedRoute>
-                        <Dashboard />
-                    </ProtectedRoute>
-                } 
+                element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
             />
             <Route 
-                path="/profile" 
-                element={
-                    <ProtectedRoute>
-                        <Profile />
-                    </ProtectedRoute>
-                } 
+                path="/dashboard/profile" 
+                element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
             />
             <Route 
-                path="/settings" 
-                element={
-                    <ProtectedRoute>
-                        <Settings />
-                    </ProtectedRoute>
-                } 
+                path="/dashboard/settings" 
+                element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} 
             />
-
-            {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route 
+                path="/dashboard/box/:boxId/review" 
+                element={isAuthenticated ? <BoxReview /> : <Navigate to="/login" />} 
+            />
+            <Route 
+                path="/dashboard/box/:boxId/cards/create" 
+                element={isAuthenticated ? <AddCard /> : <Navigate to="/login" />} 
+            />
         </RouterRoutes>
     );
-}
+};
 
 export default Routes; 

@@ -1,7 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
-    "boxes": "My Boxes",
+    "boxes": "Boxes",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
@@ -33,7 +33,7 @@
     "copyright": "© 2024 Flashcards.io. All rights reserved."
   },
   "dashboard": {
-    "welcome": "Welcome to Your Dashboard",
+    "welcome": "Welcome to Flashcards",
     "overview": "Here's an overview of your learning progress",
     "stats": {
       "boxes": "Total Boxes",
@@ -66,7 +66,8 @@
       "welcome": "Welcome back! You have {{count}} cards due for review today.",
       "streak": "Great job! You've maintained a {{count}} day study streak!",
       "newAchievement": "Congratulations! You've unlocked a new achievement!"
-    }
+    },
+    "viewBoxes": "View Boxes"
   },
   "review": {
     "title": "Review {{boxName}}",
@@ -154,5 +155,11 @@
       "analytics": "Analytics Cookies",
       "marketing": "Marketing Cookies"
     }
+  },
+  "boxes": {
+    "title": "Your Boxes",
+    "create": "Create Box",
+    "empty": "No boxes yet",
+    "createFirst": "Create your first box"
   }
 } 

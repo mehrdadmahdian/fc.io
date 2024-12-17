@@ -177,6 +177,16 @@
     text-decoration: underline;
 }
 
+.auth-error {
+    background-color: var(--error-50);
+    color: var(--error);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    border: 1px solid var(--error-100);
+    font-size: 0.875rem;
+}
+
 @media (max-width: 768px) {
     .auth-content {
         flex-direction: column;

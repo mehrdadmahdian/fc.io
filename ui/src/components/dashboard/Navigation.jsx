@@ -76,7 +76,9 @@ function Navigation() {
 
                 {/* Navigation items */}
                 <div className="main-links">
-                   
+                    <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
+                        <i className="fas fa-home"></i> {t('nav.dashboard')}
+                    </Link>
                     <Link to="/dashboard/profile" className={`nav-link ${location.pathname === '/dashboard/profile' ? 'active' : ''}`}>
                         <i className="fas fa-user-circle"></i> {t('nav.profile')}
                     </Link>
@@ -142,7 +144,6 @@ function Navigation() {
                         <button 
                             onClick={handleLogout}
                             className="menu-item logout"
-                            onClick={toggleMenu}
                         >
                             <i className="fas fa-sign-out-alt"></i>
                             <span className="menu-item-text">{t('nav.logout')}</span>
