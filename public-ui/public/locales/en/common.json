@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "cookies": {
+    "message": "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "hero": {
+    "title": "Master Any Subject with Smart Flashcards",
+    "subtitle": "Use scientifically-proven spaced repetition to learn faster and remember longer.",
+    "getStarted": "Get Started Free",
+    "howItWorks": "How It Works"
+  }
+} 

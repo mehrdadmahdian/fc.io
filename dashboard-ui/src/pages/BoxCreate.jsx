@@ -1,0 +1,84 @@
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Navigation from '../components/dashboard/Navigation';
+import Footer from '../components/Footer';
+import PageTransition from '../components/layout/PageTransition';
+import Form from '../components/form/Form';
+import FormInput from '../components/form/FormInput';
+import FormTextarea from '../components/form/FormTextarea';
+import FormSelect from '../components/form/FormSelect';
+import { api } from '../services/api';
+import '../assets/styles/BoxCreate.css';
+import '../assets/styles/Form.css';
+
+function BoxCreate() {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const categoryOptions = [
+        { value: 'general', label: t('General') },
+        { value: 'language', label: t('Language') },
+        { value: 'science', label: t('Science') },
+        { value: 'math', label: t('Mathematics') },
+        { value: 'other', label: t('Other') }
+    ];
+
+    const handleSubmit = async (formData) => {
+        await api.post('/boxes', formData);
+        navigate('/dashboard');
+    };
+
+    return (
+        <PageTransition>
+            <div className="dashboard-layout">
+                <Navigation />
+                <main className="dashboard-main">
+                    <div className="create-box-container">
+                        <div className="create-box-header">
+                            <h1>{t('Create New Box')}</h1>
+                            <p>{t('Create a new box to organize your flashcards')}</p>
+                        </div>
+
+                        <div className="create-box-card">
+                            <Form
+                                onSubmit={handleSubmit}
+                                onCancel={() => navigate('/dashboard')}
+                                submitLabel={t('Create Box')}
+                                cancelLabel={t('Cancel')}
+                                initialData={{
+                                    title: '',
+                                    description: '',
+                                    category: 'general'
+                                }}
+                            >
+                                <FormInput
+                                    label={t('Title')}
+                                    name="title"
+                                    placeholder={t('Enter box title')}
+                                    required
+                                    maxLength={50}
+                                />
+
+                                <FormTextarea
+                                    label={t('Description')}
+                                    name="description"
+                                    placeholder={t('Enter box description')}
+                                    maxLength={200}
+                                />
+
+                                <FormSelect
+                                    label={t('Category')}
+                                    name="category"
+                                    options={categoryOptions}
+                                />
+                            </Form>
+                        </div>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        </PageTransition>
+    );
+}
+
+export default BoxCreate; 

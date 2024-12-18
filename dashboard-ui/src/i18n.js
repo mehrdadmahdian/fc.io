@@ -1,0 +1,43 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import Backend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+i18n
+  .use(Backend)
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    fallbackLng: 'en',
+    supportedLngs: ['en', 'fa'],
+    debug: process.env.NODE_ENV === 'development',
+    interpolation: {
+      escapeValue: false,
+    },
+    backend: {
+      loadPath: '/dashboard/locales/{{lng}}/translation.json',
+    },
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+    react: {
+      useSuspense: true,
+    },
+    load: 'languageOnly',
+    returnEmptyString: false,
+  });
+
+i18n.on('loaded', (loaded) => {
+  console.log('i18n loaded:', loaded);
+});
+
+i18n.on('failedLoading', (lng, ns, msg) => {
+  console.error('i18n failed loading:', { lng, ns, msg });
+});
+
+i18n.store.on('added', (lng, ns) => {
+  console.log('i18n resources added:', { lng, ns });
+});
+
+export default i18n; 
