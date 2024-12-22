@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Navigation from '../../components/dashboard/Navigation';
-import ReviewCard from '../../components/review/ReviewCard';
-import ReviewProgress from '../../components/review/ReviewProgress';
+import Navigation from '../../components/layout/Navigation';
+import ReviewCard from '../../components/dashboard/boxes/review/ReviewCard';
+import ReviewProgress from '../../components/dashboard/boxes/review/ReviewProgress';
 import '../../assets/styles/Review.css';
 
 function Review() {

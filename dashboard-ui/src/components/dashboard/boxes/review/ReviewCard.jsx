@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import CardStats from './CardStats';
+import CardStats from '../../CardStats';
 
 function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
     const { t } = useTranslation();

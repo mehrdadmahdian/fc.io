@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams, useNavigate } from 'react-router-dom';
-import Navigation from '../../components/dashboard/Navigation';
-import LabelSelect from '../../components/cards/LabelSelect';
+import { useNavigate } from 'react-router-dom';
+// import { useParams, useNavigate } from 'react-router-dom';
+import Navigation from '../../components/layout/Navigation';
+import LabelSelect from '../../components/dashboard/cards/LabelSelect';
 import '../../assets/styles/AddCard.css';
 
 function AddCard() {
     const { t } = useTranslation();
-    const { boxId } = useParams();
+    // const { boxId } = useParams();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         question: '',

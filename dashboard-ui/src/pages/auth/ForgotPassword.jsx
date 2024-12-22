@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import '../assets/styles/Auth.css';
+import '../../assets/styles/Auth.css';
 
 function ForgotPassword() {
     const { t } = useTranslation();

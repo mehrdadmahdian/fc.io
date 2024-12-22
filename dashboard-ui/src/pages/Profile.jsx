@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
-import Navigation from '../components/dashboard/Navigation';
-import PageTransition from '../components/layout/PageTransition';
+import Navigation from '../components/layout/Navigation';
+import PageTransition from '../components/common/PageTransition';
 import '../assets/styles/Dashboard.css';
 
 function Profile() {

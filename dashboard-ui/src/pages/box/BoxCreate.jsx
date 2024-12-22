@@ -1,15 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navigation from '../components/dashboard/Navigation';
-import Footer from '../components/Footer';
-import PageTransition from '../components/layout/PageTransition';
-import Form from '../components/form/Form';
-import FormInput from '../components/form/FormInput';
-import FormTextarea from '../components/form/FormTextarea';
-import FormSelect from '../components/form/FormSelect';
-import { api } from '../services/api';
-import '../assets/styles/BoxCreate.css';
-import '../assets/styles/Form.css';
+import Navigation from '../../components/layout/Navigation';
+import Footer from '../../components/layout/Footer';
+import PageTransition from '../../components/common/PageTransition';
+import Form from '../../components/form/Form';
+import FormInput from '../../components/form/FormInput';
+import FormTextarea from '../../components/form/FormTextarea';
+import FormSelect from '../../components/form/FormSelect';
+import { api } from '../../services/api';
+import '../../assets/styles/BoxCreate.css';
+import '../../assets/styles/Form.css';
 
 function BoxCreate() {
     const { t } = useTranslation();

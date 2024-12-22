@@ -1,13 +1,13 @@
 import { Routes as RouterRoutes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BoxReview from './pages/box/Review';
 import AddCard from './pages/box/AddCard';
-import BoxCreate from './pages/BoxCreate';
+import BoxCreate from './pages/box/BoxCreate';
 
 const Routes = () => {
     const { isAuthenticated, isLoading } = useAuth();

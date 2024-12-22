@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import '../../assets/styles/LabelSelect.css';
+import '../../../assets/styles/LabelSelect.css';
 
 function LabelSelect({ selectedLabels, onChange }) {
     const { t } = useTranslation();

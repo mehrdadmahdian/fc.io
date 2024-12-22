@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navigation from '../components/dashboard/Navigation';
-import BoxCard from '../components/dashboard/BoxCard';
+import Navigation from '../components/layout/Navigation';
+import BoxCard from '../components/dashboard/boxes/BoxCard';
 import StatsCard from '../components/dashboard/StatsCard';
-import Footer from '../components/Footer';
+import Footer from '../components/layout/Footer';
 import '../assets/styles/Dashboard.css';
-import PageTransition from '../components/layout/PageTransition';
+import PageTransition from '../components/common/PageTransition';
 import { api } from '../services/api';
 
 function Dashboard() {
