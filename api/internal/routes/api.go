@@ -26,5 +26,5 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	authGroup.Get("/check", AuthMiddleware, api_handlers.Check)
 
 	dashboardGroup := apiGroup.Group("/dashboard").Use(AuthMiddleware)
-	dashboardGroup.Get("/boxes", authHandler.GetBoxes)
+	dashboardGroup.Get("/boxes", authHandler.GetBoxeInfos)
 }

@@ -6,8 +6,7 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
-
-func (handler *ApiHandler) GetBoxes(c *fiber.Ctx) error {
+func (handler *ApiHandler) GetBoxeInfos(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	userModel, ok := user.(*models.User)
 	if !ok {
@@ -30,7 +29,7 @@ func (handler *ApiHandler) GetBoxes(c *fiber.Ctx) error {
 
 	return JsonSuccess(
 		c,
-		utils.PointerString("logged in successfully!"),
+		utils.PointerString("data is fetched successfully!"),
 		&dataMap,
 	)
 }

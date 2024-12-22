@@ -6,7 +6,7 @@ import PageTransition from '../../components/common/PageTransition';
 import Form from '../../components/form/Form';
 import FormInput from '../../components/form/FormInput';
 import FormTextarea from '../../components/form/FormTextarea';
-import FormSelect from '../../components/form/FormSelect';
+// import FormSelect from '../../components/form/FormSelect';
 import { api } from '../../services/api';
 import '../../assets/styles/BoxCreate.css';
 import '../../assets/styles/Form.css';
@@ -15,13 +15,6 @@ function BoxCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const categoryOptions = [
-        { value: 'general', label: t('General') },
-        { value: 'language', label: t('Language') },
-        { value: 'science', label: t('Science') },
-        { value: 'math', label: t('Mathematics') },
-        { value: 'other', label: t('Other') }
-    ];
 
     const handleSubmit = async (formData) => {
         await api.post('/boxes', formData);
@@ -42,8 +35,8 @@ function BoxCreate() {
                         <div className="create-box-card">
                             <Form
                                 onSubmit={handleSubmit}
-                                onCancel={() => navigate('/dashboard')}
-                                submitLabel={t('Create Box')}
+                                onCancel={() => navigate('/')}
+                                submitLabel={t('submit')}
                                 cancelLabel={t('Cancel')}
                                 initialData={{
                                     title: '',
@@ -64,12 +57,6 @@ function BoxCreate() {
                                     name="description"
                                     placeholder={t('Enter box description')}
                                     maxLength={200}
-                                />
-
-                                <FormSelect
-                                    label={t('Category')}
-                                    name="category"
-                                    options={categoryOptions}
                                 />
                             </Form>
                         </div>

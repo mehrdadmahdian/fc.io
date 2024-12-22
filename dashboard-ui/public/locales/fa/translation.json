@@ -1,4 +1,6 @@
 {
+  "title": "عنوان",
+  "description": "توضیحات",
   "nav": {
     "features": "امکانات",
     "pricing": "قیمت‌گذاری",
@@ -56,6 +58,8 @@
       "dueToday": "سررسید امروز",
       "lastReview": "آخرین مرور",
       "progress": "پیشرفت",
+      "CountOfCardsDueToday": "تعداد کارت برای مرور",
+      "CountOfTotalCards": "تعداد کارت ها",
       "actions": {
         "addCard": "افزودن کارت",
         "review": "مرور",

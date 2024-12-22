@@ -27,21 +27,19 @@ function Dashboard() {
         const fetchDashboardData = async () => {
             try {
                 setLoading(true);
-                const boxInfos = await api.get('/dashboard/boxes');
-                console.log(boxInfos);
-                data = boxInfos.data.data
-                console.log(data);
+                const response = await api.get('/dashboard/boxes');
+                const responseData = response.data.data;
+                console.log(responseData.boxes);
                 setData({
                     stats: {
-                        totalBoxes: data?.stats?.totalBoxes || { value: 0, trend: 0 },
-                        totalCards: data?.stats?.totalCards || { value: 0, trend: 0 },
-                        reviewAccuracy: data?.stats?.reviewAccuracy || { value: 0, trend: 0 },
-                        streak: data?.stats?.streak || { value: 0, trend: 0 }
+                        totalBoxes: responseData?.stats?.totalBoxes || { value: 0, trend: 0 },
+                        totalCards: responseData?.stats?.totalCards || { value: 0, trend: 0 },
+                        reviewAccuracy: responseData?.stats?.reviewAccuracy || { value: 0, trend: 0 },
+                        streak: responseData?.stats?.streak || { value: 0, trend: 0 }
                     },
-                    boxes: data?.boxes || []
+                    boxes: responseData?.boxes || []
                 });
             } catch (error) {
-                console.error('Error fetching dashboard data:', error);
                 setData({
                     stats: {
                         totalBoxes: { value: 0, trend: 0 },
@@ -87,9 +85,9 @@ function Dashboard() {
                             <h1 className="welcome-title">
                                 {t('dashboard.welcome')} 👋
                             </h1>
-                            <p className="welcome-subtitle">
+                            {/* <p className="welcome-subtitle">
                                 {t('dashboard.subtitle')}
-                            </p>
+                            </p> */}
                         </div>
 
                         <div className="stats-container">

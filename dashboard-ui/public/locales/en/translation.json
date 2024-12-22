@@ -54,6 +54,8 @@
       "dueToday": "Due Today",
       "lastReview": "Last Review",
       "progress": "Progress",
+      "CountOfCardsDueToday": "Due Today",
+      "CountOfTotalCards": "Total Cards",
       "actions": {
         "addCard": "Add Card",
         "review": "Review",
