@@ -756,3 +756,37 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1rem; /* Reduced from likely 1.5rem or 2rem */
+    box-shadow: var(--card-shadow);
+}
+
+.stats-card-title {
+    font-size: 0.875rem; /* Slightly smaller title */
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem; /* Reduced spacing */
+}
+
+.stats-card-value {
+    font-size: 1.5rem; /* Slightly smaller value */
+    font-weight: 600;
+    margin-bottom: 0.5rem; /* Reduced spacing */
+}
+
+/* Adjust responsive layout if needed */
+@media (max-width: 768px) {
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
