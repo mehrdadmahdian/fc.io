@@ -1,25 +1,54 @@
 /* Progress Component */
 .review-progress {
-    margin-top: var(--space-4);
+    margin: var(--space-6) 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .progress-text {
     color: var(--neutral-600);
     margin-bottom: var(--space-2);
     font-size: 0.875rem;
+    text-align: center;
 }
 
 .progress-bar {
-    height: 6px;
-    background: var(--neutral-200);
+    display: flex;
+    gap: 4px;
+    height: 8px;
+    background: transparent;
     border-radius: var(--radius-full);
     overflow: hidden;
 }
 
-.progress-fill {
+.progress-segment {
+    flex: 1;
     height: 100%;
+    background: var(--neutral-200);
+    border-radius: var(--radius-full);
+    transition: background-color 0.3s ease;
+}
+
+.progress-segment.completed {
     background: var(--primary);
-    transition: width 0.3s ease;
+}
+
+.progress-segment.current {
+    background: var(--primary);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Review Card */
@@ -109,6 +138,10 @@
     margin-top: var(--space-6);
     padding-top: var(--space-4);
     border-top: 1px solid var(--neutral-200);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
 }
 
 .action-btn {

@@ -1,22 +1,24 @@
 import { useTranslation } from 'react-i18next';
 
-function ReviewProgress({ current, total }) {
-    const { t } = useTranslation();
-    const progress = (current / total) * 100;
-
+const ReviewProgress = ({ current, total }) => {
     return (
         <div className="review-progress">
             <div className="progress-text">
-                {t('review.progress', { current, total })}
+                Card {current} of {total}
             </div>
             <div className="progress-bar">
-                <div 
-                    className="progress-fill" 
-                    style={{ width: `${progress}%` }}
-                />
+                {[...Array(total)].map((_, index) => (
+                    <div 
+                        key={index} 
+                        className={`progress-segment ${
+                            index + 1 < current ? 'completed' : 
+                            index + 1 === current ? 'current' : ''
+                        }`}
+                    />
+                ))}
             </div>
         </div>
     );
-}
+};
 
 export default ReviewProgress; 
