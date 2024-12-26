@@ -30,41 +30,6 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
 
     return (
         <div className="review-section">
-            <div className="side-panel">
-                <div className="action-group">
-                    <Link 
-                        to={`/dashboard/card/${card.id}/edit`}
-                        className="action-btn edit"
-                        title={t('review.actions.edit')}
-                    >
-                        <i className="fas fa-edit"></i>
-                        <span>{t('review.actions.edit')}</span>
-                    </Link>
-                    <button 
-                        className="action-btn archive"
-                        title={t('review.actions.archive')}
-                    >
-                        <i className="fas fa-archive"></i>
-                        <span>{t('review.actions.archive')}</span>
-                    </button>
-                    <button 
-                        className="action-btn study"
-                        title={t('review.actions.study')}
-                    >
-                        <i className="fas fa-book"></i>
-                        <span>{t('review.actions.study')}</span>
-                    </button>
-                    <button 
-                        className="action-btn info"
-                        title={t('review.actions.stats')}
-                        onClick={() => setShowStats(true)}
-                    >
-                        <i className="fas fa-chart-bar"></i>
-                        <span>{t('review.actions.stats')}</span>
-                    </button>
-                </div>
-            </div>
-
             <div className="main-content">
                 <div 
                     className="review-card" 
@@ -129,16 +94,8 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
                             onClick={() => showAnswer && onResponse('hard')}
                             disabled={!showAnswer}
                         >
-                            <span className="shortcut">2</span>
-                            {t('review.responses.hard')}
-                        </button>
-                        <button 
-                            className={`btn-response good ${!showAnswer ? 'disabled' : ''}`}
-                            onClick={() => showAnswer && onResponse('good')}
-                            disabled={!showAnswer}
-                        >
                             <span className="shortcut">3</span>
-                            {t('review.responses.good')}
+                            {t('review.responses.hard')}
                         </button>
                         <button 
                             className={`btn-response easy ${!showAnswer ? 'disabled' : ''}`}
