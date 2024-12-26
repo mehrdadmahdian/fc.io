@@ -81,15 +81,7 @@ function Dashboard() {
                 <Navigation />
                 <main className="dashboard-main">
                     <div className="dashboard-container">
-                        <div className="welcome-section">
-                            <h1 className="welcome-title">
-                                {t('dashboard.welcome')} 👋
-                            </h1>
-                            {/* <p className="welcome-subtitle">
-                                {t('dashboard.subtitle')}
-                            </p> */}
-                        </div>
-
+                      
                         <div className="stats-container">
                             <StatsCard 
                                 icon="fa-box"
