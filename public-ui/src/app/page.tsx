@@ -85,9 +85,19 @@ export default function Home() {
                     </svg>
                   </Link>
                 ) : (
-                  <Link href="/dashboard" className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600">
+                  <Link 
+                    href="/dashboard" 
+                    className="group relative inline-flex items-center justify-center px-10 py-5 font-bold text-white text-lg transition-all duration-300 
+                      bg-gradient-to-r from-blue-600 to-purple-600 
+                      hover:from-blue-700 hover:to-purple-700 
+                      rounded-full shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]
+                      hover:shadow-[0_10px_40px_rgba(8,_112,_184,_0.9)]
+                      transform hover:-translate-y-1
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+                  >
                     <span>Start Your Journey</span>
-                    <svg className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                   </Link>
@@ -116,7 +126,7 @@ export default function Home() {
               </div>
             </motion.div>
             
-            <div className="grid md:grid-cols-3 gap-8 mt-16">
+            <div className="grid md:grid-cols-3 gap-8 md:gap-12 mt-16">
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
@@ -124,10 +134,13 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.2 }}
-                  className="text-center p-8 rounded-2xl bg-white shadow-xl"
+                  className="text-center p-8 md:p-10 rounded-2xl bg-white 
+                    shadow-xl hover:shadow-2xl transition-shadow duration-300
+                    border border-gray-100"
                 >
-                  <h3 className="text-4xl font-bold text-blue-600 mb-2">{stat.value}</h3>
-                  <p className="text-gray-600">{stat.label}</p>
+                  <h3 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent 
+                    bg-gradient-to-r from-blue-600 to-purple-600 mb-4">{stat.value}</h3>
+                  <p className="text-gray-600 text-lg">{stat.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -135,9 +148,9 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-32 md:py-40 relative overflow-hidden">
           <motion.div 
-            className="max-w-7xl mx-auto px-8"
+            className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -146,15 +159,17 @@ export default function Home() {
             <h2 className="text-5xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
               Supercharge Your Learning
             </h2>
-            <div className="grid lg:grid-cols-3 gap-12">
+            <div className="grid lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
-                  className="relative group"
+                  className="relative group p-2"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.2 }}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 transform rotate-2 rounded-xl transition-transform group-hover:rotate-1"/>
                   <div className="relative p-8 bg-white rounded-xl shadow-lg transform transition-transform group-hover:-translate-y-1">
@@ -171,10 +186,10 @@ export default function Home() {
         </section>
 
         {/* Interactive Demo Section - NEW */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-32 md:py-40 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5" />
           <motion.div
-            className="max-w-7xl mx-auto px-8"
+            className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -257,7 +272,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-center mb-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
               What Our Users Say
             </h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
               {testimonials.map((testimonial, index) => (
                 <motion.div
                   key={index}
@@ -265,7 +280,9 @@ export default function Home() {
                   whileInView={{ y: 0, opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.2 }}
-                  className="p-8 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-xl"
+                  className="p-8 md:p-10 rounded-2xl bg-gradient-to-br from-white to-gray-50 
+                    shadow-xl hover:shadow-2xl transition-shadow duration-300
+                    border border-gray-100"
                 >
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-600 to-purple-600" />
@@ -289,27 +306,48 @@ export default function Home() {
         </section>
 
         {/* CTA Section - NEW */}
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-32 md:py-40 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-10" />
           <motion.div
-            className="max-w-4xl mx-auto px-8 text-center"
+            className="max-w-4xl mx-auto px-8 text-center space-y-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl font-bold mb-8">Ready to Transform Your Learning?</h2>
-            <p className="text-xl text-gray-600 mb-12">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold">Ready to Transform Your Learning?</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Join thousands of successful learners who have already revolutionized their study habits.
             </p>
-            <Link
-              href="/dashboard"
-              className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
-            >
-              Get Started Now
-              <svg className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </Link>
+            <div className="pt-4">
+              <Link
+                href="/dashboard"
+                className="group relative inline-flex items-center justify-center 
+                  px-10 py-5 font-bold text-white text-lg
+                  transition-all duration-300 
+                  bg-gradient-to-r from-blue-600 to-purple-600 
+                  hover:from-blue-700 hover:to-purple-700 
+                  rounded-full
+                  shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]
+                  hover:shadow-[0_10px_40px_rgba(8,_112,_184,_0.9)]
+                  transform hover:-translate-y-1
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+              >
+                <span className="relative">Get Started Now</span>
+                <svg 
+                  className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </Link>
+            </div>
           </motion.div>
         </section>
       </main>
