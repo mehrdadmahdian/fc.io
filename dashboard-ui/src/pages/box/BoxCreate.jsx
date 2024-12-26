@@ -10,6 +10,7 @@ import FormTextarea from '../../components/form/FormTextarea';
 import { api } from '../../services/api';
 import '../../assets/styles/BoxCreate.css';
 import '../../assets/styles/Form.css';
+import PageHeader from '../../components/common/PageHeader';
 
 function BoxCreate() {
     const { t } = useTranslation();
@@ -27,10 +28,8 @@ function BoxCreate() {
                 <Navigation />
                 <main className="dashboard-main">
                     <div className="create-box-container">
-                        <div className="create-box-header">
-                            <h1>{t('Create New Box')}</h1>
-                        </div>
-
+                        <PageHeader title={t('boxCreate.title')} />
+                        
                         <div className="create-box-card">
                             <Form
                                 onSubmit={handleSubmit}

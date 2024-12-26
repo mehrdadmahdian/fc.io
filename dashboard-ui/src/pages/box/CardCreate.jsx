@@ -8,8 +8,10 @@ import FormTextarea from '../../components/form/FormTextarea';
 import LabelSelect from '../../components/dashboard/cards/LabelSelect';
 import { api } from '../../services/api';
 import '../../assets/styles/Form.css';
+import '../../assets/styles/PageHeader.css';
+import PageHeader from '../../components/common/PageHeader';
 
-function AddCard() {
+function CardCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -24,15 +26,13 @@ function AddCard() {
                 <Navigation />
                 <main className="dashboard-main">
                     <div className="create-box-container">
-                        <div className="create-box-header">
-                            <h1>{t('addCard.title')}</h1>
-                        </div>
-
+                        <PageHeader title={t('cardCreate.title')} />
+                        
                         <div className="create-box-card">
                             <Form
                                 onSubmit={handleSubmit}
                                 onCancel={() => navigate('/dashboard')}
-                                submitLabel={t('addCard.save')}
+                                submitLabel={t('cardCreate.save')}
                                 cancelLabel={t('common.cancel')}
                                 initialData={{
                                     question: '',
@@ -42,27 +42,36 @@ function AddCard() {
                                 }}
                             >
                                 <FormTextarea
-                                    label={t('addCard.question')}
+                                    label={t('cardCreate.question')}
                                     name="question"
-                                    placeholder={t('addCard.questionPlaceholder')}
+                                    placeholder={t('cardCreate.questionPlaceholder')}
                                     required
                                     rows={4}
                                 />
 
                                 <FormTextarea
-                                    label={t('addCard.answer')}
+                                    label={t('cardCreate.answer')}
                                     name="answer"
-                                    placeholder={t('addCard.answerPlaceholder')}
+                                    placeholder={t('cardCreate.answerPlaceholder')}
                                     required
                                     rows={4}
                                 />
 
                                 <FormTextarea
-                                    label={t('addCard.additionalInfo')}
+                                    label={t('cardCreate.additionalInfo')}
                                     name="additionalInfo"
-                                    placeholder={t('addCard.additionalInfoPlaceholder')}
+                                    placeholder={t('cardCreate.additionalInfoPlaceholder')}
                                     rows={3}
                                 />
+
+                                <div className="form-group">
+                                    <label>{t('cardCreate.labels')}</label>
+                                    <LabelSelect
+                                        name="labels"
+                                        selectedLabels={[]}
+                                        onChange={() => {}}
+                                    />
+                                </div>
                             </Form>
                         </div>
                     </div>
@@ -73,4 +82,4 @@ function AddCard() {
     );
 }
 
-export default AddCard; 
+export default CardCreate; 
