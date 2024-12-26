@@ -4,20 +4,17 @@ import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import PageTransition from '../../components/common/PageTransition';
 import Form from '../../components/form/Form';
-import FormInput from '../../components/form/FormInput';
 import FormTextarea from '../../components/form/FormTextarea';
-// import FormSelect from '../../components/form/FormSelect';
+import LabelSelect from '../../components/dashboard/cards/LabelSelect';
 import { api } from '../../services/api';
-import '../../assets/styles/BoxCreate.css';
 import '../../assets/styles/Form.css';
 
-function BoxCreate() {
+function AddCard() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-
     const handleSubmit = async (formData) => {
-        await api.post('/boxes', formData);
+        await api.post('/cards', formData);
         navigate('/dashboard');
     };
 
@@ -28,34 +25,43 @@ function BoxCreate() {
                 <main className="dashboard-main">
                     <div className="create-box-container">
                         <div className="create-box-header">
-                            <h1>{t('Create New Box')}</h1>
+                            <h1>{t('addCard.title')}</h1>
                         </div>
 
                         <div className="create-box-card">
                             <Form
                                 onSubmit={handleSubmit}
-                                onCancel={() => navigate('/')}
-                                submitLabel={t('submit')}
-                                cancelLabel={t('Cancel')}
+                                onCancel={() => navigate('/dashboard')}
+                                submitLabel={t('addCard.save')}
+                                cancelLabel={t('common.cancel')}
                                 initialData={{
-                                    title: '',
-                                    description: '',
-                                    category: 'general'
+                                    question: '',
+                                    answer: '',
+                                    additionalInfo: '',
+                                    labels: []
                                 }}
                             >
-                                <FormInput
-                                    label={t('Title')}
-                                    name="title"
-                                    placeholder={t('Enter box title')}
+                                <FormTextarea
+                                    label={t('addCard.question')}
+                                    name="question"
+                                    placeholder={t('addCard.questionPlaceholder')}
                                     required
-                                    maxLength={50}
+                                    rows={4}
                                 />
 
                                 <FormTextarea
-                                    label={t('Description')}
-                                    name="description"
-                                    placeholder={t('Enter box description')}
-                                    maxLength={200}
+                                    label={t('addCard.answer')}
+                                    name="answer"
+                                    placeholder={t('addCard.answerPlaceholder')}
+                                    required
+                                    rows={4}
+                                />
+
+                                <FormTextarea
+                                    label={t('addCard.additionalInfo')}
+                                    name="additionalInfo"
+                                    placeholder={t('addCard.additionalInfoPlaceholder')}
+                                    rows={3}
                                 />
                             </Form>
                         </div>
@@ -67,4 +73,4 @@ function BoxCreate() {
     );
 }
 
-export default BoxCreate; 
+export default AddCard; 

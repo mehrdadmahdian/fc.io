@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BoxReview from './pages/box/Review';
-import AddCard from './pages/box/AddCard';
+import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
 
 const Routes = () => {
@@ -45,7 +45,7 @@ const Routes = () => {
             />
             <Route 
                 path="/box/:boxId/cards/create" 
-                element={isAuthenticated ? <AddCard /> : <Navigate to="/auth/login" />} 
+                element={isAuthenticated ? <CardCreate /> : <Navigate to="/auth/login" />} 
             />
         </RouterRoutes>
     );

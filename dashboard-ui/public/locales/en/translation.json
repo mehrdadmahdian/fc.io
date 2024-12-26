@@ -44,7 +44,7 @@
       "mastered": "Mastered"
     },
     "boxes": {
-      "title": "Your Flashcard Boxes",
+      "title": "Your Boxes",
       "create": "Create New Box",
       "createDesc": "Start a new collection of flashcards",
       "empty": "No boxes yet. Create your first box to start learning!",
@@ -119,6 +119,7 @@
     "progress": "Card {{current}} of {{total}}"
   },
   "auth": {
+    "name": "Name",
     "login": {
       "title": "Welcome Back",
       "subtitle": "Sign in to continue your learning journey"
@@ -129,7 +130,7 @@
     },
     "email": "Email",
     "password": "Password",
-    "confirmPassword": "Confirm Password",
+    "confirmationPassword": "Confirm Password",
     "loginButton": "Sign In",
     "registerButton": "Sign Up",
     "needAccount": "Don't have an account? Sign up",
