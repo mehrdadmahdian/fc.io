@@ -10,26 +10,24 @@ EXPOSE 3000
 CMD ["npm", "run", "dev"]
 
 FROM base AS builder
-ENV NODE_ENV=production
+WORKDIR /app
 COPY public-ui/package.json public-ui/package-lock.json* ./
 RUN npm install
 COPY public-ui/ ./
-RUN mkdir -p public
 RUN npm run build
 
 FROM base AS production
 WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=3000
-# Copy package files first
+# Copy package files and install production dependencies
 COPY public-ui/package.json public-ui/package-lock.json* ./
-# Install dependencies including those needed for build
-RUN npm install
-# Create public directory
-RUN mkdir -p public
-# Copy built files
-COPY --from=builder /app/.next ./.next
+RUN npm install --omit=dev
+# Copy the built application
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.mjs ./next.config.mjs
+# Set permissions
+RUN chown -R node:node .
+USER node
 EXPOSE 3000
-CMD ["npm", "start"]
+ENV PORT=3000
+CMD ["node", "server.js"]
