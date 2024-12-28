@@ -49,13 +49,11 @@ services:
     container_name: dashboard-ui-container
     ports:
       - "${DASHBOARD_UI_SERVER_PORT}:3000"
-    volumes:
-      - ./dashboard-ui:/app
-      - /app/node_modules
     depends_on:
       - api
     restart: always
     environment:
+      - NODE_ENV=${APP_ENV:-production}
       - REACT_APP_API_URL=${API_URL}
       - NEXT_PUBLIC_WEBSITE_URL=${SERVER_NAME}
     networks:

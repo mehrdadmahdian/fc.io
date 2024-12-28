@@ -2,6 +2,7 @@ FROM node:18-alpine AS base
 
 WORKDIR /app
 
+# Install dependencies
 COPY ./dashboard-ui/package.json ./dashboard-ui/package-lock.json* ./
 RUN npm cache clean --force && \
     rm -rf node_modules && \
@@ -9,11 +10,12 @@ RUN npm cache clean --force && \
     npm install ajv@8.12.0 --save-exact && \
     npm install react-scripts@5.0.1 --save
 
+# Copy source code
+COPY ./dashboard-ui .
 
-COPY ./dashboard-ui /app
-
+# Build the application with the correct base URL
+ENV PUBLIC_URL=/dashboard
 RUN npm run build
-
 
 FROM node:18-alpine AS development
 
@@ -47,4 +49,5 @@ COPY --from=base /app/build /app/build
 RUN npm install -g serve
 EXPOSE 3000
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Correct serve command syntax
+CMD ["serve", "-s", "build", "-l", "3000", "--single"]

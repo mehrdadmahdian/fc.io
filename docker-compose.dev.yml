@@ -1,4 +1,8 @@
 services:
+  dashboard-ui:
+    volumes:
+      - ./dashboard-ui:/app
+      - /app/node_modules
   public-ui:
     environment:
       - WATCHPACK_POLLING=true

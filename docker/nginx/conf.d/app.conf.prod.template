@@ -1,6 +1,5 @@
 server {
     listen 443 ssl;
-
     ssl_certificate /etc/ssl/private/selfsigned.crt;
     ssl_certificate_key /etc/ssl/private/selfsigned.key;
 
@@ -14,8 +13,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    location /dashboard/ {
-        proxy_pass http://dashboard-ui-container:3000/dashboard/;
+    location /dashboard {
+        rewrite ^/dashboard/(.*) /$1 break;
+        proxy_pass http://dashboard-ui-container:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -23,29 +23,18 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
+    }
 
-        try_files $uri $uri/ /dashboard/index.html;
-
+    location /dashboard/static/ {
+        rewrite ^/dashboard/(.*) /$1 break;
+        proxy_pass http://dashboard-ui-container:3000;
+        proxy_set_header Host $host;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
     }
 
     location /api/ {
         proxy_pass http://api-container:$API_SERVER_PORT/api/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /web/ {
-        proxy_pass http://api-container:$API_SERVER_PORT/web/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    location /public/ {
-        proxy_pass http://api-container:$API_SERVER_PORT/public/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -61,6 +50,5 @@ server {
 server {
     listen 80;
     server_name $SERVER_NAME;
-
     return 301 https://$host$request_uri;
 }
