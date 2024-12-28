@@ -26,19 +26,18 @@ COPY ./public-ui .
 RUN npm run build
 
 # Production runner stage
-FROM node:18-alpine AS runner
-ENV NODE_ENV production
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
+FROM node:18-alpine AS production
 WORKDIR /app
+
+# Copy build artifacts from the builder stage
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/package.json ./package.json
 
+ENV NODE_ENV production
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
 EXPOSE 3000
 CMD ["node", "server.js"]
-
-# Use the development or production stage based on context
-FROM ${NODE_ENV:-production} AS final
