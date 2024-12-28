@@ -45,6 +45,7 @@ WORKDIR /app
 COPY --from=base /app/build /app/build
 
 RUN npm install -g serve
+ENV NODE_ENV=production
 EXPOSE 3000
 
 CMD ["serve", "-s", "build", "-l", "3000"]
