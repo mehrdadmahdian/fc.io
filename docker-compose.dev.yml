@@ -1,0 +1,7 @@
+services:
+  public-ui:
+    environment:
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./public-ui:/app
+      - /app/node_modules 

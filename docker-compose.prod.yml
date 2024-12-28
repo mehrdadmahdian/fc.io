@@ -1,0 +1,9 @@
+services:
+  nginx:
+    ports:
+      - "443:443"
+    volumes:
+      - /etc/ssl/private:/etc/ssl/private:ro
+  public-ui:
+    environment:
+      - WATCHPACK_POLLING=false
