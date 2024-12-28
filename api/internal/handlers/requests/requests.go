@@ -27,3 +27,10 @@ type SubmitReviewRequest struct {
 	CardId   string `json:"cardId" validate:"required"`
 	Action   int `json:"action" validate:"required"`
 }
+
+type CreateCardRequest struct {
+	Front   string `json:"front" validate:"required"`
+	Back    string `json:"back" validate:"required"`
+	Extra   string `json:"extra"`
+	// LabelIds []string `json:"labelIds" validate:"required"`
+}
