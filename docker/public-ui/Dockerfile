@@ -26,11 +26,12 @@ COPY ./public-ui .
 RUN npm run build
 
 # Production runner stage
-FROM base AS runner
+FROM node:18-alpine AS runner
 ENV NODE_ENV production
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
+WORKDIR /app
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
@@ -39,5 +40,5 @@ COPY --from=builder /app/package.json ./package.json
 EXPOSE 3000
 CMD ["node", "server.js"]
 
-# Final stage that can be either development or production
-FROM ${NODE_ENV:-production}
+# Use the development or production stage based on context
+FROM ${NODE_ENV:-production} AS final
