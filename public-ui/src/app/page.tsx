@@ -7,6 +7,20 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export default function Home() {
+  const [mounted, setMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   // Animation variants
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
@@ -21,22 +35,6 @@ export default function Home() {
       }
     }
   };
-
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
-
-  if (isLoggedIn === undefined) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"/>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
