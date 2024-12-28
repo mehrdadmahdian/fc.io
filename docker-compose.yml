@@ -1,5 +1,5 @@
 services:
-  ngindocex:
+  nginx:
     build: 
       context: .
       dockerfile: ./docker/nginx/Dockerfile
