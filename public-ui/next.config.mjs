@@ -1,6 +1,7 @@
 import { i18n } from './next-i18next.config.mjs'
 
 const nextConfig = {
+  output: 'standalone',
   i18n,
   reactStrictMode: true,
   webpackDevMiddleware: config => {

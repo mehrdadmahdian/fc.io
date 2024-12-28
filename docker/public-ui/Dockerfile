@@ -20,8 +20,6 @@ RUN npm ci --legacy-peer-deps
 # Builder stage for production
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY ./public-ui/tailwind.config.js ./
-COPY ./public-ui/postcss.config.js ./
 COPY ./public-ui .
 RUN npm run build
 
@@ -29,11 +27,10 @@ RUN npm run build
 FROM node:18-alpine AS production
 WORKDIR /app
 
-# Copy build artifacts from the builder stage
+# Copy necessary files from builder
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/package.json ./package.json
 
 ENV NODE_ENV production
 ENV PORT 3000
