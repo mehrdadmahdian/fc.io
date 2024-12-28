@@ -169,7 +169,7 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.2 }}
                   whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  // transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-purple-100 transform rotate-2 rounded-xl transition-transform group-hover:rotate-1"/>
                   <div className="relative p-8 bg-white rounded-xl shadow-lg transform transition-transform group-hover:-translate-y-1">
