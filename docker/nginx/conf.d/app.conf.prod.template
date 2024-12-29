@@ -1,6 +1,6 @@
 server {
-    listen 80;
-    #ssl_certificate /etc/ssl/private/selfsigned.crt;
+    listen 443 ssl;
+    ssl_certificate /etc/ssl/private/selfsigned.crt;
     ssl_certificate_key /etc/ssl/private/selfsigned.key;
 
     server_name $SERVER_NAME;
