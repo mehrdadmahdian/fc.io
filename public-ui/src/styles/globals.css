@@ -47,3 +47,13 @@ body {
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+@keyframes buttonGlow {
+  0% { box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5); }
+  100% { box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3); }
+}
+
+.button-glow {
+  animation: buttonGlow 3s infinite;
+} 

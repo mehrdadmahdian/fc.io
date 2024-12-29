@@ -39,6 +39,26 @@ export default function Home() {
   return (
     <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <Navigation />
+      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm font-medium flex items-center justify-center gap-2">
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            This website is not yet operational
+          </p>
+        </div>
+      </div>
       <main className={`min-h-screen transition-opacity duration-300 ${
         isMenuOpen ? 'opacity-20' : 'opacity-100'
       }`}>
@@ -85,18 +105,32 @@ export default function Home() {
                 ) : (
                   <Link 
                     href="/dashboard" 
-                    className="group relative inline-flex items-center justify-center px-10 py-5 font-bold text-white text-lg transition-all duration-300 
-                      bg-gradient-to-r from-blue-600 to-purple-600 
-                      hover:from-blue-700 hover:to-purple-700 
-                      rounded-full shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]
-                      hover:shadow-[0_10px_40px_rgba(8,_112,_184,_0.9)]
-                      transform hover:-translate-y-1
-                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+                    className="group relative inline-flex items-center justify-center 
+                      w-[280px]
+                      px-12 py-5 font-bold text-white text-lg
+                      bg-gradient-to-r from-indigo-600 to-violet-600 
+                      hover:from-indigo-700 hover:to-violet-700 
+                      rounded-full
+                      shadow-[0_8px_24px_rgba(99,102,241,0.3)]
+                      hover:shadow-[0_8px_32px_rgba(99,102,241,0.5)]
+                      transform transition-all duration-300
+                      hover:-translate-y-1
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600
+                      whitespace-nowrap"
                   >
-                    <span>Start Your Journey</span>
-                    <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
-                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    <span>Get Started Now</span>
+                    <svg 
+                      className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth={2} 
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
                     </svg>
                   </Link>
                 )}
@@ -320,99 +354,101 @@ export default function Home() {
               <Link
                 href="/dashboard"
                 className="group relative inline-flex items-center justify-center 
-                  px-10 py-5 font-bold text-white text-lg
-                  transition-all duration-300 
-                  bg-gradient-to-r from-blue-600 to-purple-600 
-                  hover:from-blue-700 hover:to-purple-700 
+                  w-[280px]
+                  px-12 py-5 font-bold text-white text-lg
+                  bg-gradient-to-r from-indigo-600 to-violet-600 
+                  hover:from-indigo-700 hover:to-violet-700 
                   rounded-full
-                  shadow-[0_20px_50px_rgba(8,_112,_184,_0.7)]
-                  hover:shadow-[0_10px_40px_rgba(8,_112,_184,_0.9)]
-                  transform hover:-translate-y-1
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
-              >
-                <span className="relative">Get Started Now</span>
-                <svg 
-                  className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
+                  shadow-[0_8px_24px_rgba(99,102,241,0.3)]
+                  hover:shadow-[0_8px_32px_rgba(99,102,241,0.5)]
+                  transform transition-all duration-300
+                  hover:-translate-y-1
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600
+                  whitespace-nowrap"
                 >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M17 8l4 4m0 0l-4 4m4-4H3"
-                  />
-                </svg>
-              </Link>
-            </div>
-          </motion.div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
-const features = [
-  {
-    title: "AI-Powered Learning",
-    description: "Our advanced AI adapts to your learning style and optimizes your study schedule for maximum retention.",
-    icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-    </svg>
-  },
-  {
-    title: "Smart Repetition",
-    description: "Review cards at scientifically optimized intervals using our advanced spaced repetition algorithm.",
-    icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-    </svg>
-  },
-  {
-    title: "Deep Analytics",
-    description: "Track your progress with detailed insights and visualizations of your learning journey.",
-    icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-    </svg>
+                  <span>Get Started Now</span>
+                  <svg 
+                    className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </motion.div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    );
   }
-]; 
 
-const stats = [
-  { value: "1M+", label: "Active Users" },
-  { value: "50M+", label: "Flashcards Created" },
-  { value: "99%", label: "Success Rate" },
-];
+  const features = [
+    {
+      title: "AI-Powered Learning",
+      description: "Our advanced AI adapts to your learning style and optimizes your study schedule for maximum retention.",
+      icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+      </svg>
+    },
+    {
+      title: "Smart Repetition",
+      description: "Review cards at scientifically optimized intervals using our advanced spaced repetition algorithm.",
+      icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    },
+    {
+      title: "Deep Analytics",
+      description: "Track your progress with detailed insights and visualizations of your learning journey.",
+      icon: <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+    }
+  ]; 
 
-const demoCards = [
-  { question: "What is spaced repetition?", answer: "A learning technique that incorporates increasing intervals of time between reviews of previously learned material." },
-  { question: "How does AI enhance learning?", answer: "AI analyzes your performance patterns and adjusts review schedules for optimal retention." },
-  { question: "What makes effective flashcards?", answer: "Clear, concise content with visual elements and meaningful connections." },
-];
+  const stats = [
+    { value: "1M+", label: "Active Users" },
+    { value: "50M+", label: "Flashcards Created" },
+    { value: "99%", label: "Success Rate" },
+  ];
 
-const features2 = [
-  {
-    title: "Rich Media Support",
-    description: "Add images, audio, and video to your cards",
-    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-  },
-  // Add more features...
-];
+  const demoCards = [
+    { question: "What is spaced repetition?", answer: "A learning technique that incorporates increasing intervals of time between reviews of previously learned material." },
+    { question: "How does AI enhance learning?", answer: "AI analyzes your performance patterns and adjusts review schedules for optimal retention." },
+    { question: "What makes effective flashcards?", answer: "Clear, concise content with visual elements and meaningful connections." },
+  ];
 
-const testimonials = [
-  {
-    name: "Sarah Johnson",
-    title: "Medical Student",
-    quote: "This platform transformed how I study for medical school. The AI-powered suggestions are incredibly helpful!"
-  },
-  {
-    name: "David Chen",
-    title: "Software Engineer",
-    quote: "The spaced repetition system helped me master programming concepts in record time."
-  },
-  {
-    name: "Emily Williams",
-    title: "Language Learner",
-    quote: "I've tried many flashcard apps, but this one's interactive features make learning so much more engaging."
-  },
-]; 
+  const features2 = [
+    {
+      title: "Rich Media Support",
+      description: "Add images, audio, and video to your cards",
+      icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+    },
+    // Add more features...
+  ];
+
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      title: "Medical Student",
+      quote: "This platform transformed how I study for medical school. The AI-powered suggestions are incredibly helpful!"
+    },
+    {
+      name: "David Chen",
+      title: "Software Engineer",
+      quote: "The spaced repetition system helped me master programming concepts in record time."
+    },
+    {
+      name: "Emily Williams",
+      title: "Language Learner",
+      quote: "I've tried many flashcard apps, but this one's interactive features make learning so much more engaging."
+    },
+  ]; 
