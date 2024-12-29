@@ -26,8 +26,6 @@ function CardCreate() {
             await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
             navigate('/');
         } catch (error) {
-            console.error('Error creating card:', error);
-            // Handle error appropriately
         }
     };
 

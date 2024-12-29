@@ -29,15 +29,12 @@ i18n
   });
 
 i18n.on('loaded', (loaded) => {
-  console.log('i18n loaded:', loaded);
 });
 
 i18n.on('failedLoading', (lng, ns, msg) => {
-  console.error('i18n failed loading:', { lng, ns, msg });
 });
 
 i18n.store.on('added', (lng, ns) => {
-  console.log('i18n resources added:', { lng, ns });
 });
 
 export default i18n; 

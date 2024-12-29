@@ -43,8 +43,7 @@ function Navigation() {
             await i18n.changeLanguage(lng);
             document.documentElement.dir = lng === 'fa' ? 'rtl' : 'ltr';
             setIsMenuOpen(false);
-        } catch (error) {
-            console.error('Error changing language:', error);
+        } catch (error) { 
         }
     };
 

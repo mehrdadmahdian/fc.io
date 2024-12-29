@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navigation from '../components/layout/Navigation';
 import BoxCard from '../components/dashboard/boxes/BoxCard';
@@ -11,7 +11,6 @@ import { api } from '../services/api';
 
 function Dashboard() {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
         stats: {
@@ -29,7 +28,6 @@ function Dashboard() {
                 setLoading(true);
                 const response = await api.get('/dashboard/boxes');
                 const responseData = response.data.data;
-                console.log(responseData.boxes);
                 setData({
                     stats: {
                         totalBoxes: responseData?.stats?.totalBoxes || { value: 0, trend: 0 },

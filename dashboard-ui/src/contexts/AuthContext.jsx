@@ -101,7 +101,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             return true;
         } catch (error) {
-            console.error('Login failed:', error);
             return false;
         }
     };
@@ -117,7 +116,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             return true;
         } catch (error) {
-            console.error('Login failed:', error);
             return false;
         }
     };
@@ -126,7 +124,6 @@ export const AuthProvider = ({ children }) => {
         try {
             await api.post('/auth/logout');
         } catch (error) {
-            console.error('Logout failed:', error);
         } finally {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');

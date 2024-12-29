@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 const ReviewProgress = ({ current, total }) => {
     return (
         <div className="review-progress">
