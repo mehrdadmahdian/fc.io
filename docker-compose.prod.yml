@@ -8,5 +8,6 @@ services:
     environment:
       - WATCHPACK_POLLING=false
   dashboard-ui:
-    args:
-      REACT_APP_API_BASE_URL: ${API_URL}
+    build:
+      args:
+        REACT_APP_API_BASE_URL: ${API_URL}
