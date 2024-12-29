@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DashboardContainer from '../../components/layout/DashboardContainer';
 import PageHeader from '../../components/common/PageHeader';
@@ -6,45 +7,80 @@ import ReviewCard from '../../components/dashboard/boxes/review/ReviewCard';
 import ReviewProgress from '../../components/dashboard/boxes/review/ReviewProgress';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Review.css';
+import { api } from '../../services/api';
+
 
 function Review() {
+    const { boxId } = useParams();
     const { t } = useTranslation();
-    const [currentCard, setCurrentCard] = useState(0);
+    const [currentCard, setCurrentCard] = useState(1);
+    const [totalCards, setTotalCards] = useState(0);
     const [showAnswer, setShowAnswer] = useState(false);
+    const [reviewData, setReviewData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Fake data for development
-    const reviewData = {
-        boxName: "JavaScript Basics",
-        totalCards: 20,
-        currentCard: currentCard + 1,
-        cards: [
-            {
-                id: 1,
-                question: "What is closure in JavaScript?",
-                answer: "A closure is the combination of a function bundled together with references to its surrounding state. In JavaScript, closures are created every time a function is created, at function creation time.",
-                difficulty: "medium"
-            },
-            // Add more cards here
-        ]
+    useEffect(() => {
+        const fetchReviewData = async () => {
+            try {
+                const response = await api.get(`/dashboard/boxes/${boxId}/review/cards`);
+                if (response.data.status === 'success') {
+                    setReviewData({
+                        boxName: response.data.data.boxName,
+                        cards: response.data.data.cards,
+                    });
+                    setTotalCards(response.data.data.totalCards);
+                } else {
+                    setError('Failed to fetch review data');
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchReviewData();
+    }, [boxId]); // Added boxId as dependency
+
+    const handleResponse = async (response) => {
+        try {
+            await api.post('/reviews/respond', {
+                cardId: reviewData.cards[currentCard].id,
+                response: response
+            });
+
+            setShowAnswer(false);
+            if (currentCard < totalCards - 1) {
+                setCurrentCard(prev => prev + 1);
+            }
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     const handleShowAnswer = (value) => {
         setShowAnswer(value !== undefined ? value : !showAnswer);
     };
 
-    const handleResponse = (response) => {
+    const handleNext = () => {
         setShowAnswer(false);
-        if (currentCard < reviewData.totalCards - 1) {
+        if (currentCard < totalCards- 1) {
             setCurrentCard(prev => prev + 1);
         }
     };
 
-    const handleNext = () => {
-        setShowAnswer(false);
-        if (currentCard < reviewData.totalCards - 1) {
-            setCurrentCard(prev => prev + 1);
-        }
-    };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    if (!reviewData) {
+        return <div>No cards to review</div>;
+    }
 
     return (
         <DashboardContainer>
@@ -53,8 +89,8 @@ function Review() {
                 <div className="dashboard-content">
                     <div className="dashboard-box">
                         <ReviewProgress 
-                            current={reviewData.currentCard} 
-                            total={reviewData.totalCards} 
+                            current={currentCard + 1}
+                            total={totalCards} 
                         />
                         <div className="review-content">
                             <ReviewCard 

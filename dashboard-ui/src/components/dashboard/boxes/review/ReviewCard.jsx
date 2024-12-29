@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CardStats from '../../CardStats';
 
-function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
+function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, progress }) {
     const { t } = useTranslation();
     const [showStats, setShowStats] = useState(false);
 
@@ -29,6 +29,17 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
 
     return (
         <div className="review-section">
+            <div className="progress-bar">
+                <div 
+                    className="progress-fill" 
+                    style={{ width: `${progress}%` }}
+                    role="progressbar"
+                    aria-valuenow={progress}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                />
+            </div>
+
             <div className="main-content">
                 <div 
                     className="review-card" 
@@ -41,27 +52,27 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
                         <div className={`card-face ${showAnswer ? 'back' : 'front'}`}>
                             {!showAnswer ? (
                                 <div className="question">
-                                    <div className="question-text">{card.question}</div>
+                                    <div className="question-text">{card.Front}</div>
                                 </div>
                             ) : (
                                 <div className="answer">
                                     <div className="answer-main">
-                                        <div className="answer-text">{card.answer}</div>
+                                        <div className="answer-text">{card.Back}</div>
                                     </div>
                                     <div className="answer-details">
                                         {card.example && (
                                             <div className="answer-section">
-                                                <div className="example-text">{card.example}</div>
+                                                <div className="example-text">{card.Extra}</div>
                                             </div>
                                         )}
                                         {card.additionalInfo && (
                                             <div className="answer-section">
-                                                <div className="info-text">{card.additionalInfo}</div>
+                                                <div className="info-text">{card.Extra}</div>
                                             </div>
                                         )}
                                         {card.notes && (
                                             <div className="answer-section">
-                                                <div className="notes-text">{card.notes}</div>
+                                                <div className="notes-text">{card.Extra}</div>
                                             </div>
                                         )}
                                     </div>

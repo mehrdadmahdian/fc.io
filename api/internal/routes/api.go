@@ -26,14 +26,15 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	authGroup.Get("/check", AuthMiddleware, api_handlers.Check)
 
 	dashboardGroup := apiGroup.Group("/dashboard").Use(AuthMiddleware)
-	dashboardGroup.Get("/boxes", apiHandler.GetBoxeInfos)
+	dashboardGroup.Get("/boxes", apiHandler.GetBoxInfos)
+	dashboardGroup.Get("/boxes/:boxid/review/cards", apiHandler.GetReviewCards)
 	// dashboardGroup.Get("/boxes/:boxid", apiHandler.GetBox)
 	// dashboardGroup.Put("/boxes/:boxid", apiHandler.EditBox)
 	// dashboardGroup.Delete("/boxes/:boxid", apiHandler.DeleteBox)
 	// dashboardGroup.Post("/boxes/:boxid/special-action", apiHandler.PerformBoxAction)
-	
-	dashboardGroup.Post("/boxes/:boxid/cards", apiHandler.CreateCard)       
-	// dashboardGroup.Get("/boxes/:boxid/cards", apiHandler.GetCards)       
+
+	dashboardGroup.Post("/boxes/:boxid/cards", apiHandler.CreateCard)
+	// dashboardGroup.Get("/boxes/:boxid/cards", apiHandler.GetCards)
 	// dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCard)
 	// dashboardGroup.Put("/boxes/:boxid/cards/:cardid", apiHandler.UpdateCard)
 	// dashboardGroup.Delete("/boxes/:boxid/cards/:cardid", apiHandler.DeleteCard)

@@ -135,6 +135,15 @@ func (boxService *BoxService) GetFirstEligibleCardToReview(ctx context.Context, 
 	return card, nil
 }
 
+func (boxService *BoxService) GetBoxCardsToReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
+	cards, err := boxService.cardRepository.GetBoxCardsToReview(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return cards, nil
+}
+
 func (boxService *BoxService) GetCountOfRemainingCardsForReview(ctx context.Context, box *models.Box) (*int64, error) {
 	count, err := boxService.cardRepository.GetCountOfRemainingCardsForReview(ctx, box)
 	if err != nil {

@@ -127,6 +127,37 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 	return &card, nil
 }
 
+func (cardRepository *CardRepository) GetBoxCardsToReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
+	currentTime := time.Now()
+
+	filter := bson.M{
+		"box_id": box.ID,
+		"review": bson.M{"$ne": nil},
+		"review.next_due_date": bson.M{
+			"$ne":  nil,
+			"$lte": currentTime,
+		},
+	}
+
+	sort := bson.D{{"review.next_due_date", 1}}
+
+	cursor, err := cardRepository.collection.Find(
+        context.Background(),
+        filter,
+        options.Find().SetSort(sort),
+    )
+    if err != nil {
+        return nil, err
+    }
+    defer cursor.Close(ctx)
+
+    var cards []*models.Card
+    if err := cursor.All(ctx, &cards); err != nil {
+        return nil, err
+    }
+    return cards, nil
+}
+
 func (cardRepository *CardRepository) GetCountOfRemainingCardsForReview(ctx context.Context, box *models.Box) (*int64, error) {
 	currentTime := time.Now()
 
