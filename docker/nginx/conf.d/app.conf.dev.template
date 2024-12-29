@@ -13,30 +13,18 @@ server {
     }
 
     location /dashboard/ {
-        proxy_pass http://dashboard-ui-container:3000/dashboard/;
-        
-        # Essential headers for development server
+        proxy_pass http://dashboard-ui-container:3000/dashboard/;  # Add /dashboard/ to the end
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
+        proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
-        
-        # Development specific settings
-        proxy_buffering off;
-        proxy_cache off;
-        proxy_set_header Connection '';
-        keepalive_requests 100;
-        
-        # Force no caching in development
-        add_header Last-Modified $date_gmt;
-        add_header Cache-Control 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
-        if_modified_since off;
-        expires off;
-        etag off;
+
+        # Add these headers for development
+        proxy_set_header Origin $http_origin;
+        proxy_set_header Access-Control-Allow-Origin *;
     }
 
     location /api/ {
