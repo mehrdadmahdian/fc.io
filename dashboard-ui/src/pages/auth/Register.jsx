@@ -53,37 +53,32 @@ function Register() {
     return (
         <PageTransition>
             <div className="auth-container">
-                <div className="auth-content">
-                    <div className="auth-left">
-                        <div className="auth-welcome">
-                            <div className="auth-logo">
-                                <i className="fas fa-brain"></i>
-                            </div>
-                            <h1>{t('auth.register.title')}</h1>
-                            <p className="auth-subtitle">{t('auth.register.subtitle')}</p>
-                            <div className="auth-quote">
-                                <i className="fas fa-quote-left"></i>
-                                <p>The journey of a thousand miles begins with a single step.</p>
-                                <span>- Lao Tzu</span>
-                            </div>
-                        </div>
+                <div className="auth-brand-wrapper">
+                    <div className="auth-brand-logo">
+                        <i className="fas fa-brain"></i>
                     </div>
+                    <div className="auth-brand-text">
+                        <h1>flashcards.io</h1>
+                        <p>AI-Powered Learning</p>
+                    </div>
+                </div>
 
+                <div className="auth-content">
                     <div className="auth-right">
                         <div className="auth-form-container">
                             <h2>{t('auth.register.title')}</h2>
+                            <p className="auth-subtitle">{t('auth.register.subtitle')}</p>
+
                             {error && (
                                 <div className="auth-error">
+                                    <i className="fas fa-exclamation-circle"></i>
                                     {error}
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="auth-form">
                                 <div className="form-group">
-                                    <label htmlFor="name">
-                                        <i className="fas fa-user"></i>
-                                        {t('auth.name')}
-                                    </label>
+                                    <label htmlFor="name">{t('auth.name')}</label>
                                     <input
                                         type="text"
                                         id="name"
@@ -97,10 +92,7 @@ function Register() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="email">
-                                        <i className="fas fa-envelope"></i>
-                                        {t('auth.email')}
-                                    </label>
+                                    <label htmlFor="email">{t('auth.email')}</label>
                                     <input
                                         type="email"
                                         id="email"
@@ -114,10 +106,7 @@ function Register() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="password">
-                                        <i className="fas fa-lock"></i>
-                                        {t('auth.password')}
-                                    </label>
+                                    <label htmlFor="password">{t('auth.password')}</label>
                                     <input
                                         type="password"
                                         id="password"
@@ -132,7 +121,6 @@ function Register() {
 
                                 <div className="form-group">
                                     <label htmlFor="confirmationPassword">
-                                        <i className="fas fa-lock"></i>
                                         {t('auth.confirmationPassword')}
                                     </label>
                                     <input
@@ -155,7 +143,7 @@ function Register() {
                                     {isLoading ? (
                                         <><i className="fas fa-spinner fa-spin"></i> {t('common.loading')}</>
                                     ) : (
-                                        <>{t('auth.registerButton')}</>
+                                        t('auth.registerButton')
                                     )}
                                 </button>
                             </form>

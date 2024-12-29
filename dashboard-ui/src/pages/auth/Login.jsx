@@ -51,51 +51,32 @@ function Login() {
     return (
         <PageTransition>
             <div className="auth-container">
-                <div className="auth-content">
-                    <div className="auth-left">
-                        <div className="auth-welcome">
-                            <h1>{t('auth.welcome.title')}</h1>
-                            <p className="auth-subtitle">{t('auth.login.subtitle')}</p>
-                            <div className="auth-features">
-                                <div className="auth-feature">
-                                    <i className="fas fa-sync"></i>
-                                    <div className="feature-text">
-                                        <h3>{t('auth.welcome.features.spaced.title')}</h3>
-                                        <p>{t('auth.welcome.features.spaced.description')}</p>
-                                    </div>
-                                </div>
-                                <div className="auth-feature">
-                                    <i className="fas fa-chart-line"></i>
-                                    <div className="feature-text">
-                                        <h3>{t('auth.welcome.features.progress.title')}</h3>
-                                        <p>{t('auth.welcome.features.progress.description')}</p>
-                                    </div>
-                                </div>
-                                <div className="auth-feature">
-                                    <i className="fas fa-mobile-alt"></i>
-                                    <div className="feature-text">
-                                        <h3>{t('auth.welcome.features.anywhere.title')}</h3>
-                                        <p>{t('auth.welcome.features.anywhere.description')}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div className="auth-brand-wrapper">
+                    <div className="auth-brand-logo">
+                        <i className="fas fa-brain"></i>
                     </div>
+                    <div className="auth-brand-text">
+                        <h1>flashcards.io</h1>
+                        <p>AI-Powered Learning</p>
+                    </div>
+                </div>
 
+                <div className="auth-content">
                     <div className="auth-right">
                         <div className="auth-form-container">
+                            <h2>{t('auth.welcome.title')}</h2>
+                            <p className="auth-subtitle">{t('auth.login.subtitle')}</p>
+                            
                             {error && (
                                 <div className="auth-error">
+                                    <i className="fas fa-exclamation-circle"></i>
                                     {error}
                                 </div>
                             )}
 
                             <form onSubmit={handleSubmit} className="auth-form">
                                 <div className="form-group">
-                                    <label htmlFor="email">
-                                        <i className="fas fa-envelope"></i>
-                                        {t('auth.email')}
-                                    </label>
+                                    <label htmlFor="email">{t('auth.email')}</label>
                                     <input
                                         type="email"
                                         id="email"
@@ -109,10 +90,7 @@ function Login() {
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="password">
-                                        <i className="fas fa-lock"></i>
-                                        {t('auth.password')}
-                                    </label>
+                                    <label htmlFor="password">{t('auth.password')}</label>
                                     <input
                                         type="password"
                                         id="password"
@@ -133,21 +111,22 @@ function Login() {
                                     {isLoading ? (
                                         <><i className="fas fa-spinner fa-spin"></i> {t('common.loading')}</>
                                     ) : (
-                                        <>{t('auth.loginButton')}</>
+                                        t('auth.loginButton')
                                     )}
                                 </button>
                             </form>
 
                             <div className="auth-links">
                                 <Link to="/auth/register" className="auth-link">
+                                    <i className="fas fa-user-plus"></i>
                                     {t('auth.needAccount')}
                                 </Link>
-                                <br />
                                 <Link to="/auth/forgot-password" className="auth-link">
+                                    <i className="fas fa-key"></i>
                                     {t('auth.forgotPassword')}
                                 </Link>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
             </div>
