@@ -4,7 +4,7 @@ import axios from 'axios';
 const AuthContext = createContext(null);
 
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+    baseURL: process.env.REACT_APP_API_BASE_URL,
 });
 
 // Interceptor for adding token to requests
@@ -27,7 +27,7 @@ api.interceptors.response.use(
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
-                const response = await axios.post('/api/auth/refresh', {
+                const response = await axios.post('/auth/refresh', {
                     refreshToken
                 });
 
