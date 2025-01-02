@@ -164,5 +164,19 @@
     "create": "Create Box",
     "empty": "No boxes yet",
     "createFirst": "Create your first box"
+  },
+  "cardCreate": {
+    "title": "Create New Card",
+    "question": "Question",
+    "answer": "Answer",
+    "additionalInfo": "Additional Information",
+    "questionPlaceholder": "Enter your question here",
+    "answerPlaceholder": "Enter the answer here",
+    "additionalInfoPlaceholder": "Enter any additional information or notes (optional)",
+    "save": "Save Card"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "fillRequiredFields": "Please fill in all required fields"
   }
 } 

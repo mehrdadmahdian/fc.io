@@ -79,7 +79,6 @@ function Dashboard() {
                 <Navigation />
                 <main className="dashboard-main">
                     <div className="dashboard-container">
-                      
                         <div className="stats-container">
                             <StatsCard 
                                 icon="fa-box"
@@ -109,17 +108,6 @@ function Dashboard() {
                         </div>
 
                         <div className="boxes-section">
-                            <div className="section-header">
-                                <div className="header-left">
-                                    <h2 className="section-title">{t('dashboard.boxes.title')}</h2>
-                                    {/* <p className="section-subtitle">{t('dashboard.boxes.subtitle')}</p> */}
-                                </div>
-                                {/* <Link to="/dashboard/box/create" className="btn btn-primary">
-                                    <i className="fas fa-plus"></i>
-                                    {t('dashboard.boxes.create')}
-                                </Link> */}
-                            </div>
-
                             <div className="boxes-grid">
                                 {data.boxes.map(box => (
                                     <BoxCard key={box.id} box={box} />
@@ -133,29 +121,6 @@ function Dashboard() {
                                 </Link>
                             </div>
                         </div>
-
-                        {/* <div className="quick-actions">
-                            <h2 className="section-title">{t('dashboard.quickActions')}</h2>
-                            <div className="actions-grid">
-                                <button className="action-card" onClick={() => navigate('/dashboard/box/create')}>
-                                    <i className="fas fa-plus"></i>
-                                    <span>{t('dashboard.createBox')}</span>
-                                </button>
-                                <button className="action-card">
-                                    <i className="fas fa-book"></i>
-                                    <span>{t('dashboard.startReview')}</span>
-                                </button>
-                                <button className="action-card">
-                                    <i className="fas fa-chart-bar"></i>
-                                    <span>{t('dashboard.viewStats')}</span>
-                                </button>
-                                <button className="action-card">
-                                    <i className="fas fa-cog"></i>
-                                    <span>{t('dashboard.settings')}</span>
-                                </button>
-                            </div>
-                        </div> */}
-
                     </div>
                 </main>
                 <Footer />

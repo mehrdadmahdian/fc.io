@@ -16,9 +16,8 @@ function CardCreate() {
     const { boxId } = useParams();
 
     const handleSubmit = async (formData) => {
-        // Validate required fields
-        if (!formData.question || !formData.answer) {
-            alert(t('common.fillRequiredFields')); // Or use your preferred notification method
+        if (!formData.front || !formData.back) {
+            alert(t('common.fillRequiredFields'));
             return;
         }
 
@@ -34,23 +33,24 @@ function CardCreate() {
             <div className="dashboard-container">
                 <PageHeader title={t('cardCreate.title')} />
                 <div className="dashboard-content">
-                    <div className="dashboard-box">
+                    <div className="dashboard-box" style={{ width: '100%', maxWidth: 'none', padding: '20px' }}>
                         <Form
+                            style={{ width: '100%' }}
                             onSubmit={handleSubmit}
                             onCancel={() => navigate('/dashboard')}
                             submitLabel={t('cardCreate.save')}
                             cancelLabel={t('common.cancel')}
                             initialData={{
-                                question: '',
-                                answer: '',
-                                additionalInfo: '',
+                                front: '',
+                                back: '',
+                                extra: '',
                                 labels: []
                             }}
                             validateForm={true}
                         >
                             <FormTextarea
                                 label={`${t('cardCreate.question')} *`}
-                                name="question"
+                                name="front"
                                 required={true}
                                 placeholder={t('cardCreate.questionPlaceholder')}
                                 rows={4}
@@ -58,7 +58,7 @@ function CardCreate() {
 
                             <FormTextarea
                                 label={`${t('cardCreate.answer')} *`}
-                                name="answer"
+                                name="back"
                                 placeholder={t('cardCreate.answerPlaceholder')}
                                 required={true}
                                 rows={4}
@@ -66,7 +66,7 @@ function CardCreate() {
 
                             <FormTextarea
                                 label={t('cardCreate.additionalInfo')}
-                                name="additionalInfo"
+                                name="extra"
                                 placeholder={t('cardCreate.additionalInfoPlaceholder')}
                                 rows={3}
                             />
