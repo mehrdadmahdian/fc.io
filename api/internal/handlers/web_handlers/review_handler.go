@@ -42,7 +42,7 @@ func (handler *WebHandler) SubmitReview(c *fiber.Ctx) error {
 	handler.boxService.SubmitReview(
 		c.Context(),
 		request.CardId,
-		request.Action,
+		string(request.Action),
 	)
 
 	return c.Redirect("/web/dashboard/box/"+box.IDString()+"/review", fiber.StatusSeeOther)

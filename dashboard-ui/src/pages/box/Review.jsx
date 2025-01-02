@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DashboardContainer from '../../components/layout/DashboardContainer';
 import PageHeader from '../../components/common/PageHeader';
@@ -13,23 +13,29 @@ import { api } from '../../services/api';
 function Review() {
     const { boxId } = useParams();
     const { t } = useTranslation();
-    const [currentCard, setCurrentCard] = useState(1);
+    const [currentCard, setCurrentCard] = useState(0);
     const [totalCards, setTotalCards] = useState(0);
     const [showAnswer, setShowAnswer] = useState(false);
     const [reviewData, setReviewData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchReviewData = async () => {
             try {
                 const response = await api.get(`/dashboard/boxes/${boxId}/review/cards`);
                 if (response.data.status === 'success') {
-                    setReviewData({
-                        boxName: response.data.data.boxName,
-                        cards: response.data.data.cards,
-                    });
-                    setTotalCards(response.data.data.totalCards);
+                    if (!response.data.data.cards || response.data.data.cards.length === 0) {
+                        setReviewData(null);
+                        setTotalCards(0);
+                    } else {
+                        setReviewData({
+                            boxName: response.data.data.boxName,
+                            cards: response.data.data.cards,
+                        });
+                        setTotalCards(response.data.data.totalCards);
+                    }
                 } else {
                     setError('Failed to fetch review data');
                 }
@@ -41,18 +47,20 @@ function Review() {
         };
     
         fetchReviewData();
-    }, [boxId]); // Added boxId as dependency
+    }, [boxId]);
 
-    const handleResponse = async (response) => {
+    const handleResponse = async (difficulty) => {
         try {
-            await api.post('/reviews/respond', {
-                cardId: reviewData.cards[currentCard].id,
-                response: response
+            await api.post(`/dashboard/boxes/${boxId}/review/respond`, {
+                cardId: reviewData.cards[currentCard].ID,
+                difficulty: difficulty
             });
 
             setShowAnswer(false);
             if (currentCard < totalCards - 1) {
                 setCurrentCard(prev => prev + 1);
+            } else {
+                navigate(`/`);
             }
         } catch (err) {
             setError(err.message);
@@ -65,21 +73,61 @@ function Review() {
 
     const handleNext = () => {
         setShowAnswer(false);
-        if (currentCard < totalCards- 1) {
+        if (currentCard < totalCards - 1) {
             setCurrentCard(prev => prev + 1);
+        } else {
+            navigate('/');
         }
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <DashboardContainer>
+                <div className="dashboard-container">
+                    <div className="loading-state">
+                        {t('common.loading')}...
+                    </div>
+                </div>
+            </DashboardContainer>
+        );
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <DashboardContainer>
+                <div className="dashboard-container">
+                    <div className="error-state">
+                        {t('common.error')}: {error}
+                    </div>
+                </div>
+            </DashboardContainer>
+        );
     }
 
-    if (!reviewData) {
-        return <div>No cards to review</div>;
+    if (!reviewData || !reviewData.cards || reviewData.cards.length === 0) {
+        return (
+            <DashboardContainer>
+                <div className="dashboard-container">
+                    <PageHeader title={t('review.title')} />
+                    <div className="dashboard-content">
+                        <div className="dashboard-box">
+                            <div className="review-content empty">
+                                <div className="empty-state">
+                                    <h3>{t('review.noCards.title')}</h3>
+                                    <p>{t('review.noCards.message')}</p>
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={() => navigate(`/`)}
+                                    >
+                                        {t('common.backToBox')}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </DashboardContainer>
+        );
     }
 
     return (
@@ -102,19 +150,19 @@ function Review() {
                             />
                         </div>
                         <div className="action-group">
-                            <button className="action-btn edit">
+                            <button className="action-btn edit" title={t('Edit')}>
                                 <i className="fas fa-edit"></i>
                                 <span>{t('Edit')}</span>
                             </button>
-                            <button className="action-btn archive">
+                            <button className="action-btn archive" title={t('Archive')}>
                                 <i className="fas fa-archive"></i>
                                 <span>{t('Archive')}</span>
                             </button>
-                            <button className="action-btn flag">
+                            <button className="action-btn flag" title={t('Flag')}>
                                 <i className="fas fa-flag"></i>
                                 <span>{t('Flag')}</span>
                             </button>
-                            <button className="action-btn info">
+                            <button className="action-btn info" title={t('Info')}>
                                 <i className="fas fa-info-circle"></i>
                                 <span>{t('Info')}</span>
                             </button>

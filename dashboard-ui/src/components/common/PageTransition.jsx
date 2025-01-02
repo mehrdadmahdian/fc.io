@@ -3,24 +3,27 @@ import { motion } from 'framer-motion';
 const pageVariants = {
     initial: {
         opacity: 0,
-        y: 20
+        x: -20,
+        scale: 0.98
     },
     in: {
         opacity: 1,
-        y: 0
+        x: 0,
+        scale: 1
     },
     out: {
         opacity: 0,
-        y: -20
+        x: 20,
+        scale: 0.98
     }
 };
 
 const pageTransition = {
     type: "spring",
-    ease: "easeInOut",
-    duration: 0.2,
-    damping: 15,
-    stiffness: 60,
+    duration: 0.4,
+    damping: 20,
+    stiffness: 100,
+    mass: 0.8
 };
 
 function PageTransition({ children }) {

@@ -1,9 +1,9 @@
 package api_handlers
 
 import (
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
+	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
@@ -60,4 +60,43 @@ func (handler *ApiHandler) GetReviewCards(c *fiber.Ctx) error {
 	)
 }
 
+func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
+	//todo: check if the card is in the box
+	// boxID := c.Params("boxid")
+	// box, err := handler.boxService.GetBox(c.Context(), boxID)
+	// if err != nil {
+	// 	return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"), nil)
+	// }
+
+	request, err := requests.ParseRequestBody(c, new(requests.RespondToReviewRequest))
+	if err != nil {
+		return JsonFailed(
+			c,
+			fiber.StatusBadRequest,
+			utils.PointerString("invalid request body: " + err.Error()),
+			nil,
+		)
+	}
+
+	err = handler.boxService.SubmitReview(
+		c.Context(),
+		request.CardId,
+		request.Difficulty,
+	)
+	
+	if err != nil {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("failed to submit review: " + err.Error()),
+			nil,
+		)
+	}
+
+	return JsonSuccess(
+		c,
+		utils.PointerString("action is submitted successfully!"),
+		nil,
+	)
+}
 

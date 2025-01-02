@@ -88,13 +88,12 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 
 		// Create a new BoxInfo and append it
 		boxInfos = append(boxInfos, &BoxInfo{
-			Box:                 box,
+			Box:                  box,
 			CountOfCardsDueToday: int(*countOfCardsDueToday),
-			CountOfTotalCards:   int(*boxCardsCount),
-			SuccessRate:         0, // Placeholder for SuccessRate
+			CountOfTotalCards:    int(*boxCardsCount),
+			SuccessRate:          0, // Placeholder for SuccessRate
 		})
 	}
-
 
 	return boxInfos, nil
 }
@@ -156,7 +155,7 @@ func (boxService *BoxService) GetCountOfRemainingCardsForReview(ctx context.Cont
 func (boxService *BoxService) SubmitReview(
 	ctx context.Context,
 	cardId string,
-	difficulty int,
+	difficulty string,
 ) error {
 	card, err := boxService.cardRepository.FindById(ctx, cardId)
 	if err != nil {
@@ -164,25 +163,29 @@ func (boxService *BoxService) SubmitReview(
 	}
 
 	currentInterval := card.Review.Interval
-	if (currentInterval == 0) {
+	if currentInterval == 0 {
 		currentInterval = 1
 	}
 	currentEaseFactor := card.Review.EaseFactor
-	if (currentEaseFactor == 0.0) {
+	if currentEaseFactor == 0.0 {
 		currentEaseFactor = 2.5
 	}
 
 	var NewInterval int
 	var NewEaseFactor float64
 	var nextReviewDate *time.Time
-	
-	NewInterval, NewEaseFactor = calculateNewIntervalAndEaseFactor(
-		currentInterval, 
+
+	NewInterval, NewEaseFactor, err = calculateNewIntervalAndEaseFactor(
+		currentInterval,
 		currentEaseFactor,
 		difficulty,
 	)
-	
-	if (difficulty == 0) {
+
+	if err != nil {
+		return err
+	}
+
+	if difficulty == "again" {
 		nextReviewDate = nil
 	} else {
 		val := time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
@@ -190,11 +193,11 @@ func (boxService *BoxService) SubmitReview(
 	}
 
 	reviewHistoryRecord := &models.ReviewHistoryRecord{
-		Date:   time.Now(),
-		Action: difficulty,
-		OldInterval: currentInterval,
+		Date:          time.Now(),
+		Difficulty:    difficulty,
+		OldInterval:   currentInterval,
 		OldEaseFactor: currentEaseFactor,
-		NewInterval: NewInterval,
+		NewInterval:   NewInterval,
 		NewEaseFactor: NewEaseFactor,
 	}
 
@@ -213,29 +216,25 @@ func (boxService *BoxService) SubmitReview(
 	return nil
 }
 
-func calculateNewIntervalAndEaseFactor(currentInterval int, easeFactor float64, difficulty int) (int, float64) {
-	multipliers := map[int]float64{
-		3: 0.5, // repeat
-		2: 1.0, // hard
-		1: 10.0, // easy
+func calculateNewIntervalAndEaseFactor(currentInterval int, easeFactor float64, difficulty string) (int, float64, error) {
+	multipliers := map[string]float64{
+		"again": 0.5,
+		"hard":  1.0,
+		"easy":  10.0,
 	}
 
-	if difficulty < 1 || difficulty > 3 {
-		return currentInterval, easeFactor
+	multiplier, exists := multipliers[difficulty]
+	if !exists {
+		return 0, 0, fmt.Errorf("invalid difficulty level: %s", difficulty)
 	}
 
-	multiplier := multipliers[difficulty]
-	newInterval := float64(currentInterval) * easeFactor * multiplier 
-	// 1*2.5*0.5 = 1
-	// 1*2.5*1 = 2
-	// 1*2.5*10 = 25
+	newInterval := float64(currentInterval) * easeFactor * multiplier
 
 	newEaseFactor := easeFactor
-
 
 	if newEaseFactor < 1.3 {
 		newEaseFactor = 1.3
 	}
 
-	return int(newInterval), newEaseFactor
+	return int(newInterval), newEaseFactor, nil
 }

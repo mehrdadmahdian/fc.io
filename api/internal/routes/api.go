@@ -28,6 +28,7 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup := apiGroup.Group("/dashboard").Use(AuthMiddleware)
 	dashboardGroup.Get("/boxes", apiHandler.GetBoxInfos)
 	dashboardGroup.Get("/boxes/:boxid/review/cards", apiHandler.GetReviewCards)
+	dashboardGroup.Post("/boxes/:boxid/review/respond", apiHandler.RespondToReview)
 	// dashboardGroup.Get("/boxes/:boxid", apiHandler.GetBox)
 	// dashboardGroup.Put("/boxes/:boxid", apiHandler.EditBox)
 	// dashboardGroup.Delete("/boxes/:boxid", apiHandler.DeleteBox)

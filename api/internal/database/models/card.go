@@ -36,7 +36,7 @@ type Review struct {
 
 type ReviewHistoryRecord struct {
 	Date          time.Time `bson:"date"`
-	Action        int       `bson:"action"`
+	Difficulty    string    `bson:"difficulty"`
 	OldInterval   int       `bson:"old_interval"`
 	OldEaseFactor float64   `bson:"old_ease_factor"`
 	NewInterval   int       `bson:"new_interval"`
