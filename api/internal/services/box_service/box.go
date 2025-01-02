@@ -162,51 +162,57 @@ func (boxService *BoxService) SubmitReview(
 		return err
 	}
 
-	currentInterval := card.Review.Interval
-	if currentInterval == 0 {
-		currentInterval = 1
-	}
+	// Initialize or get current ease factor
 	currentEaseFactor := card.Review.EaseFactor
 	if currentEaseFactor == 0.0 {
 		currentEaseFactor = 2.5
 	}
 
-	var NewInterval int
-	var NewEaseFactor float64
-	var nextReviewDate *time.Time
+	var nextReviewDate time.Time
+	var newInterval int
+	var newEaseFactor float64
 
-	NewInterval, NewEaseFactor, err = calculateNewIntervalAndEaseFactor(
-		currentInterval,
-		currentEaseFactor,
-		difficulty,
-	)
-
-	if err != nil {
-		return err
+	// Adjust ease factor based on difficulty
+	switch difficulty {
+	case "again":
+		nextReviewDate = time.Now().Add(1 * time.Hour)
+		newInterval = 0                          // 0 means hours instead of days
+		newEaseFactor = currentEaseFactor * 0.85 // Decrease ease factor
+	case "hard":
+		nextReviewDate = time.Now().Add(2 * 24 * time.Hour)
+		newInterval = 2
+		newEaseFactor = currentEaseFactor * 0.95 // Slightly decrease ease factor
+	case "easy":
+		nextReviewDate = time.Now().Add(20 * 24 * time.Hour)
+		newInterval = 20
+		newEaseFactor = currentEaseFactor * 1.1 // Increase ease factor
+	default:
+		return fmt.Errorf("invalid difficulty level: %s", difficulty)
 	}
 
-	if difficulty == "again" {
-		nextReviewDate = nil
-	} else {
-		val := time.Now().Add(time.Duration(NewInterval) * 24 * time.Hour)
-		nextReviewDate = &val
+	// Ensure ease factor stays within reasonable bounds
+	if newEaseFactor < 1.3 {
+		newEaseFactor = 1.3
+	}
+	if newEaseFactor > 2.5 {
+		newEaseFactor = 2.5
 	}
 
 	reviewHistoryRecord := &models.ReviewHistoryRecord{
 		Date:          time.Now(),
 		Difficulty:    difficulty,
-		OldInterval:   currentInterval,
+		OldInterval:   card.Review.Interval,
 		OldEaseFactor: currentEaseFactor,
-		NewInterval:   NewInterval,
-		NewEaseFactor: NewEaseFactor,
+		NewInterval:   newInterval,
+		NewEaseFactor: newEaseFactor,
 	}
 
 	err = boxService.cardRepository.UpdateCardReview(
 		ctx,
 		card,
-		nextReviewDate,
-		NewInterval,
-		NewEaseFactor,
+		&nextReviewDate,
+		newInterval,
+		newEaseFactor,
 		reviewHistoryRecord,
 	)
 	if err != nil {
@@ -214,27 +220,4 @@ func (boxService *BoxService) SubmitReview(
 	}
 
 	return nil
-}
-
-func calculateNewIntervalAndEaseFactor(currentInterval int, easeFactor float64, difficulty string) (int, float64, error) {
-	multipliers := map[string]float64{
-		"again": 0.5,
-		"hard":  1.0,
-		"easy":  10.0,
-	}
-
-	multiplier, exists := multipliers[difficulty]
-	if !exists {
-		return 0, 0, fmt.Errorf("invalid difficulty level: %s", difficulty)
-	}
-
-	newInterval := float64(currentInterval) * easeFactor * multiplier
-
-	newEaseFactor := easeFactor
-
-	if newEaseFactor < 1.3 {
-		newEaseFactor = 1.3
-	}
-
-	return int(newInterval), newEaseFactor, nil
 }
