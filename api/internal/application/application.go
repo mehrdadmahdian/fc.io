@@ -10,6 +10,7 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/web_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/card_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	logger "github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
@@ -22,6 +23,7 @@ type Container struct {
 	RedisService  *redis_service.RedisService
 	AuthService   *auth_service.AuthService
 	BoxService    *box_service.BoxService
+	CardService   *card_service.CardService
 	Seeder        *seeders.Seeder
 	ApiHandler    *api_handlers.ApiHandler
 	WebHandler    *web_handlers.WebHandler
@@ -125,6 +127,8 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		labelRepository,
 	)
 
+	cardService, err := card_service.NewCardService(cardRepository)
+
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "boxService",
@@ -133,7 +137,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService)
+	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",
@@ -157,6 +161,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		RedisService:  redisService,
 		AuthService:   authService,
 		BoxService:    boxService,
+		CardService:   cardService,
 		Seeder:        seeder,
 		ApiHandler:    apiHandler,
 		WebHandler:    webHandler,

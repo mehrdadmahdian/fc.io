@@ -39,3 +39,27 @@ func (handler *ApiHandler) CreateCard(c *fiber.Ctx) error {
 
 	return JsonSuccess(c, utils.PointerString("card created successfully"), nil)
 }
+
+func (handler *ApiHandler) ArchiveCard(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	err := handler.cardService.ArchiveCard(
+		c.Context(),
+		cardID,
+	)
+	
+	if err != nil {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("failed to archive card: " + err.Error()),
+			nil,
+		)
+	}
+
+	return JsonSuccess(
+		c,
+		utils.PointerString("card is archived successfully!"),
+		nil,
+	)
+}

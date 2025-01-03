@@ -119,8 +119,8 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-            return nil, nil
-        }
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -142,20 +142,20 @@ func (cardRepository *CardRepository) GetBoxCardsToReview(ctx context.Context, b
 	sort := bson.D{{"review.next_due_date", 1}}
 
 	cursor, err := cardRepository.collection.Find(
-        context.Background(),
-        filter,
-        options.Find().SetSort(sort),
-    )
-    if err != nil {
-        return nil, err
-    }
-    defer cursor.Close(ctx)
+		context.Background(),
+		filter,
+		options.Find().SetSort(sort),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
 
-    var cards []*models.Card
-    if err := cursor.All(ctx, &cards); err != nil {
-        return nil, err
-    }
-    return cards, nil
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
+	}
+	return cards, nil
 }
 
 func (cardRepository *CardRepository) GetCountOfRemainingCardsForReview(ctx context.Context, box *models.Box) (*int64, error) {
@@ -202,10 +202,10 @@ func (cardRepository *CardRepository) UpdateCardReview(
 ) error {
 	update := bson.M{
 		"$set": bson.M{
-			"review.next_due_date":    nextReviewDate,
-			"review.interval": interval,
-			"review.ease_factor":      easeFactor,
-			"review.reviews_count":    card.Review.ReviewsCount + 1,
+			"review.next_due_date": nextReviewDate,
+			"review.interval":      interval,
+			"review.ease_factor":   easeFactor,
+			"review.reviews_count": card.Review.ReviewsCount + 1,
 		},
 		"$push": bson.M{
 			"review.review_history": reviewRecord,
@@ -219,6 +219,25 @@ func (cardRepository *CardRepository) UpdateCardReview(
 	}
 	filter := bson.M{"_id": card.ID}
 	_, err := cardRepository.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cardRepository *CardRepository) SetArchived(ctx context.Context, cardID string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"review.next_due_date": nil,
+		},
+	}
+	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}
