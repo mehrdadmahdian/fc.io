@@ -63,3 +63,41 @@ func (handler *ApiHandler) ArchiveCard(c *fiber.Ctx) error {
 		nil,
 	)
 }
+
+func (handler *ApiHandler) GetCardInfo(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	card, err := handler.cardService.GetCard(c.Context(), cardID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get card"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("card fetched successfully"), &map[string]interface{}{
+		"card": card,
+	})
+}
+
+func (handler *ApiHandler) UpdateCard(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	card, err := handler.cardService.GetCard(c.Context(), cardID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get card"), nil)
+	}
+	request, err := requests.ParseRequestBody(c, new(requests.EditCardRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
+	}
+
+	card.Front = request.Front
+	card.Back = request.Back
+	card.Extra = request.Extra
+
+	err = handler.cardService.UpdateCard(c.Context(), card)
+
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update card"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("card updated successfully"), nil)
+}

@@ -44,6 +44,10 @@ const Routes = () => {
                 element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
             />
             <Route 
+                path="/box/:boxId/cards/:cardId/edit" 
+                element={isAuthenticated ? <CardCreate /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
                 path="/box/:boxId/cards/create" 
                 element={
                     isAuthenticated ? (

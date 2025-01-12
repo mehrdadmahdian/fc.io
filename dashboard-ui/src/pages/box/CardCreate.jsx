@@ -9,24 +9,57 @@ import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Form.css';
 import '../../assets/styles/PageHeader.css';
 import PageHeader from '../../components/common/PageHeader';
+import { useEffect, useState } from 'react';
 
 function CardCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { boxId } = useParams();
+    const { boxId, cardId } = useParams();
+    const [formData, setFormData] = useState({
+        front: '',
+        back: '',
+        extra: ''
+    });
+    const [loading, setLoading] = useState(cardId ? true : false);
+
+    useEffect(() => {
+        if (cardId) {
+            const fetchCard = async () => {
+                try {
+                    const response = await api.get(`/dashboard/boxes/${boxId}/cards/${cardId}`);
+                    setFormData({
+                        front: response.data.data.card.Front,
+                        back: response.data.data.card.Back,
+                        extra: response.data.data.card.Extra || ''
+                    });
+                } catch (err) {
+                    console.error('Error fetching card:', err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchCard();
+        }
+    }, [boxId, cardId]);
 
     const handleSubmit = async (formData) => {
-        if (!formData.front || !formData.back) {
-            alert(t('common.fillRequiredFields'));
-            return;
-        }
-
         try {
-            await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
-            navigate('/');
-        } catch (error) {
+            if (cardId) {
+                // Update existing card
+                await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, formData);
+            } else {
+                // Create new card
+                await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
+            }
+            navigate(`/box/${boxId}/review`);
+        } catch (err) {
+            console.error('Error saving card:', err);
         }
     };
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <DashboardContainer>
@@ -41,9 +74,9 @@ function CardCreate() {
                             submitLabel={t('cardCreate.save')}
                             cancelLabel={t('common.cancel')}
                             initialData={{
-                                front: '',
-                                back: '',
-                                extra: '',
+                                front: formData.front,
+                                back: formData.back,
+                                extra: formData.extra,
                                 labels: []
                             }}
                             validateForm={true}

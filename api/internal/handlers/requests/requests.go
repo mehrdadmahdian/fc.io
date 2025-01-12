@@ -39,3 +39,10 @@ type CreateCardRequest struct {
 	Extra   string `json:"extra"`
 	// LabelIds []string `json:"labelIds" validate:"required"`
 }
+
+type EditCardRequest struct {
+	Front   string `json:"front" validate:"required"`
+	Back    string `json:"back" validate:"required"`
+	Extra   string `json:"extra"`
+	// LabelIds []string `json:"labelIds" validate:"required"`
+}

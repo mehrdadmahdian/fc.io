@@ -102,6 +102,11 @@
             }
         };
 
+        const handleEdit = () => {
+            const currentCardId = reviewData.cards[currentCard].ID;
+            navigate(`/box/${boxId}/cards/${currentCardId}/edit`);
+        };
+
         if (loading) {
             return (
                 <DashboardContainer>
@@ -172,7 +177,11 @@
                                 />
                             </div>
                             <div className="action-group">
-                                <button className="action-btn edit" title={t('Edit')}>
+                                <button 
+                                    className="action-btn edit" 
+                                    title={t('Edit')}
+                                    onClick={handleEdit}
+                                >
                                     <i className="fas fa-edit"></i>
                                     <span>{t('Edit')}</span>
                                 </button>

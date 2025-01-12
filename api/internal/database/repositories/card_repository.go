@@ -243,3 +243,15 @@ func (cardRepository *CardRepository) SetArchived(ctx context.Context, cardID st
 	}
 	return nil
 }
+
+func (cardRepository *CardRepository) UpdateCard(ctx context.Context, card *models.Card) error {
+	filter := bson.M{"_id": card.ID}
+	update := bson.M{
+		"$set": card,
+	}
+	_, err := cardRepository.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -24,3 +24,7 @@ func (cardService *CardService) GetCard(ctx context.Context, cardID string) (*mo
 func (cardService *CardService) ArchiveCard(ctx context.Context, cardID string) error {
 	return cardService.cardRepository.SetArchived(ctx, cardID)
 }
+
+func (cardService *CardService) UpdateCard(ctx context.Context, card *models.Card) error {
+	return cardService.cardRepository.UpdateCard(ctx, card)
+}

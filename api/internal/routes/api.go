@@ -35,9 +35,10 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	// dashboardGroup.Post("/boxes/:boxid/special-action", apiHandler.PerformBoxAction)
 
 	dashboardGroup.Post("/boxes/:boxid/cards", apiHandler.CreateCard)
+	dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCardInfo)
 	dashboardGroup.Post("/boxes/:boxid/cards/:cardid/archive", apiHandler.ArchiveCard)
 	// dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCard)
-	// dashboardGroup.Put("/boxes/:boxid/cards/:cardid", apiHandler.UpdateCard)
+	dashboardGroup.Put("/boxes/:boxid/cards/:cardid", apiHandler.UpdateCard)
 	// dashboardGroup.Delete("/boxes/:boxid/cards/:cardid", apiHandler.DeleteCard)
 	// dashboardGroup.Post("/boxes/:boxid/cards/:cardid/action", apiHandler.PerformCardAction)
 }
