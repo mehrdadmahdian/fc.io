@@ -1,0 +1,7 @@
+{
+  "dashboard": {
+    "boxes": {
+      "CountOfCardsNeedingReview": "Cards Needing Review"
+    }
+  }
+}

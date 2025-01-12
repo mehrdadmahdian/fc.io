@@ -25,6 +25,10 @@ function BoxCard({ box }) {
                     <span className="stat-number">{box.CountOfCardsDueToday}</span>
                     <span className="stat-label">{t('dashboard.boxes.CountOfCardsDueToday')}</span>
                 </div>
+                <div className="stat-item">
+                    <span className="stat-number">{box.CountOfCardsNeedingReview}</span>
+                    <span className="stat-label">{t('dashboard.boxes.CountOfCardsNeedingReview')}</span>
+                </div>
             </div>
             
             <div className="button-group">

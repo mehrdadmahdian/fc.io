@@ -60,6 +60,7 @@
       "progress": "پیشرفت",
       "CountOfCardsDueToday": "تعداد کارت برای مرور",
       "CountOfTotalCards": "تعداد کارت ها",
+      "CountOfCardsNeedingReview": "نیازمند مرور",
       "actions": {
         "addCard": "افزودن کارت",
         "review": "مرور",

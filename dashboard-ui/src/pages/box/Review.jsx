@@ -19,6 +19,7 @@
         const [reviewData, setReviewData] = useState(null);
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
+        const [notification, setNotification] = useState(null);
         const navigate = useNavigate();
 
         useEffect(() => {
@@ -87,7 +88,8 @@
                 const response = await api.post(`/dashboard/boxes/${boxId}/cards/${reviewData.cards[currentCard].ID}/archive`);
                 
                 if (response.data.status === 'success') {
-                    alert('Card archived successfully!');
+                    setNotification('Card archived successfully!');
+                    setTimeout(() => setNotification(null), 3000);
                 }
                 
                 setShowAnswer(false);
@@ -163,6 +165,11 @@
                     <PageHeader title={t('review.title', { boxName: reviewData.boxName })} />
                     <div className="dashboard-content">
                         <div className="dashboard-box">
+                            {notification && (
+                                <div className="notification-message">
+                                    {notification}
+                                </div>
+                            )}
                             <ReviewProgress 
                                 current={currentCard + 1}
                                 total={totalCards} 

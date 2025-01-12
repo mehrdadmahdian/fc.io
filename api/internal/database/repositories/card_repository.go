@@ -178,6 +178,23 @@ func (cardRepository *CardRepository) GetCountOfRemainingCardsForReview(ctx cont
 	return &count, nil
 }
 
+func (repository *CardRepository) GetCountOfNeedingReviewCount(ctx context.Context, box *models.Box) (*int64, error) {
+	filter := bson.M{
+		"box_id": box.ID,
+		"review": bson.M{"$ne": nil},
+		"review.next_due_date": bson.M{
+			"$eq":  nil,
+		},
+	}
+
+	count, err := repository.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &count, nil
+}
+
 func (cardRepository *CardRepository) GetCountOfAllCardsOfTheBox(ctx context.Context, box *models.Box) (*int64, error) {
 
 	filter := bson.M{

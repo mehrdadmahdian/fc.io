@@ -86,14 +86,21 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 			return nil, err
 		}
 
+		CountOfCardsNeedingReview, err := boxService.cardRepository.GetCountOfNeedingReviewCount(ctx, box)
+		if err != nil {
+			return nil, err
+		}
+
 		// Create a new BoxInfo and append it
 		boxInfos = append(boxInfos, &BoxInfo{
 			Box:                  box,
 			CountOfCardsDueToday: int(*countOfCardsDueToday),
 			CountOfTotalCards:    int(*boxCardsCount),
-			SuccessRate:          0, // Placeholder for SuccessRate
+			CountOfCardsNeedingReview:    int(*CountOfCardsNeedingReview),
+			SuccessRate: (float64(*boxCardsCount) - float64(*CountOfCardsNeedingReview)) / float64(*boxCardsCount),
 		})
 	}
+	
 
 	return boxInfos, nil
 }

@@ -6,5 +6,6 @@ type BoxInfo struct {
 	Box *models.Box
 	CountOfCardsDueToday int
 	CountOfTotalCards int
+	CountOfCardsNeedingReview int
 	SuccessRate float64
 }
