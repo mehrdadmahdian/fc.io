@@ -47,11 +47,13 @@ function CardCreate() {
             if (cardId) {
                 // Update existing card
                 await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, formData);
+                navigate(`/box/${boxId}/cards/create`);
             } else {
                 // Create new card
                 await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
+                navigate(`/box/${boxId}/review`);
+
             }
-            navigate(`/box/${boxId}/review`);
         } catch (err) {
             console.error('Error saving card:', err);
         }

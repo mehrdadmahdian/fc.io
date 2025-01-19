@@ -183,7 +183,7 @@ func (repository *CardRepository) GetCountOfNeedingReviewCount(ctx context.Conte
 		"box_id": box.ID,
 		"review": bson.M{"$ne": nil},
 		"review.next_due_date": bson.M{
-			"$eq":  nil,
+			"$ne":  nil,
 		},
 	}
 
