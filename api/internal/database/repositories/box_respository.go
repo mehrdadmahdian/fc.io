@@ -85,3 +85,30 @@ func (boxRepository *BoxRepository) GetBoxByID(ctx context.Context, boxID string
 
 	return &box, nil
 }
+
+func (boxRepository *BoxRepository) UpdateBox(ctx context.Context, boxID string, name string, description string) error {
+	objectID, err := primitive.ObjectIDFromHex(boxID)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":        name,
+			"description": description,
+		},
+	}
+
+	_, err = boxRepository.collection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
+	return err
+}
+
+func (boxRepository *BoxRepository) DeleteBox(ctx context.Context, boxID string) error {
+	objectID, err := primitive.ObjectIDFromHex(boxID)
+	if err != nil {
+		return err
+	}
+
+	_, err = boxRepository.collection.DeleteOne(ctx, bson.M{"_id": objectID})
+	return err
+}

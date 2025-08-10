@@ -2,7 +2,10 @@ module github.com/mehrdadmahdian/fc.io
 
 go 1.23.0
 
-require golang.org/x/crypto v0.26.0
+require (
+	github.com/google/uuid v1.5.0
+	golang.org/x/crypto v0.26.0
+)
 
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -13,7 +16,6 @@ require (
 	github.com/gofiber/template v1.8.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/google/uuid v1.5.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect

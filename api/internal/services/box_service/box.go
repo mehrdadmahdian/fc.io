@@ -91,16 +91,23 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 			return nil, err
 		}
 
+		// Calculate success rate, avoiding division by zero
+		var successRate float64
+		if *boxCardsCount > 0 {
+			successRate = (float64(*boxCardsCount) - float64(*CountOfCardsNeedingReview)) / float64(*boxCardsCount)
+		} else {
+			successRate = 0.0
+		}
+
 		// Create a new BoxInfo and append it
 		boxInfos = append(boxInfos, &BoxInfo{
-			Box:                  box,
-			CountOfCardsDueToday: int(*countOfCardsDueToday),
-			CountOfTotalCards:    int(*boxCardsCount),
-			CountOfCardsNeedingReview:    int(*CountOfCardsNeedingReview),
-			SuccessRate: (float64(*boxCardsCount) - float64(*CountOfCardsNeedingReview)) / float64(*boxCardsCount),
+			Box:                       box,
+			CountOfCardsDueToday:      int(*countOfCardsDueToday),
+			CountOfTotalCards:         int(*boxCardsCount),
+			CountOfCardsNeedingReview: int(*CountOfCardsNeedingReview),
+			SuccessRate:               successRate,
 		})
 	}
-	
 
 	return boxInfos, nil
 }
@@ -227,4 +234,40 @@ func (boxService *BoxService) SubmitReview(
 	}
 
 	return nil
+}
+
+func (boxService *BoxService) CreateBox(ctx context.Context, box *models.Box) error {
+	_, err := boxService.boxRepository.InsertBox(ctx, box)
+	if err != nil {
+		return err
+	}
+
+	// Create default stages for the new box
+	stages, err := models.GetListOfBasicStages(box.IDString())
+	if err != nil {
+		return err
+	}
+	for _, stage := range stages {
+		_, err := boxService.stageRepository.Insert(ctx, &stage)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box, statusFilter string) ([]*models.Card, error) {
+	if statusFilter != "" {
+		return boxService.cardRepository.GetCardsByStatus(ctx, box, statusFilter)
+	}
+	return boxService.cardRepository.GetAllCardsOfTheBox(ctx, box)
+}
+
+func (boxService *BoxService) UpdateBox(ctx context.Context, boxID string, name string, description string) error {
+	return boxService.boxRepository.UpdateBox(ctx, boxID, name, description)
+}
+
+func (boxService *BoxService) DeleteBox(ctx context.Context, boxID string) error {
+	return boxService.boxRepository.DeleteBox(ctx, boxID)
 }

@@ -3,10 +3,16 @@ import { BrowserRouter } from 'react-router-dom';
 import Routes from './Routes';
 
 function App() {
+    // Debug: Log to console when App component mounts
+    console.log('Dashboard App component loaded successfully');
+    
+    // Temporary: Add visible content to debug rendering
     return (
-        <BrowserRouter basename="/dashboard">
-            <Routes />
-        </BrowserRouter>
+        <div>
+            <BrowserRouter basename="/dashboard">
+                <Routes />
+            </BrowserRouter>
+        </div>
     );
 }
 

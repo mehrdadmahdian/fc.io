@@ -40,7 +40,7 @@ api.interceptors.response.use(
                 // Refresh token failed, logout user
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
-                window.location.href = '/login';
+                window.location.href = '/dashboard/auth/login';
             }
         }
 
@@ -54,11 +54,19 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        getUser();
+        console.log('AuthProvider: Initializing authentication check');
+        try {
+            getUser();
+        } catch (error) {
+            console.error('AuthProvider: Error during initialization:', error);
+            setIsLoading(false);
+            setIsAuthenticated(false);
+        }
     }, []);
 
     const getUser = async () => {
         const token = localStorage.getItem('accessToken');
+        console.log('AuthProvider: Checking token, found:', !!token);
         
         if (token) {
             setIsAuthenticated(true);
@@ -85,8 +93,10 @@ export const AuthProvider = ({ children }) => {
                 }
             }
         } else {
+            console.log('AuthProvider: No token found, setting as unauthenticated');
             setIsAuthenticated(false);
         }
+        console.log('AuthProvider: Authentication check complete, isAuthenticated will be:', !token ? false : 'checking...');
         setIsLoading(false);
     };
 

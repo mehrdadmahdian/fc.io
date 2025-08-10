@@ -72,7 +72,44 @@
     },
     "viewBoxes": "View Boxes"
   },
+  "boxCreate": {
+    "title": "Create New Box"
+  },
+  "boxDetails": {
+    "title": "Box Details"
+  },
+  "cards": {
+    "title": "Cards",
+    "add": "Add Card",
+    "createFirst": "Create Your First Card",
+    "noCards": "No cards in this box yet",
+    "noCardsWithFilter": "No cards match the selected filter",
+    "filterByStatus": "Filter by Status",
+    "all": "All",
+    "new": "New",
+    "learning": "Learning", 
+    "review": "Review",
+    "archived": "Archived",
+    "front": "Front",
+    "back": "Back",
+    "extra": "Extra",
+    "edit": "Edit",
+    "archive": "Archive",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this card?"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "Title": "Title",
+  "Description": "Description", 
+  "Enter box title": "Enter box title",
+  "Enter box description": "Enter box description",
+  "submit": "Create Box",
+  "Cancel": "Cancel",
   "review": {
+    "start": "Start Review",
     "title": "Review {{boxName}}",
     "question": "Question",
     "answer": "Answer",

@@ -47,12 +47,12 @@ func (handler *ApiHandler) ArchiveCard(c *fiber.Ctx) error {
 		c.Context(),
 		cardID,
 	)
-	
+
 	if err != nil {
 		return JsonFailed(
 			c,
 			fiber.StatusInternalServerError,
-			utils.PointerString("failed to archive card: " + err.Error()),
+			utils.PointerString("failed to archive card: "+err.Error()),
 			nil,
 		)
 	}
@@ -80,24 +80,31 @@ func (handler *ApiHandler) GetCardInfo(c *fiber.Ctx) error {
 func (handler *ApiHandler) UpdateCard(c *fiber.Ctx) error {
 	cardID := c.Params("cardid")
 
-	card, err := handler.cardService.GetCard(c.Context(), cardID)
-	if err != nil {
-		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get card"), nil)
-	}
 	request, err := requests.ParseRequestBody(c, new(requests.EditCardRequest))
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
 	}
 
-	card.Front = request.Front
-	card.Back = request.Back
-	card.Extra = request.Extra
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
 
-	err = handler.cardService.UpdateCard(c.Context(), card)
-
+	err = handler.cardService.UpdateCard(c.Context(), cardID, request.Front, request.Back, request.Extra)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update card"), nil)
 	}
 
 	return JsonSuccess(c, utils.PointerString("card updated successfully"), nil)
+}
+
+func (handler *ApiHandler) DeleteCard(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	err := handler.cardService.DeleteCard(c.Context(), cardID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to delete card"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("card deleted successfully"), nil)
 }

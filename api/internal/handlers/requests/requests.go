@@ -17,32 +17,42 @@ type RefreshTokenRequest struct {
 }
 
 type StoreCardRequest struct {
-	Front   string `json:"front" validate:"required"`
-	Back    string `json:"back" validate:"required"`
-	Extra   string `json:"extra"`
+	Front    string   `json:"front" validate:"required"`
+	Back     string   `json:"back" validate:"required"`
+	Extra    string   `json:"extra"`
 	LabelIds []string `json:"labelIds" validate:"required"`
 }
 
 type SubmitReviewRequest struct {
-	CardId   string `json:"cardId" validate:"required"`
-	Action   int `json:"action" validate:"required"`
+	CardId string `json:"cardId" validate:"required"`
+	Action int    `json:"action" validate:"required"`
 }
 
 type RespondToReviewRequest struct {
-	CardId string `json:"cardId" validate:"required"`
+	CardId     string `json:"cardId" validate:"required"`
 	Difficulty string `json:"difficulty" validate:"required"`
 }
 
 type CreateCardRequest struct {
-	Front   string `json:"front" validate:"required"`
-	Back    string `json:"back" validate:"required"`
-	Extra   string `json:"extra"`
+	Front string `json:"front" validate:"required"`
+	Back  string `json:"back" validate:"required"`
+	Extra string `json:"extra"`
 	// LabelIds []string `json:"labelIds" validate:"required"`
 }
 
 type EditCardRequest struct {
-	Front   string `json:"front" validate:"required"`
-	Back    string `json:"back" validate:"required"`
-	Extra   string `json:"extra"`
+	Front string `json:"front" validate:"required"`
+	Back  string `json:"back" validate:"required"`
+	Extra string `json:"extra"`
 	// LabelIds []string `json:"labelIds" validate:"required"`
+}
+
+type CreateBoxRequest struct {
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description"`
+}
+
+type UpdateBoxRequest struct {
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description"`
 }

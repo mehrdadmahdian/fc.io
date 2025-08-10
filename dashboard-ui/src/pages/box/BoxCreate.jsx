@@ -14,8 +14,23 @@ function BoxCreate() {
     const navigate = useNavigate();
 
     const handleSubmit = async (formData) => {
-        await api.post('/boxes', formData);
-        navigate('/dashboard');
+        try {
+            await api.post('/dashboard/boxes', formData);
+            // Debug: Log the current location before navigation
+            console.log('BoxCreate: Before navigation, current location:', window.location.href);
+            console.log('BoxCreate: Navigating to "/" with basename="/dashboard"');
+            
+            // Navigate to dashboard root within the React Router context (no leading slash)
+            navigate('/', { replace: true });
+            
+            // Debug: Log after navigation attempt
+            setTimeout(() => {
+                console.log('BoxCreate: After navigation, current location:', window.location.href);
+            }, 100);
+        } catch (error) {
+            console.error('Failed to create box:', error);
+            // TODO: Show error message to user
+        }
     };
 
     return (

@@ -1,0 +1,167 @@
+# FC.io Project Intelligence & Patterns
+
+## Project Context
+FC.io is a sophisticated flashcard learning platform built with a microservices architecture. The project demonstrates excellent separation of concerns with a Go backend, dual React/Next.js frontends, and comprehensive Docker deployment strategy.
+
+## Critical Architecture Patterns
+
+### 1. Clean Architecture Implementation (Go Backend)
+The backend follows hexagonal architecture with clear layers:
+- **Handlers**: HTTP endpoints and middleware (Fiber framework)
+- **Services**: Business logic and orchestration  
+- **Repositories**: Data access layer (MongoDB)
+- **Models**: Domain entities with embedded relationships
+
+**Key Pattern**: Dependency injection through a central Container struct that manages all service dependencies.
+
+### 2. Dual Frontend Strategy
+- **Public UI**: Next.js with TypeScript for landing page (SEO-optimized)
+- **Dashboard UI**: React SPA for authenticated application (interactive)
+- **Routing**: Nginx reverse proxy handles path-based routing to appropriate frontend
+
+### 3. Authentication Flow
+JWT-based authentication with refresh token pattern:
+- Access tokens (24h lifetime) for API calls
+- Refresh tokens (30d lifetime) for renewal
+- Redis blacklisting for logout
+- Automatic token refresh in frontend interceptors
+
+### 4. Database Design Philosophy
+MongoDB document structure with embedded relationships for performance:
+```go
+type Card struct {
+    // Core fields
+    ID, BoxID, LabelIDs, Front, Back, Extra
+    Review Review  // Spaced repetition data
+    // Embedded for queries
+    Box *Box, Labels *[]Label
+}
+```
+
+## Development Workflow Patterns
+
+### Docker Development Environment
+- Multi-stage builds (development/production)
+- Volume mounting for hot reload
+- Environment-specific compose files (docker-compose.dev.yml)
+- Nginx proxy with SSL termination
+
+### Code Organization Philosophy
+- Service-oriented with clear boundaries
+- Repository pattern for data access
+- Middleware chain pattern for request processing
+- Factory pattern for service instantiation
+
+## Technology Decisions & Rationale
+
+### Backend Stack
+- **Go + Fiber**: High performance, simple syntax, excellent concurrency
+- **MongoDB**: Flexible schema for evolving learning features
+- **Redis**: Session management and JWT blacklisting
+- **Docker**: Consistent development and deployment
+
+### Frontend Strategy  
+- **Next.js**: SSR/SSG for marketing pages, SEO benefits
+- **React SPA**: Rich interactivity for dashboard, offline capabilities
+- **TypeScript**: Type safety and better developer experience
+- **Tailwind**: Utility-first CSS for rapid development
+
+## Spaced Repetition Implementation
+The core learning algorithm follows modified SM-2:
+- Default interval: 1 day
+- Default ease factor: 2.5
+- Review history tracking for algorithm refinement
+- Next due date calculation based on difficulty response
+
+## Key Development Insights
+
+### Error Handling Pattern
+Consistent error handling with custom types:
+```go
+type ServiceCreationError struct {
+    ServiceName, Err, OriginalErrorMessage
+}
+```
+
+### Middleware Philosophy
+Layered middleware for cross-cutting concerns:
+- Authentication (JWT validation)
+- CSRF protection (web routes)
+- Content Security Policy
+- Error handling and logging
+
+### API Design Patterns
+RESTful with clear resource hierarchy:
+- `/api/auth/*` - Authentication endpoints
+- `/api/dashboard/boxes/:id/*` - Nested resource pattern
+- `/web/*` - Server-side rendered pages
+
+## Performance Considerations
+
+### Backend Optimizations
+- MongoDB connection pooling
+- Redis caching for frequently accessed data
+- Structured logging for observability
+- Efficient query patterns with embedded documents
+
+### Frontend Optimizations
+- Route-based code splitting
+- Image optimization (Next.js)
+- Axios interceptors for automatic token management
+- Component-based architecture for reusability
+
+## Security Implementation
+- JWT tokens with proper expiration
+- CORS configuration for cross-origin requests
+- CSRF tokens for state-changing operations
+- Input validation with go-playground/validator
+- Password hashing with bcrypt
+
+## Development Pain Points Solved
+
+### Hot Reload Configuration
+- Go: reflex for automatic restarts
+- React: built-in dev server with fast refresh
+- Docker: volume mounting for live code updates
+- Nginx: configuration templates for environment switching
+
+### Multi-Frontend Routing
+Nginx path-based routing eliminates conflicts:
+- `/` → Public UI (Next.js)
+- `/dashboard` → Dashboard UI (React)
+- `/api` → Go backend
+- `/web` → Server-side Go templates
+
+## Critical Success Factors
+
+1. **Clean Separation**: Services, repositories, and handlers are well-separated
+2. **Scalable Architecture**: Each component can scale independently
+3. **Developer Experience**: Hot reload, TypeScript, good error handling
+4. **Production Ready**: Docker, environment configuration, SSL support
+5. **Learning Focus**: Spaced repetition algorithm is core to the platform
+
+## Common Patterns to Follow
+
+### Service Creation
+Always use factory functions with error handling:
+```go
+func NewService(dependencies...) (*Service, error) {
+    // validation and initialization
+    return &Service{}, nil
+}
+```
+
+### Frontend API Calls
+Use the axios instance with automatic token handling:
+```javascript
+import { api } from '../services/api';
+const response = await api.get('/endpoint');
+```
+
+### Error Responses
+Consistent JSON error structure:
+```go
+return api_handlers.JsonFailed(c, statusCode, message, data)
+```
+
+This project demonstrates excellent architectural decisions and would benefit from continued focus on the core learning experience while maintaining the clean separation of concerns that makes it maintainable and scalable.

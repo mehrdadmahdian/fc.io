@@ -183,7 +183,7 @@ func (repository *CardRepository) GetCountOfNeedingReviewCount(ctx context.Conte
 		"box_id": box.ID,
 		"review": bson.M{"$ne": nil},
 		"review.next_due_date": bson.M{
-			"$ne":  nil,
+			"$ne": nil,
 		},
 	}
 
@@ -271,4 +271,77 @@ func (cardRepository *CardRepository) UpdateCard(ctx context.Context, card *mode
 		return err
 	}
 	return nil
+}
+
+func (cardRepository *CardRepository) GetCardsByStatus(ctx context.Context, box *models.Box, status string) ([]*models.Card, error) {
+	var filter bson.M
+
+	switch status {
+	case "new":
+		filter = bson.M{
+			"box_id":               box.ID,
+			"review.reviews_count": 0,
+		}
+	case "learning":
+		filter = bson.M{
+			"box_id":               box.ID,
+			"review.reviews_count": bson.M{"$gt": 0},
+			"review.interval":      bson.M{"$lt": 7},
+		}
+	case "review":
+		filter = bson.M{
+			"box_id":          box.ID,
+			"review.interval": bson.M{"$gte": 7},
+		}
+	case "archived":
+		filter = bson.M{
+			"box_id":               box.ID,
+			"review.next_due_date": nil,
+		}
+	default:
+		filter = bson.M{"box_id": box.ID}
+	}
+
+	cursor, err := cardRepository.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, cardID string, front string, back string, extra string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"front":      front,
+			"back":       back,
+			"extra":      extra,
+			"updated_at": time.Now(),
+		},
+	}
+
+	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (cardRepository *CardRepository) DeleteCard(ctx context.Context, cardID string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	_, err = cardRepository.collection.DeleteOne(ctx, filter)
+	return err
 }

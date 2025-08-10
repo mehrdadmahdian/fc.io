@@ -1,6 +1,8 @@
 package api_handlers
 
 import (
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
@@ -11,6 +13,10 @@ func (handler *ApiHandler) GetBoxInfos(c *fiber.Ctx) error {
 	user := c.Locals("user")
 	userModel, ok := user.(*models.User)
 	if !ok {
+		utils.LogError(c, handler.loggerService, "GetBoxInfos",
+			fmt.Errorf("user not found in context"), map[string]interface{}{
+				"error_type": "authentication_error",
+			})
 		return JsonFailed(
 			c,
 			fiber.StatusInternalServerError,
@@ -21,8 +27,19 @@ func (handler *ApiHandler) GetBoxInfos(c *fiber.Ctx) error {
 
 	userBoxes, err := handler.boxService.RenderUserBoxes(c.Context(), userModel)
 	if err != nil {
+		utils.LogError(c, handler.loggerService, "GetBoxInfos", err, map[string]interface{}{
+			"error_type": "database_error",
+			"user_id":    userModel.ID.Hex(),
+		})
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get user boxes"), nil)
 	}
+
+	// Log successful operation
+	utils.LogInfo(c, handler.loggerService, "GetBoxInfos",
+		"Successfully retrieved user boxes", map[string]interface{}{
+			"user_id":   userModel.ID.Hex(),
+			"box_count": len(userBoxes),
+		})
 
 	dataMap := map[string]interface{}{
 		"boxes": userBoxes,
@@ -39,7 +56,7 @@ func (handler *ApiHandler) GetReviewCards(c *fiber.Ctx) error {
 	boxID := c.Params("boxid")
 	box, err := handler.boxService.GetBox(c.Context(), boxID)
 	if err != nil {
-		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box" + err.Error()), nil)
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"+err.Error()), nil)
 	}
 
 	cards, err := handler.boxService.GetBoxCardsToReview(c.Context(), box)
@@ -48,9 +65,9 @@ func (handler *ApiHandler) GetReviewCards(c *fiber.Ctx) error {
 	}
 
 	dataMap := map[string]interface{}{
-		"boxName": box.Name,
+		"boxName":    box.Name,
 		"totalCards": len(cards),
-		"cards": cards,
+		"cards":      cards,
 	}
 
 	return JsonSuccess(
@@ -58,6 +75,105 @@ func (handler *ApiHandler) GetReviewCards(c *fiber.Ctx) error {
 		utils.PointerString("data is fetched successfully!"),
 		&dataMap,
 	)
+}
+
+func (handler *ApiHandler) CreateBox(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	userModel, ok := user.(*models.User)
+	if !ok {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("user is not set in the lifecycle"),
+			nil,
+		)
+	}
+
+	request, err := requests.ParseRequestBody(c, new(requests.CreateBoxRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
+	}
+
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
+
+	box := models.NewBox(request.Title, userModel.ID)
+	box.Description = request.Description
+
+	err = handler.boxService.CreateBox(c.Context(), box)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to create box"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box created successfully"), &map[string]interface{}{
+		"box": box,
+	})
+}
+
+func (handler *ApiHandler) GetBox(c *fiber.Ctx) error {
+	boxID := c.Params("boxid")
+	box, err := handler.boxService.GetBox(c.Context(), boxID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box fetched successfully"), &map[string]interface{}{
+		"box": box,
+	})
+}
+
+func (handler *ApiHandler) GetBoxCards(c *fiber.Ctx) error {
+	boxID := c.Params("boxid")
+	statusFilter := c.Query("status", "")
+
+	box, err := handler.boxService.GetBox(c.Context(), boxID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"), nil)
+	}
+
+	cards, err := handler.boxService.GetBoxCards(c.Context(), box, statusFilter)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box cards"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box cards fetched successfully"), &map[string]interface{}{
+		"box":   box,
+		"cards": cards,
+	})
+}
+
+func (handler *ApiHandler) EditBox(c *fiber.Ctx) error {
+	boxID := c.Params("boxid")
+
+	request, err := requests.ParseRequestBody(c, new(requests.UpdateBoxRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("unable to parse request"), nil)
+	}
+
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
+
+	err = handler.boxService.UpdateBox(c.Context(), boxID, request.Name, request.Description)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update box"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box updated successfully"), nil)
+}
+
+func (handler *ApiHandler) DeleteBox(c *fiber.Ctx) error {
+	boxID := c.Params("boxid")
+
+	err := handler.boxService.DeleteBox(c.Context(), boxID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to delete box"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box deleted successfully"), nil)
 }
 
 func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
@@ -73,7 +189,7 @@ func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
 		return JsonFailed(
 			c,
 			fiber.StatusBadRequest,
-			utils.PointerString("invalid request body: " + err.Error()),
+			utils.PointerString("invalid request body: "+err.Error()),
 			nil,
 		)
 	}
@@ -83,12 +199,12 @@ func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
 		request.CardId,
 		request.Difficulty,
 	)
-	
+
 	if err != nil {
 		return JsonFailed(
 			c,
 			fiber.StatusInternalServerError,
-			utils.PointerString("failed to submit review: " + err.Error()),
+			utils.PointerString("failed to submit review: "+err.Error()),
 			nil,
 		)
 	}
@@ -99,4 +215,3 @@ func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
 		nil,
 	)
 }
-

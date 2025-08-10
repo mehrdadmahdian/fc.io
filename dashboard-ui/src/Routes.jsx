@@ -8,6 +8,7 @@ import Settings from './pages/Settings';
 import BoxReview from './pages/box/Review';
 import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
+import BoxDetails from './pages/box/BoxDetails';
 
 const Routes = () => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -40,6 +41,10 @@ const Routes = () => {
                 element={isAuthenticated ? <BoxCreate /> : <Navigate to="/auth/login" />} 
             />
             <Route 
+                path="/box/:boxId" 
+                element={isAuthenticated ? <BoxDetails /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
                 path="/box/:boxId/review" 
                 element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
             />
@@ -48,7 +53,7 @@ const Routes = () => {
                 element={isAuthenticated ? <CardCreate /> : <Navigate to="/auth/login" />} 
             />
             <Route 
-                path="/box/:boxId/cards/create" 
+                path="/box/:boxId/card/create" 
                 element={
                     isAuthenticated ? (
                         <CardCreate />

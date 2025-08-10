@@ -137,7 +137,18 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService)
+	// Create container first so it can be passed to handlers
+	container := &Container{
+		LoggerService: loggerService,
+		MongoService:  mongoService,
+		RedisService:  redisService,
+		AuthService:   authService,
+		BoxService:    boxService,
+		CardService:   cardService,
+		Seeder:        seeder,
+	}
+
+	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService, loggerService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",
@@ -155,15 +166,9 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
-	return &Container{
-		LoggerService: loggerService,
-		MongoService:  mongoService,
-		RedisService:  redisService,
-		AuthService:   authService,
-		BoxService:    boxService,
-		CardService:   cardService,
-		Seeder:        seeder,
-		ApiHandler:    apiHandler,
-		WebHandler:    webHandler,
-	}, nil
+	// Set handlers in container
+	container.ApiHandler = apiHandler
+	container.WebHandler = webHandler
+
+	return container, nil
 }
