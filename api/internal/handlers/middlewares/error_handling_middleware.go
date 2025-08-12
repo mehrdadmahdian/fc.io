@@ -8,14 +8,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 )
 
-func ErrorHandlingMiddleware(container *application.Container) fiber.Handler {
+func ErrorHandlingMiddleware(logger *logger_service.LoggerService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		logger := container.LoggerService
 
 		// Generate request ID for tracing
 		requestID := uuid.New().String()

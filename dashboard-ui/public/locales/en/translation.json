@@ -50,6 +50,8 @@
       "empty": "No boxes yet. Create your first box to start learning!",
       "active": "Active",
       "inactive": "Inactive",
+      "setActive": "Set Active",
+      "settingActive": "Setting Active...",
       "totalCards": "Total Cards",
       "dueToday": "Due Today",
       "lastReview": "Last Review",
@@ -57,6 +59,9 @@
       "CountOfCardsDueToday": "Due Today",
       "CountOfTotalCards": "Total Cards",
       "CountOfCardsNeedingReview": "Needs Review",
+      "active": "Active",
+      "setActive": "Set Active",
+      "settingActive": "Setting Active...",
       "actions": {
         "addCard": "Add Card",
         "review": "Review",
@@ -73,7 +78,9 @@
     "viewBoxes": "View Boxes"
   },
   "boxCreate": {
-    "title": "Create New Box"
+    "title": "Create New Box",
+    "createSuccess": "Box created successfully!",
+    "createError": "Failed to create box. Please try again."
   },
   "boxDetails": {
     "title": "Box Details"
@@ -211,7 +218,10 @@
     "questionPlaceholder": "Enter your question here",
     "answerPlaceholder": "Enter the answer here",
     "additionalInfoPlaceholder": "Enter any additional information or notes (optional)",
-    "save": "Save Card"
+    "save": "Save Card",
+    "createSuccess": "Card created successfully!",
+    "updateSuccess": "Card updated successfully!",
+    "saveError": "Failed to save card. Please try again."
   },
   "common": {
     "cancel": "Cancel",

@@ -6,30 +6,25 @@ import Form from '../../components/form/Form';
 import FormInput from '../../components/form/FormInput';
 import FormTextarea from '../../components/form/FormTextarea';
 import { api } from '../../services/api';
+import { useToast } from '../../contexts/ToastContext';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Form.css';
 
 function BoxCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { success, error } = useToast();
 
     const handleSubmit = async (formData) => {
         try {
             await api.post('/dashboard/boxes', formData);
-            // Debug: Log the current location before navigation
-            console.log('BoxCreate: Before navigation, current location:', window.location.href);
-            console.log('BoxCreate: Navigating to "/" with basename="/dashboard"');
+            success(t('boxCreate.createSuccess'));
             
             // Navigate to dashboard root within the React Router context (no leading slash)
             navigate('/', { replace: true });
-            
-            // Debug: Log after navigation attempt
-            setTimeout(() => {
-                console.log('BoxCreate: After navigation, current location:', window.location.href);
-            }, 100);
-        } catch (error) {
-            console.error('Failed to create box:', error);
-            // TODO: Show error message to user
+        } catch (err) {
+            console.error('Failed to create box:', err);
+            error(t('boxCreate.createError'));
         }
     };
 

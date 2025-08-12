@@ -26,6 +26,14 @@ func NewBoxRepository(mongoService *internal_mongo.MongoService) (*BoxRepository
 }
 
 func (boxRepository *BoxRepository) InsertBox(ctx context.Context, box *models.Box) (*models.Box, error) {
+	// If this box is being set as active, deactivate all other boxes for this user first
+	if box.IsActive {
+		err := boxRepository.DeactivateAllBoxesForUser(ctx, box.UserID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	_, err := boxRepository.collection.InsertOne(ctx, box)
 	if err != nil {
 		return nil, err
@@ -37,8 +45,10 @@ func (boxRepository *BoxRepository) InsertBox(ctx context.Context, box *models.B
 func (boxRepository *BoxRepository) GetAllBoxesForUser(ctx context.Context, user *models.User) ([]*models.Box, error) {
 	var boxes []*models.Box
 	cursor, err := boxRepository.collection.Find(ctx, bson.M{"user_id": user.ID}, options.Find().SetProjection(bson.M{
-		"_id":  1,
-		"name": 1,
+		"_id":         1,
+		"name":        1,
+		"description": 1,
+		"is_active":   1,
 	}))
 
 	if err != nil {
@@ -111,4 +121,55 @@ func (boxRepository *BoxRepository) DeleteBox(ctx context.Context, boxID string)
 
 	_, err = boxRepository.collection.DeleteOne(ctx, bson.M{"_id": objectID})
 	return err
+}
+
+// DeactivateAllBoxesForUser sets all boxes for a user to inactive
+func (boxRepository *BoxRepository) DeactivateAllBoxesForUser(ctx context.Context, userID primitive.ObjectID) error {
+	update := bson.M{
+		"$set": bson.M{
+			"is_active": false,
+		},
+	}
+
+	_, err := boxRepository.collection.UpdateMany(ctx, bson.M{"user_id": userID}, update)
+	return err
+}
+
+// SetActiveBox sets one box as active and deactivates all others for the user
+func (boxRepository *BoxRepository) SetActiveBox(ctx context.Context, boxID string, userID primitive.ObjectID) error {
+	// First deactivate all boxes for this user
+	err := boxRepository.DeactivateAllBoxesForUser(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	// Then activate the specified box
+	objectID, err := primitive.ObjectIDFromHex(boxID)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"is_active": true,
+		},
+	}
+
+	_, err = boxRepository.collection.UpdateOne(ctx, bson.M{"_id": objectID, "user_id": userID}, update)
+	return err
+}
+
+// GetActiveBoxForUser returns the active box for a user
+func (boxRepository *BoxRepository) GetActiveBoxForUser(ctx context.Context, userID primitive.ObjectID) (*models.Box, error) {
+	var box models.Box
+
+	err := boxRepository.collection.FindOne(ctx, bson.M{"user_id": userID, "is_active": true}).Decode(&box)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &box, nil
 }

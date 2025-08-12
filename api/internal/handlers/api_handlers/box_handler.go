@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
+	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
@@ -41,8 +42,53 @@ func (handler *ApiHandler) GetBoxInfos(c *fiber.Ctx) error {
 			"box_count": len(userBoxes),
 		})
 
+	// Get comprehensive user statistics
+	userStats, err := handler.boxService.GetUserStatistics(c.Context(), userModel)
+	if err != nil {
+		utils.LogError(c, handler.loggerService, "GetBoxInfos", err, map[string]interface{}{
+			"error_type": "statistics_error",
+			"user_id":    userModel.ID.Hex(),
+		})
+		// If stats fail, create default stats by counting from userBoxes
+		var totalCards, cardsDueToday, cardsNeedingReview int
+		for _, boxInfo := range userBoxes {
+			totalCards += boxInfo.CountOfTotalCards
+			cardsDueToday += boxInfo.CountOfCardsDueToday
+			cardsNeedingReview += boxInfo.CountOfCardsNeedingReview
+		}
+
+		userStats = &box_service.UserStatistics{
+			TotalBoxes:         len(userBoxes),
+			TotalCards:         totalCards,
+			CardsDueToday:      cardsDueToday,
+			CardsNeedingReview: cardsNeedingReview,
+			ReviewAccuracy:     0,
+			Streak:             0,
+		}
+	}
+
+	stats := map[string]interface{}{
+		"totalBoxes": map[string]interface{}{
+			"value": userStats.TotalBoxes,
+			"trend": 0, // Could be calculated based on historical data
+		},
+		"totalCards": map[string]interface{}{
+			"value": userStats.TotalCards,
+			"trend": 0,
+		},
+		"reviewAccuracy": map[string]interface{}{
+			"value": int(userStats.ReviewAccuracy),
+			"trend": 0,
+		},
+		"streak": map[string]interface{}{
+			"value": userStats.Streak,
+			"trend": 0,
+		},
+	}
+
 	dataMap := map[string]interface{}{
 		"boxes": userBoxes,
+		"stats": stats,
 	}
 
 	return JsonSuccess(
@@ -214,4 +260,53 @@ func (handler *ApiHandler) RespondToReview(c *fiber.Ctx) error {
 		utils.PointerString("action is submitted successfully!"),
 		nil,
 	)
+}
+
+func (handler *ApiHandler) SetActiveBox(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	userModel, ok := user.(*models.User)
+	if !ok {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("user is not set in the lifecycle"),
+			nil,
+		)
+	}
+
+	boxID := c.Params("boxid")
+	err := handler.boxService.SetActiveBox(c.Context(), boxID, userModel)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to set active box"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("box set as active successfully"), nil)
+}
+
+func (handler *ApiHandler) GetActiveBox(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	userModel, ok := user.(*models.User)
+	if !ok {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("user is not set in the lifecycle"),
+			nil,
+		)
+	}
+
+	activeBox, err := handler.boxService.GetActiveBox(c.Context(), userModel)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get active box"), nil)
+	}
+
+	if activeBox == nil {
+		return JsonSuccess(c, utils.PointerString("no active box found"), &map[string]interface{}{
+			"activeBox": nil,
+		})
+	}
+
+	return JsonSuccess(c, utils.PointerString("active box retrieved successfully"), &map[string]interface{}{
+		"activeBox": activeBox,
+	})
 }

@@ -4,17 +4,18 @@ import (
 	"context"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mehrdadmahdian/fc.io/internal/application"
+	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 )
 
-func WebAuthMiddleware(Container *application.Container) fiber.Handler {
+func WebAuthMiddleware(authService *auth_service.AuthService, redisService *redis_service.RedisService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Cookies("token")
 		if tokenString == "" {
 			return c.Redirect("/web/auth/login", 302)
 		}
 
-		exists, err := Container.RedisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
+		exists, err := redisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
 		if err != nil {
 			return c.Redirect("/web/auth/login", 302)
 		}
@@ -23,7 +24,7 @@ func WebAuthMiddleware(Container *application.Container) fiber.Handler {
 			return c.Redirect("/web/auth/login", 302)
 		}
 
-		user, err := Container.AuthService.GetUserByToken(tokenString)
+		user, err := authService.GetUserByToken(tokenString)
 
 		if err != nil {
 			return c.Redirect("/web/auth/login", 302)
@@ -39,14 +40,14 @@ func WebAuthMiddleware(Container *application.Container) fiber.Handler {
 	}
 }
 
-func GetAuthenticatedUser(Container *application.Container) fiber.Handler {
+func GetAuthenticatedUser(authService *auth_service.AuthService, redisService *redis_service.RedisService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		tokenString := c.Cookies("token")
 		if tokenString == "" {
 			return c.Next()
 		}
 
-		exists, err := Container.RedisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
+		exists, err := redisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
 		if err != nil {
 			return c.Next()
 		}
@@ -55,7 +56,7 @@ func GetAuthenticatedUser(Container *application.Container) fiber.Handler {
 			return c.Next()
 		}
 
-		user, err := Container.AuthService.GetUserByToken(
+		user, err := authService.GetUserByToken(
 			tokenString,
 		)
 

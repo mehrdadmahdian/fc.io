@@ -4,6 +4,12 @@
     padding: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.box-card.active-box {
+    border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
 }
 
 .box-card:hover {
@@ -18,6 +24,11 @@
     margin-bottom: 16px;
 }
 
+.box-status {
+    display: flex;
+    align-items: center;
+}
+
 .box-title {
     font-size: 1.5rem;
     font-weight: 600;
@@ -28,10 +39,36 @@
 .status-badge {
     padding: 6px 12px;
     border-radius: 20px;
-    background: #e6f7ee;
-    color: #16a34a;
     font-size: 0.875rem;
     font-weight: 500;
+}
+
+.status-badge.active {
+    background: #e6f7ee;
+    color: #16a34a;
+}
+
+.set-active-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.set-active-btn:hover:not(:disabled) {
+    background: #e5e7eb;
+    color: #374151;
+    border-color: #9ca3af;
+}
+
+.set-active-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .box-description {
@@ -114,6 +151,11 @@
     padding: 24px;
 }
 
+.boxes-grid-icons {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+}
+
 /* Button Variations */
 .button-review {
     background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
@@ -180,6 +222,209 @@
     box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
+/* Icon View Styles */
+.box-card-icon {
+    padding: 16px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.box-icon-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.box-icon-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.box-icon {
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.box-card-icon.active-box .box-icon {
+    background: linear-gradient(135deg, #e6f7ee 0%, #d1fae5 100%);
+    color: #10b981;
+}
+
+.box-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.box-icon-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.box-icon-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.stat-with-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-hint {
+    font-size: 0.65rem;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+.stat-badge {
+    background: #e5e7eb;
+    color: #374151;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.due-badge {
+    background: #fef3c7;
+    color: #d97706;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+.icon-set-active-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.icon-set-active-btn:hover:not(:disabled) {
+    background: #10b981;
+    color: white;
+    transform: scale(1.1);
+}
+
+.icon-set-active-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.active-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.active-indicator svg {
+    width: 14px;
+    height: 14px;
+}
+
+.box-icon-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.icon-action-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.icon-action-btn svg {
+    width: 28px;
+    height: 28px;
+}
+
+.icon-action-btn.add {
+    background: #e6f7ee;
+    color: #10b981;
+}
+
+.icon-action-btn.add:hover {
+    background: #10b981;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.icon-action-btn.review {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.icon-action-btn.review:hover {
+    background: #3b82f6;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.icon-action-btn.details {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.icon-action-btn.details:hover {
+    background: #6b7280;
+    color: white;
+    transform: translateY(-1px);
+}
+
 @media (max-width: 640px) {
     .button-group {
         grid-template-columns: 1fr;
@@ -187,6 +432,16 @@
     
     .box-card {
         padding: 16px;
+    }
+    
+    .box-card-icon {
+        padding: 12px;
+        min-height: 140px;
+    }
+    
+    .boxes-grid-icons {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
     }
     
     .floating-add-button {

@@ -9,11 +9,11 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
+	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 )
 
-func CheckCSRFMiddelware(Container *application.Container) fiber.Handler {
+func CheckCSRFMiddelware(redisService *redis_service.RedisService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Method() == fiber.MethodGet || c.Method() == fiber.MethodHead || c.Method() == fiber.MethodOptions {
 			return c.Next()
@@ -40,8 +40,8 @@ func CheckCSRFMiddelware(Container *application.Container) fiber.Handler {
 		}
 		key := "csrf_token:" + u.IDString() + ":" + decodedToken
 
-		storedToken, err := Container.RedisService.Client().Get(c.Context(), key).Result()
-	
+		storedToken, err := redisService.Client().Get(c.Context(), key).Result()
+
 		if err != nil || decodedToken != storedToken {
 			return c.Status(fiber.StatusForbidden).SendString("Invalid CSRF token: " + err.Error())
 		} else if err != nil {
@@ -53,7 +53,7 @@ func CheckCSRFMiddelware(Container *application.Container) fiber.Handler {
 	}
 }
 
-func GenerateCSRFMiddleware(Container *application.Container) fiber.Handler {
+func GenerateCSRFMiddleware(redisService *redis_service.RedisService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Method() != fiber.MethodGet && c.Method() != fiber.MethodHead && c.Method() != fiber.MethodOptions {
 			return c.Next()
@@ -78,7 +78,7 @@ func GenerateCSRFMiddleware(Container *application.Container) fiber.Handler {
 
 		key := "csrf_token:" + u.IDString() + ":" + csrfToken
 
-		err = Container.RedisService.Client().SetEX(
+		err = redisService.Client().SetEX(
 			c.Context(),
 			key,
 			csrfToken,

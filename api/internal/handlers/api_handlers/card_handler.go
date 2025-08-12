@@ -29,7 +29,7 @@ func (handler *ApiHandler) CreateCard(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		return nil
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to create card model"), nil)
 	}
 
 	err = handler.boxService.AddCard(c.Context(), card)

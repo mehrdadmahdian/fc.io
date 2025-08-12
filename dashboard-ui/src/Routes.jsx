@@ -15,7 +15,7 @@ const Routes = () => {
 
     // Show nothing while checking authentication
     if (isLoading) {
-        return null;
+        return <div>Checking authentication...</div>;
     }
 
     return (
@@ -40,27 +40,22 @@ const Routes = () => {
                 path="/box/create" 
                 element={isAuthenticated ? <BoxCreate /> : <Navigate to="/auth/login" />} 
             />
+            {/* More specific routes must come before less specific ones */}
             <Route 
-                path="/box/:boxId" 
-                element={isAuthenticated ? <BoxDetails /> : <Navigate to="/auth/login" />} 
-            />
-            <Route 
-                path="/box/:boxId/review" 
-                element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
+                path="/box/:boxId/cards/create" 
+                element={<CardCreate />}
             />
             <Route 
                 path="/box/:boxId/cards/:cardId/edit" 
                 element={isAuthenticated ? <CardCreate /> : <Navigate to="/auth/login" />} 
             />
             <Route 
-                path="/box/:boxId/card/create" 
-                element={
-                    isAuthenticated ? (
-                        <CardCreate />
-                    ) : (
-                        <Navigate to="/auth/login" />
-                    )
-                } 
+                path="/box/:boxId/review" 
+                element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/box/:boxId" 
+                element={isAuthenticated ? <BoxDetails /> : <Navigate to="/auth/login" />} 
             />
         </RouterRoutes>
     );

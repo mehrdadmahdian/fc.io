@@ -128,7 +128,7 @@ function BoxDetails() {
                         {/* Action Buttons */}
                         <div className="box-actions" style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                             <Link 
-                                to={`/box/${boxId}/card/create`} 
+                                to={`/box/${boxId}/cards/create`} 
                                 className="button button-primary"
                             >
                                 <i className="fas fa-plus"></i>

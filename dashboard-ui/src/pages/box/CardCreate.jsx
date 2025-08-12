@@ -10,11 +10,13 @@ import '../../assets/styles/Form.css';
 import '../../assets/styles/PageHeader.css';
 import PageHeader from '../../components/common/PageHeader';
 import { useEffect, useState } from 'react';
+import { useToast } from '../../contexts/ToastContext';
 
 function CardCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { boxId, cardId } = useParams();
+    const { success, error } = useToast();
     const [formData, setFormData] = useState({
         front: '',
         back: '',
@@ -47,14 +49,17 @@ function CardCreate() {
             if (cardId) {
                 // Update existing card
                 await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, formData);
+                success(t('cardCreate.updateSuccess'));
                 navigate(`/box/${boxId}/review`);    
             } else {
                 // Create new card
                 await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
-                navigate(`/box/${boxId}/cards/create`);
+                success(t('cardCreate.createSuccess'));
+                navigate(`/box/${boxId}`);
             }
         } catch (err) {
             console.error('Error saving card:', err);
+            error(t('cardCreate.saveError'));
         }
     };
 

@@ -8,9 +8,9 @@ import (
 )
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
-	ApiCSPMiddleware := middlewares.CSPMiddleware(applicationContainer)
-	AuthMiddleware := middlewares.AuthMiddleware(applicationContainer)
-	ErrorMiddleware := middlewares.ErrorHandlingMiddleware(applicationContainer)
+	ApiCSPMiddleware := middlewares.ApiCSPMiddleware()
+	AuthMiddleware := middlewares.AuthMiddleware(applicationContainer.AuthService, applicationContainer.RedisService)
+	ErrorMiddleware := middlewares.ErrorHandlingMiddleware(applicationContainer.LoggerService)
 
 	apiGroup := fiberApp.Group("/api")
 	apiGroup.Use(ErrorMiddleware) // Apply error handling first
@@ -48,10 +48,12 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup := apiGroup.Group("/dashboard").Use(AuthMiddleware)
 	dashboardGroup.Get("/boxes", apiHandler.GetBoxInfos)
 	dashboardGroup.Post("/boxes", apiHandler.CreateBox)
+	dashboardGroup.Get("/boxes/active", apiHandler.GetActiveBox)
 	dashboardGroup.Get("/boxes/:boxid", apiHandler.GetBox)
 	dashboardGroup.Get("/boxes/:boxid/cards", apiHandler.GetBoxCards)
 	dashboardGroup.Put("/boxes/:boxid", apiHandler.EditBox)
 	dashboardGroup.Delete("/boxes/:boxid", apiHandler.DeleteBox)
+	dashboardGroup.Post("/boxes/:boxid/set-active", apiHandler.SetActiveBox)
 	dashboardGroup.Get("/boxes/:boxid/review/cards", apiHandler.GetReviewCards)
 	dashboardGroup.Post("/boxes/:boxid/review/respond", apiHandler.RespondToReview)
 

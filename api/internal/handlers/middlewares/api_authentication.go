@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/api_handlers"
+	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
 	"github.com/mehrdadmahdian/fc.io/internal/utils"
 )
 
-func AuthMiddleware(Container *application.Container) fiber.Handler {
+func AuthMiddleware(authService *auth_service.AuthService, redisService *redis_service.RedisService) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")
 		if !strings.HasPrefix(authHeader, "Bearer ") {
@@ -22,7 +23,7 @@ func AuthMiddleware(Container *application.Container) fiber.Handler {
 			)
 		}
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-		exists, err := Container.RedisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
+		exists, err := redisService.Client().SIsMember(context.Background(), "blacklisted_tokens", tokenString).Result()
 		if err != nil {
 			return api_handlers.JsonFailed(
 				c,
@@ -41,7 +42,7 @@ func AuthMiddleware(Container *application.Container) fiber.Handler {
 			)
 		}
 
-		user, err := Container.AuthService.GetUserByToken(
+		user, err := authService.GetUserByToken(
 			tokenString,
 		)
 

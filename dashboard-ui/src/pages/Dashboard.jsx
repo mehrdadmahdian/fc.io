@@ -22,6 +22,19 @@ function Dashboard() {
         boxes: []
     });
 
+    const handleActiveBoxChange = (newActiveBoxId) => {
+        setData(prevData => ({
+            ...prevData,
+            boxes: prevData.boxes.map(box => ({
+                ...box,
+                Box: {
+                    ...box.Box,
+                    IsActive: box.Box.ID === newActiveBoxId
+                }
+            }))
+        }));
+    };
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -108,17 +121,18 @@ function Dashboard() {
                         </div>
 
                         <div className="boxes-section">
-                            <div className="boxes-grid">
-                                {data.boxes.map(box => (
-                                    <BoxCard key={box.id} box={box} />
+                            <div className="boxes-header">
+                                <h2>{t('dashboard.boxes.title')}</h2>
+                            </div>
+                            <div className="boxes-grid boxes-grid-icons">
+                                {data.boxes.map((box) => (
+                                    <BoxCard 
+                                        key={box.Box.ID} 
+                                        box={box} 
+                                        onActiveChange={handleActiveBoxChange}
+                                        viewMode="icon"
+                                    />
                                 ))}
-                                <Link to="/box/create" className="box-card create-box">
-                                    <div className="create-box-content">
-                                        <i className="fas fa-plus-circle"></i>
-                                        <h3>{t('dashboard.boxes.create')}</h3>
-                                        <p>{t('dashboard.boxes.createDesc')}</p>
-                                    </div>
-                                </Link>
                             </div>
                         </div>
                     </div>
