@@ -34,7 +34,25 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                             <path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 10.146V6a3 3 0 013-3h15a3 3 0 013 3v4.146a4.483 4.483 0 00-3-.146h-15c-1.035 0-2.016.277-2.86.75a3.972 3.972 0 00-.14-.604z" />
                         </svg>
                     </div>
-                    <h4 className="box-icon-title" title={box.Box.Name}>{box.Box.Name}</h4>
+                    <div className="box-header-info">
+                        <h4 className="box-icon-title" title={box.Box.Name}>{box.Box.Name}</h4>
+                        {!box.Box.IsActive ? (
+                            <button 
+                                className="icon-set-active-btn" 
+                                onClick={handleSetActive}
+                                disabled={isSettingActive}
+                                title={t('dashboard.boxes.setActive')}
+                            >
+                                ✓
+                            </button>
+                        ) : (
+                            <div className="active-indicator">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="box-icon-stats">
                     <div className="stat-with-hint">
@@ -48,35 +66,26 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                         </div>
                     )}
                 </div>
-                {!box.Box.IsActive ? (
-                    <button 
-                        className="icon-set-active-btn" 
-                        onClick={handleSetActive}
-                        disabled={isSettingActive}
-                        title={t('dashboard.boxes.setActive')}
-                    >
-                        ✓
-                    </button>
-                ) : (
-                    <div className="active-indicator">✓</div>
-                )}
             </div>
             <div className="box-icon-actions">
                 <Link to={`/box/${box.Box.ID}/cards/create`} className="icon-action-btn add" title={t('dashboard.boxes.actions.addCard')}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 4.75a.75.75 0 01.75.75v6h6a.75.75 0 010 1.5h-6v6a.75.75 0 01-1.5 0v-6h-6a.75.75 0 010-1.5h6v-6a.75.75 0 01.75-.75z" />
                     </svg>
+                    <span className="action-text">{t('dashboard.boxes.actions.addCard')}</span>
                 </Link>
                 <Link to={`/box/${box.Box.ID}/review`} className="icon-action-btn review" title={t('dashboard.boxes.actions.review')}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
                         <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
                     </svg>
+                    <span className="action-text">{t('dashboard.boxes.actions.review')}</span>
                 </Link>
                 <Link to={`/box/${box.Box.ID}`} className="icon-action-btn details" title={t('dashboard.boxes.actions.details')}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
                     </svg>
+                    <span className="action-text">{t('dashboard.boxes.actions.details')}</span>
                 </Link>
             </div>
         </div>
