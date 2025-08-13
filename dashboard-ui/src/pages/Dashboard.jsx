@@ -16,6 +16,7 @@ function Dashboard() {
         stats: {
             totalBoxes: { value: 0, trend: 0 },
             totalCards: { value: 0, trend: 0 },
+            todayDue: { value: 0, trend: 0 },
             reviewAccuracy: { value: 0, trend: 0 },
             streak: { value: 0, trend: 0 }
         },
@@ -45,6 +46,7 @@ function Dashboard() {
                     stats: {
                         totalBoxes: responseData?.stats?.totalBoxes || { value: 0, trend: 0 },
                         totalCards: responseData?.stats?.totalCards || { value: 0, trend: 0 },
+                        todayDue: responseData?.stats?.todayDue || { value: 0, trend: 0 },
                         reviewAccuracy: responseData?.stats?.reviewAccuracy || { value: 0, trend: 0 },
                         streak: responseData?.stats?.streak || { value: 0, trend: 0 }
                     },
@@ -55,6 +57,7 @@ function Dashboard() {
                     stats: {
                         totalBoxes: { value: 0, trend: 0 },
                         totalCards: { value: 0, trend: 0 },
+                        todayDue: { value: 0, trend: 0 },
                         reviewAccuracy: { value: 0, trend: 0 },
                         streak: { value: 0, trend: 0 }
                     },
@@ -100,12 +103,27 @@ function Dashboard() {
                                 trend={data.stats.totalBoxes.trend}
                             />
 
-                            <StatsCard 
-                                icon="fa-layer-group"
-                                title="dashboard.stats.cards"
-                                value={data.stats.totalCards.value}
-                                trend={data.stats.totalCards.trend}
-                            />
+                            <div className="stat-card combined-cards-stats">
+                                <div className="stat-header">
+                                    <div className="stat-icon">
+                                        <i className="fas fa-layer-group"></i>
+                                    </div>
+                                </div>
+                                <div className="stat-content">
+                                    <div className="combined-stats-row">
+                                        <div className="stat-item">
+                                            <h3 className="stat-value">{data.stats.totalCards.value}</h3>
+                                            <p className="stat-title">Total Cards</p>
+                                        </div>
+                                        <div className="stat-divider">|</div>
+                                        <div className="stat-item">
+                                            <h3 className="stat-value">{data.stats.todayDue?.value || 0}</h3>
+                                            <p className="stat-title">Due Today</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <StatsCard 
                                 icon="fa-chart-line"
                                 title="dashboard.stats.accuracy"
@@ -123,7 +141,7 @@ function Dashboard() {
                         <div className="boxes-section">
                             <div className="boxes-header">
                                 <h2>{t('dashboard.boxes.title')}</h2>
-                                <Link to="/box/create" className="btn btn-primary">
+                                <Link to="/dashboard/box/create" className="btn btn-primary">
                                     <i className="fas fa-plus"></i>
                                     {t('dashboard.boxes.create')}
                                 </Link>
@@ -145,7 +163,7 @@ function Dashboard() {
                                         </div>
                                         <h3>{t('dashboard.boxes.empty')}</h3>
                                         <p>{t('dashboard.boxes.createDesc')}</p>
-                                        <Link to="/box/create" className="btn btn-primary">
+                                        <Link to="/dashboard/box/create" className="btn btn-primary">
                                             <i className="fas fa-plus"></i>
                                             {t('dashboard.boxes.create')}
                                         </Link>

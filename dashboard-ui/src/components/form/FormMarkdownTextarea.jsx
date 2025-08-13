@@ -108,6 +108,70 @@ function FormMarkdownTextarea({
                 {required && <span className="required-asterisk">*</span>}
             </label>
             
+            <div className="markdown-toolbar-top">
+                <button 
+                    type="button" 
+                    className="toolbar-btn" 
+                    onClick={() => insertMarkdown('bold')}
+                    title="Bold"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    <strong>B</strong>
+                </button>
+                <button 
+                    type="button" 
+                    className="toolbar-btn" 
+                    onClick={() => insertMarkdown('italic')}
+                    title="Italic"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    <em>I</em>
+                </button>
+                <button 
+                    type="button" 
+                    className="toolbar-btn" 
+                    onClick={() => insertMarkdown('code')}
+                    title="Code"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    {'</>'}
+                </button>
+                <button 
+                    type="button" 
+                    className="toolbar-btn" 
+                    onClick={() => insertMarkdown('list')}
+                    title="List"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    •
+                </button>
+                <button 
+                    type="button" 
+                    className="toolbar-btn" 
+                    onClick={() => insertMarkdown('link')}
+                    title="Link"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    🔗
+                </button>
+                <div className="toolbar-divider"></div>
+                <button 
+                    type="button" 
+                    className={`toolbar-btn ${isPreviewMode ? 'active' : ''}`}
+                    onClick={togglePreview}
+                    title="Preview"
+                    disabled={disabled}
+                    tabIndex="-1"
+                >
+                    👁
+                </button>
+            </div>
+            
             <div className="markdown-input-container">
                 <div className="markdown-content">
                     {!isPreviewMode ? (
@@ -158,64 +222,6 @@ function FormMarkdownTextarea({
                             )}
                         </div>
                     )}
-                </div>
-                
-                <div className="markdown-toolbar-side">
-                    <button 
-                        type="button" 
-                        className="toolbar-btn" 
-                        onClick={() => insertMarkdown('bold')}
-                        title="Bold"
-                        disabled={disabled}
-                    >
-                        <strong>B</strong>
-                    </button>
-                    <button 
-                        type="button" 
-                        className="toolbar-btn" 
-                        onClick={() => insertMarkdown('italic')}
-                        title="Italic"
-                        disabled={disabled}
-                    >
-                        <em>I</em>
-                    </button>
-                    <button 
-                        type="button" 
-                        className="toolbar-btn" 
-                        onClick={() => insertMarkdown('code')}
-                        title="Code"
-                        disabled={disabled}
-                    >
-                        {'</>'}
-                    </button>
-                    <button 
-                        type="button" 
-                        className="toolbar-btn" 
-                        onClick={() => insertMarkdown('list')}
-                        title="List"
-                        disabled={disabled}
-                    >
-                        •
-                    </button>
-                    <button 
-                        type="button" 
-                        className="toolbar-btn" 
-                        onClick={() => insertMarkdown('link')}
-                        title="Link"
-                        disabled={disabled}
-                    >
-                        🔗
-                    </button>
-                    <div className="toolbar-divider"></div>
-                    <button 
-                        type="button" 
-                        className={`toolbar-btn ${isPreviewMode ? 'active' : ''}`}
-                        onClick={togglePreview}
-                        title="Preview"
-                        disabled={disabled}
-                    >
-                        👁
-                    </button>
                 </div>
             </div>
 

@@ -191,9 +191,20 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-gradient);
+    background: var(--primary);
     color: white;
     border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    color: white;
+    text-decoration: none;
 }
 
 .btn-outline-primary {
@@ -952,6 +963,30 @@ body {
     font-size: 1.5rem; /* Slightly smaller value */
     font-weight: 600;
     margin-bottom: 0.5rem; /* Reduced spacing */
+}
+
+/* Combined stats styles */
+.combined-cards-stats {
+    position: relative;
+}
+
+.combined-stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.stat-item {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-divider {
+    color: var(--neutral-300);
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.7;
 }
 
 /* Adjust responsive layout if needed */
