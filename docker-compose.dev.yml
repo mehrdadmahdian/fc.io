@@ -1,11 +1,22 @@
 services:
   dashboard-ui:
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - WDS_SOCKET_HOST=0.0.0.0
+      - WDS_SOCKET_PORT=0
+      - REACT_APP_RELOAD_SOCKET=true
     volumes:
-      - ./dashboard-ui:/app
+      - ./dashboard-ui:/app:delegated
       - /app/node_modules
+      - dashboard_ui_cache:/app/.npm
+    stdin_open: true
+    tty: true
   public-ui:
     environment:
       - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
     volumes:
-      - ./public-ui:/app
+      - ./public-ui:/app:delegated
       - /app/node_modules 

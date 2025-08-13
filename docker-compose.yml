@@ -56,6 +56,11 @@ services:
       - NODE_ENV=${APP_ENV:-production}
       - REACT_APP_API_BASE_URL=${API_URL}
       - NEXT_PUBLIC_WEBSITE_URL=${SERVER_NAME}
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+      - WDS_SOCKET_HOST=0.0.0.0
+      - WDS_SOCKET_PORT=0
     networks:
       - fc-network
   public-ui:
@@ -121,3 +126,4 @@ networks:
 volumes:
     redis_data:
     mongo-data:
+    dashboard_ui_cache:

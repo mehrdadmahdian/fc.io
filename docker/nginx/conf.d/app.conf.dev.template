@@ -12,9 +12,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
-    location /dashboard/ {
+    location /dashboard {
         # Forward to React dev server which serves at /dashboard
-        proxy_pass http://dashboard-ui-container:3000/dashboard/;
+        proxy_pass http://dashboard-ui-container:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

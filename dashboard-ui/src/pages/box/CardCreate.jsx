@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DashboardContainer from '../../components/layout/DashboardContainer';
+import PageHeader from '../../components/common/PageHeader';
 import Form from '../../components/form/Form';
-import FormTextarea from '../../components/form/FormTextarea';
+import FormMarkdownTextarea from '../../components/form/FormMarkdownTextarea';
 import { api } from '../../services/api';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Form.css';
-import '../../assets/styles/PageHeader.css';
-import PageHeader from '../../components/common/PageHeader';
+import '../../assets/styles/MarkdownTextarea.css';
 import { useEffect, useState } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -64,50 +64,58 @@ function CardCreate() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <DashboardContainer>
+                <div className="dashboard-container">
+                    <PageHeader title={t('common.loading')} />
+                    <div className="dashboard-content">
+                        <div className="dashboard-box">
+                            <div className="loading-state">
+                                <div className="loading-spinner"></div>
+                                {t('common.loading')}...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </DashboardContainer>
+        );
     }
 
     return (
         <DashboardContainer>
             <div className="dashboard-container">
-                <PageHeader title={t('cardCreate.title')} />
+                <PageHeader title={cardId ? t('cardCreate.editTitle') : t('cardCreate.title')} />
                 <div className="dashboard-content">
-                    <div className="dashboard-box" style={{ width: '100%', maxWidth: 'none', padding: '20px' }}>
+                    <div className="dashboard-box">
                         <Form
-                            style={{ width: '100%' }}
                             onSubmit={handleSubmit}
-                            onCancel={() => navigate('/dashboard')}
-                            submitLabel={t('cardCreate.save')}
+                            onCancel={() => navigate(`/box/${boxId}`)}
+                            submitLabel={cardId ? t('cardCreate.update') : t('cardCreate.save')}
                             cancelLabel={t('common.cancel')}
-                            initialData={{
-                                front: formData.front,
-                                back: formData.back,
-                                extra: formData.extra,
-                                labels: []
-                            }}
+                            initialData={formData}
                             validateForm={true}
                         >
-                            <FormTextarea
+                            <FormMarkdownTextarea
                                 label={`${t('cardCreate.question')} *`}
                                 name="front"
                                 required={true}
                                 placeholder={t('cardCreate.questionPlaceholder')}
-                                rows={4}
+                                rows={6}
                             />
 
-                            <FormTextarea
+                            <FormMarkdownTextarea
                                 label={`${t('cardCreate.answer')} *`}
                                 name="back"
                                 placeholder={t('cardCreate.answerPlaceholder')}
                                 required={true}
-                                rows={4}
+                                rows={6}
                             />
 
-                            <FormTextarea
+                            <FormMarkdownTextarea
                                 label={t('cardCreate.additionalInfo')}
                                 name="extra"
                                 placeholder={t('cardCreate.additionalInfoPlaceholder')}
-                                rows={3}
+                                rows={4}
                             />
                         </Form>
                     </div>

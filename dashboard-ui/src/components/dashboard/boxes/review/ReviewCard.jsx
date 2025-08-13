@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CardStats from '../../CardStats';
+import MarkdownContent from '../../../common/MarkdownContent';
 
 function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
     const { t } = useTranslation();
@@ -42,17 +43,23 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
                         <div className={`card-face ${showAnswer ? 'back' : 'front'}`}>
                             {!showAnswer ? (
                                 <div className="question">
-                                    <div className="question-text">{card.Front}</div>
+                                    <div className="question-text">
+                                        <MarkdownContent content={card.Front} className="review-question-content" />
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="answer">
                                     <div className="answer-main">
-                                        <div className="answer-text">{card.Back}</div>
+                                        <div className="answer-text">
+                                            <MarkdownContent content={card.Back} className="review-answer-content" />
+                                        </div>
                                     </div>
                                     <div className="answer-details">
                                         {card.Extra && (
                                             <div className="answer-section small-text">
-                                                <div className="extra-text text-muted">{card.Extra}</div>
+                                                <div className="extra-text text-muted">
+                                                    <MarkdownContent content={card.Extra} className="review-extra-content" />
+                                                </div>
                                             </div>
                                         )}
                                     </div>

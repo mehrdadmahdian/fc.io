@@ -23,22 +23,36 @@ FROM node:18-alpine AS development
 
 WORKDIR /app
 
-COPY --from=base /app/package.json /app/package-lock.json* ./
-RUN npm install --legacy-peer-deps && \
+# Copy package files first for better layer caching
+COPY ./dashboard-ui/package.json ./dashboard-ui/package-lock.json* ./
+RUN npm cache clean --force && \
+    rm -rf node_modules && \
+    npm install --legacy-peer-deps && \
     npm install react-scripts@5.0.1 --save
-COPY ./dashboard-ui .
 
-# Set environment variables for development
+# Set environment variables for development HOT RELOAD
 ENV NODE_ENV=development
 ENV WATCHPACK_POLLING=true
 ENV CHOKIDAR_USEPOLLING=true
 ENV FAST_REFRESH=true
+ENV WDS_SOCKET_HOST=0.0.0.0
+ENV WDS_SOCKET_PORT=0
+ENV GENERATE_SOURCEMAP=false
+
+# Create a startup script to handle volume mounting properly
+RUN echo '#!/bin/sh' > /start-dev.sh && \
+    echo 'echo "Starting React development server with hot reload..."' >> /start-dev.sh && \
+    echo 'echo "Waiting for source files to be mounted..."' >> /start-dev.sh && \
+    echo 'while [ ! -f "/app/src/index.js" ] && [ ! -f "/app/src/index.jsx" ]; do sleep 1; done' >> /start-dev.sh && \
+    echo 'echo "Source files detected, starting server..."' >> /start-dev.sh && \
+    echo 'npm start' >> /start-dev.sh && \
+    chmod +x /start-dev.sh
 
 # Expose the development port
 EXPOSE 3000
 
-# Start the development server
-CMD ["npm", "start"]
+# Start the development server with proper hot reload
+CMD ["/start-dev.sh"]
 
 # Production Stage
 FROM node:18-alpine AS production

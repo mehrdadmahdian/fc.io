@@ -89,8 +89,12 @@
     "title": "Cards",
     "add": "Add Card",
     "createFirst": "Create Your First Card",
+    "createFirstDescription": "Start building your knowledge base by creating your first flashcard",
     "noCards": "No cards in this box yet",
     "noCardsWithFilter": "No cards match the selected filter",
+    "noSearchResults": "No cards found",
+    "tryDifferentSearch": "Try a different search term or clear your filters",
+    "searchPlaceholder": "Search cards by front, back, or extra content...",
     "filterByStatus": "Filter by Status",
     "all": "All",
     "new": "New",
@@ -100,10 +104,24 @@
     "front": "Front",
     "back": "Back",
     "extra": "Extra",
+    "status": "Status",
+    "actions": "Actions",
+    "total": "total",
+    "empty": "Click to add content",
+    "clickToEdit": "Click to edit",
     "edit": "Edit",
     "archive": "Archive",
     "delete": "Delete",
-    "deleteConfirm": "Are you sure you want to delete this card?"
+    "deleteConfirm": "Are you sure you want to delete this card?",
+    "updateSuccess": "Card updated successfully",
+    "updateError": "Failed to update card",
+    "deleteSuccess": "Card deleted successfully", 
+    "deleteError": "Failed to delete card",
+    "archiveSuccess": "Card archived successfully",
+    "archiveError": "Failed to archive card"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} results"
   },
   "common": {
     "loading": "Loading...",
@@ -212,19 +230,31 @@
   },
   "cardCreate": {
     "title": "Create New Card",
+    "editTitle": "Edit Card",
+    "subtitle": "Create effective flashcards with markdown support",
+    "editSubtitle": "Update your flashcard content with markdown support",
     "question": "Question",
     "answer": "Answer",
     "additionalInfo": "Additional Information",
-    "questionPlaceholder": "Enter your question here",
-    "answerPlaceholder": "Enter the answer here",
-    "additionalInfoPlaceholder": "Enter any additional information or notes (optional)",
+    "questionSection": "Question Side",
+    "answerSection": "Answer Side", 
+    "additionalSection": "Extra Notes",
+    "questionDescription": "What do you want to remember? Use markdown for formatting.",
+    "answerDescription": "The answer or explanation. Support rich formatting with markdown.",
+    "additionalDescription": "Any extra notes, mnemonics, or related information.",
+    "questionPlaceholder": "Enter your question here...",
+    "answerPlaceholder": "Enter the answer here...",
+    "additionalInfoPlaceholder": "Enter any additional information or notes (optional)...",
+    "noPreview": "Nothing to preview",
     "save": "Save Card",
+    "update": "Update Card",
     "createSuccess": "Card created successfully!",
     "updateSuccess": "Card updated successfully!",
     "saveError": "Failed to save card. Please try again."
   },
   "common": {
     "cancel": "Cancel",
+    "loading": "Loading",
     "fillRequiredFields": "Please fill in all required fields"
   }
 } 

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import MarkdownContent from '../../common/MarkdownContent';
 
 function CardPreview({ card }) {
     const { t } = useTranslation();
@@ -8,7 +9,7 @@ function CardPreview({ card }) {
             <div className="preview-section">
                 <div className="preview-content">
                     <div className="preview-question">
-                        {card.question}
+                        <MarkdownContent content={card.question} className="preview-question-content" />
                     </div>
                 </div>
             </div>
@@ -18,11 +19,11 @@ function CardPreview({ card }) {
             <div className="preview-section">
                 <div className="preview-content">
                     <div className="preview-answer">
-                        {card.answer}
+                        <MarkdownContent content={card.answer} className="preview-answer-content" />
                     </div>
                     {card.additionalInfo && (
                         <div className="preview-additional">
-                            {card.additionalInfo}
+                            <MarkdownContent content={card.additionalInfo} className="preview-additional-content" />
                         </div>
                     )}
                 </div>

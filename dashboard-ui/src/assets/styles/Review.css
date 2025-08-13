@@ -110,6 +110,91 @@
     font-style: italic;
 }
 
+/* Markdown content in review cards */
+.review-question-content {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--neutral-900);
+    line-height: 1.4;
+}
+
+.review-answer-content {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--primary);
+    line-height: 1.5;
+}
+
+.review-extra-content {
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--neutral-600);
+    line-height: 1.5;
+}
+
+/* Override markdown styles for review cards */
+.review-question-content h1,
+.review-question-content h2,
+.review-question-content h3 {
+    margin-bottom: 0.5rem;
+    color: inherit;
+}
+
+.review-answer-content h1,
+.review-answer-content h2,
+.review-answer-content h3 {
+    margin-bottom: 0.5rem;
+    color: inherit;
+}
+
+.review-question-content p,
+.review-answer-content p,
+.review-extra-content p {
+    margin-bottom: 0.75rem;
+}
+
+.review-question-content ul,
+.review-answer-content ul,
+.review-extra-content ul,
+.review-question-content ol,
+.review-answer-content ol,
+.review-extra-content ol {
+    text-align: left;
+    margin: 0.75rem auto;
+    max-width: fit-content;
+}
+
+.review-question-content code,
+.review-answer-content code,
+.review-extra-content code {
+    font-size: 0.85em;
+}
+
+.review-question-content pre,
+.review-answer-content pre,
+.review-extra-content pre {
+    text-align: left;
+    font-size: 0.75em;
+    margin: 1rem 0;
+}
+
+.review-question-content blockquote,
+.review-answer-content blockquote,
+.review-extra-content blockquote {
+    text-align: left;
+    margin: 1rem auto;
+    max-width: fit-content;
+}
+
+.review-question-content table,
+.review-answer-content table,
+.review-extra-content table {
+    margin: 1rem auto;
+    font-size: 0.75em;
+}
+
 /* Show answer hint styling */
 .show-answer-hint {
     position: absolute;

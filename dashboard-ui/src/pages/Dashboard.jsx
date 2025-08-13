@@ -123,16 +123,34 @@ function Dashboard() {
                         <div className="boxes-section">
                             <div className="boxes-header">
                                 <h2>{t('dashboard.boxes.title')}</h2>
+                                <Link to="/box/create" className="btn btn-primary">
+                                    <i className="fas fa-plus"></i>
+                                    {t('dashboard.boxes.create')}
+                                </Link>
                             </div>
                             <div className="boxes-grid boxes-grid-icons">
-                                {data.boxes.map((box) => (
-                                    <BoxCard 
-                                        key={box.Box.ID} 
-                                        box={box} 
-                                        onActiveChange={handleActiveBoxChange}
-                                        viewMode="icon"
-                                    />
-                                ))}
+                                {data.boxes.length > 0 ? (
+                                    data.boxes.map((box) => (
+                                        <BoxCard 
+                                            key={box.Box.ID} 
+                                            box={box} 
+                                            onActiveChange={handleActiveBoxChange}
+                                            viewMode="icon"
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="empty-state">
+                                        <div className="empty-icon">
+                                            <i className="fas fa-box"></i>
+                                        </div>
+                                        <h3>{t('dashboard.boxes.empty')}</h3>
+                                        <p>{t('dashboard.boxes.createDesc')}</p>
+                                        <Link to="/box/create" className="btn btn-primary">
+                                            <i className="fas fa-plus"></i>
+                                            {t('dashboard.boxes.create')}
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

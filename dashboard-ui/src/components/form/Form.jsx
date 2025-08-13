@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Button from './Button';
 
 function Form({
     initialData = {},
@@ -80,22 +79,22 @@ function Form({
 
             <div className="form-actions">
                 {onCancel && (
-                    <Button
+                    <button
                         type="button"
-                        variant="secondary"
+                        className="btn btn-secondary"
                         onClick={onCancel}
                         disabled={isSubmitting || isLoading}
                     >
                         {cancelLabel}
-                    </Button>
+                    </button>
                 )}
-                <Button
+                <button
                     type="submit"
-                    variant="primary"
+                    className="btn btn-primary"
                     disabled={isSubmitting || isLoading}
                 >
                     {isSubmitting ? 'Submitting...' : submitLabel}
-                </Button>
+                </button>
             </div>
         </form>
     );
