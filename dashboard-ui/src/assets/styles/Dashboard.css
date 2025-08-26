@@ -850,10 +850,50 @@ body {
     }
 }
 
+/* Large desktop default */
+.boxes-section {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+.dashboard-container {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 /* Responsive breakpoints to match stats cards */
 @media (max-width: 1280px) {
     .boxes-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .boxes-section {
+        padding: 1rem;
+    }
+}
+
+/* Tablet and medium mobile styles */
+@media (max-width: 768px) {
+    .boxes-section {
+        padding: 1rem;
+        width: 100%;
+    }
+    
+    .dashboard-container {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .boxes-grid-icons {
+        width: 100%;
+        justify-items: stretch;
+        padding: 0;
     }
 }
 
@@ -861,7 +901,7 @@ body {
     .boxes-grid {
         grid-template-columns: 1fr;
         justify-items: stretch;
-        padding: 1rem;
+        padding: 0;
         width: 100%;
     }
     
@@ -871,7 +911,7 @@ body {
     }
 
     .dashboard-container {
-        padding: 1rem;
+        padding: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -891,6 +931,7 @@ body {
     .boxes-grid-icons {
         width: 100%;
         justify-items: stretch;
+        padding: 0;
     }
 }
 
@@ -1091,12 +1132,12 @@ body {
         gap: 12px;
         justify-items: stretch;
         width: 100%;
-        padding: 0.5rem;
+        padding: 0;
     }
     
     .box-card {
-        width: 90%;
-        margin: 0 auto;
+        width: 100%;
+        margin: 0;
         box-sizing: border-box;
     }
     
