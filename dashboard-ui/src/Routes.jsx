@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BoxReview from './pages/box/Review';
+import ReverseReview from './pages/box/ReverseReview';
 import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
 import BoxDetails from './pages/box/BoxDetails';
@@ -52,6 +53,10 @@ const Routes = () => {
             <Route 
                 path="/box/:boxId/review" 
                 element={isAuthenticated ? <BoxReview /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/box/:boxId/review/reverse" 
+                element={isAuthenticated ? <ReverseReview /> : <Navigate to="/auth/login" />} 
             />
             <Route 
                 path="/box/:boxId" 

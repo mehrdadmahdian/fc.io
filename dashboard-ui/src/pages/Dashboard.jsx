@@ -140,8 +140,7 @@ function Dashboard() {
 
                         <div className="boxes-section">
                             <div className="boxes-header">
-                                <h2>{t('dashboard.boxes.title')}</h2>
-                                <Link to="/box/create" className="btn btn-primary">
+                                <Link to="/box/create" className="btn btn-primary btn-create-box">
                                     <i className="fas fa-plus"></i>
                                     {t('dashboard.boxes.create')}
                                 </Link>

@@ -65,6 +65,7 @@
       "actions": {
         "addCard": "Add Card",
         "review": "Review",
+        "reviewReverse": "Review Reverse",
         "details": "Details",
         "edit": "Edit Box",
         "delete": "Delete Box"
@@ -136,12 +137,18 @@
   "review": {
     "start": "Start Review",
     "title": "Review {{boxName}}",
+    "reverseTitle": "Reverse Review {{boxName}}",
     "question": "Question",
     "answer": "Answer",
     "additionalInfo": "Additional Information",
     "example": "Example",
     "notes": "Notes",
     "clickToReveal": "Click to reveal answer",
+    "noCards": {
+      "title": "No Cards to Review",
+      "message": "Great job! You've completed all reviews for this box.",
+      "messageReverse": "Great job! You've completed all reverse reviews for this box."
+    },
     "actions": {
       "edit": "Edit Card",
       "archive": "Archive",

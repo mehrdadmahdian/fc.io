@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/template/html/v2"
 	"github.com/mehrdadmahdian/fc.io/config"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
@@ -38,6 +39,14 @@ func main() {
 		Views:   engine,
 		Prefork: false,
 	})
+
+	// Add CORS middleware to handle browser preflight requests
+	fiber.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost,http://127.0.0.1,http://localhost:3000,http://127.0.0.1:3000",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,X-Requested-With",
+		AllowCredentials: true,
+	}))
 
 	fiber.Static("/public", "./public")
 

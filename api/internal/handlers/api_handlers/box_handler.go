@@ -76,6 +76,10 @@ func (handler *ApiHandler) GetBoxInfos(c *fiber.Ctx) error {
 			"value": userStats.TotalCards,
 			"trend": 0,
 		},
+		"todayDue": map[string]interface{}{
+			"value": userStats.CardsDueToday,
+			"trend": 0,
+		},
 		"reviewAccuracy": map[string]interface{}{
 			"value": int(userStats.ReviewAccuracy),
 			"trend": 0,
@@ -309,4 +313,60 @@ func (handler *ApiHandler) GetActiveBox(c *fiber.Ctx) error {
 	return JsonSuccess(c, utils.PointerString("active box retrieved successfully"), &map[string]interface{}{
 		"activeBox": activeBox,
 	})
+}
+
+// Reverse review methods
+
+func (handler *ApiHandler) GetReverseReviewCards(c *fiber.Ctx) error {
+	boxID := c.Params("boxid")
+	box, err := handler.boxService.GetBox(c.Context(), boxID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"+err.Error()), nil)
+	}
+
+	cards, err := handler.boxService.GetBoxCardsToReverseReview(c.Context(), box)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box cards to reverse review"), nil)
+	}
+
+	dataMap := map[string]interface{}{
+		"boxName":    box.Name,
+		"totalCards": len(cards),
+		"cards":      cards,
+	}
+
+	return JsonSuccess(c, utils.PointerString("cards for reverse review fetched successfully"), &dataMap)
+}
+
+func (handler *ApiHandler) RespondToReverseReview(c *fiber.Ctx) error {
+	request, err := requests.ParseRequestBody(c, new(requests.RespondToReviewRequest))
+	if err != nil {
+		return JsonFailed(
+			c,
+			fiber.StatusBadRequest,
+			utils.PointerString("invalid request body: "+err.Error()),
+			nil,
+		)
+	}
+
+	err = handler.boxService.SubmitReverseReview(
+		c.Context(),
+		request.CardId,
+		request.Difficulty,
+	)
+
+	if err != nil {
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("failed to submit reverse review: "+err.Error()),
+			nil,
+		)
+	}
+
+	return JsonSuccess(
+		c,
+		utils.PointerString("reverse review action is submitted successfully!"),
+		nil,
+	)
 }

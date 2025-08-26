@@ -515,3 +515,68 @@
         transform: translateY(0);
     }
 }
+
+/* Reverse Review Styles */
+.review-card.reverse-mode {
+    border-left: 4px solid #9333EA;
+    background: linear-gradient(135deg, #FAFAFA 0%, #F8FAFC 100%);
+}
+
+.reverse-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.mode-badge {
+    background: linear-gradient(135deg, #9333EA, #7C3AED);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reverse-mode .card-face.back {
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+}
+
+.reverse-mode .card-face.front {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+}
+
+.button-review-reverse {
+    background: #9333EA;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.button-review-reverse:hover {
+    background: #7C3AED;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.icon-action-btn.review-reverse {
+    background: #9333EA;
+    color: white;
+}
+
+.icon-action-btn.review-reverse:hover {
+    background: #7C3AED;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+}

@@ -81,6 +81,12 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                     </svg>
                     <span className="action-text">{t('dashboard.boxes.actions.review')}</span>
                 </Link>
+                <Link to={`/box/${box.Box.ID}/review/reverse`} className="icon-action-btn review-reverse" title={t('dashboard.boxes.actions.reviewReverse')}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                    </svg>
+                    <span className="action-text">{t('dashboard.boxes.actions.reviewReverse')}</span>
+                </Link>
                 <Link to={`/box/${box.Box.ID}`} className="icon-action-btn details" title={t('dashboard.boxes.actions.details')}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
@@ -136,6 +142,9 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                 </Link>
                 <Link to={`/box/${box.Box.ID}/review`} className="button button-review">
                     {t('dashboard.boxes.actions.review')}
+                </Link>
+                <Link to={`/box/${box.Box.ID}/review/reverse`} className="button button-review-reverse">
+                    {t('dashboard.boxes.actions.reviewReverse')}
                 </Link>
                 <Link to={`/box/${box.Box.ID}`} className="button button-primary">
                     {t('dashboard.boxes.actions.details')}

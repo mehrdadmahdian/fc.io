@@ -19,11 +19,13 @@
 
 .nav-container {
     width: 100%;
+    max-width: 1200px;
     height: var(--nav-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 1rem;
+    padding: 0 2rem;
+    margin: 0 auto;
 }
 
 .nav-brand {
@@ -95,9 +97,14 @@
     color: var(--text-color);
     cursor: pointer;
     padding: 0.5rem;
+    font-size: 1.25rem;
 }
 
 @media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
     .main-links,
     .language-selector {
         display: none;

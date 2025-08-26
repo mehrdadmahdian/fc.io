@@ -7,29 +7,30 @@ import (
 )
 
 const DefaultInteval int = 1
-const DefaultEaseFactor float64= 2.5
+const DefaultEaseFactor float64 = 2.5
 
 type Card struct {
-	ID        primitive.ObjectID   `bson:"_id,omitempty"`
-	BoxID     primitive.ObjectID   `bson:"box_id"`
-	LabelIDs  []primitive.ObjectID `bson:"label_ids"`
-	Front     string               `bson:"front"`
-	Back      string               `bson:"back"`
-	Extra     string               `bson:"extra"`
-	Review    Review               `bson:"review"`
-	CreatedAt time.Time            `bson:"created_at"`
-	UpdatedAt time.Time            `bson:"updated_at"`
+	ID            primitive.ObjectID   `bson:"_id,omitempty"`
+	BoxID         primitive.ObjectID   `bson:"box_id"`
+	LabelIDs      []primitive.ObjectID `bson:"label_ids"`
+	Front         string               `bson:"front"`
+	Back          string               `bson:"back"`
+	Extra         string               `bson:"extra"`
+	Review        Review               `bson:"review"`
+	ReverseReview Review               `bson:"reverse_review"`
+	CreatedAt     time.Time            `bson:"created_at"`
+	UpdatedAt     time.Time            `bson:"updated_at"`
 
 	//embeded
-	Box    *Box     `bson:box,omitempty`
-	Labels *[]Label `bson:labels,omitempty`
+	Box    *Box     `bson:"box,omitempty"`
+	Labels *[]Label `bson:"labels,omitempty"`
 }
 
 type Review struct {
 	LastReviewDate *time.Time            `bson:"last_review_date"`
 	NextDueDate    *time.Time            `bson:"next_due_date"`
-	Interval       int                  `bson:"current_interval"`
-	EaseFactor     float64              `bson:"ease_factor"`
+	Interval       int                   `bson:"current_interval"`
+	EaseFactor     float64               `bson:"ease_factor"`
 	ReviewsCount   int                   `bson:"reviews_count"`
 	ReviewHistory  []ReviewHistoryRecord `bson:"review_history"`
 }
@@ -65,6 +66,7 @@ func NewCard(
 	}
 
 	nextDueDate := time.Now().Add(24 * time.Hour)
+	reverseNextDueDate := time.Now().Add(24 * time.Hour)
 	defaultInterval := DefaultInteval
 	defaultEaseFactor := DefaultEaseFactor
 	return &Card{
@@ -79,6 +81,14 @@ func NewCard(
 		Review: Review{
 			LastReviewDate: nil,
 			NextDueDate:    &nextDueDate,
+			Interval:       defaultInterval,
+			EaseFactor:     defaultEaseFactor,
+			ReviewsCount:   0,
+			ReviewHistory:  []ReviewHistoryRecord{},
+		},
+		ReverseReview: Review{
+			LastReviewDate: nil,
+			NextDueDate:    &reverseNextDueDate,
 			Interval:       defaultInterval,
 			EaseFactor:     defaultEaseFactor,
 			ReviewsCount:   0,

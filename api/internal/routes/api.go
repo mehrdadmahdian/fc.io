@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/api_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/middlewares"
@@ -13,6 +14,15 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	ErrorMiddleware := middlewares.ErrorHandlingMiddleware(applicationContainer.LoggerService)
 
 	apiGroup := fiberApp.Group("/api")
+
+	// Add CORS middleware specifically for API routes
+	apiGroup.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost,http://127.0.0.1,http://localhost:3000,http://127.0.0.1:3000",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,X-Requested-With",
+		AllowCredentials: true,
+	}))
+
 	apiGroup.Use(ErrorMiddleware) // Apply error handling first
 	apiGroup.Use(ApiCSPMiddleware)
 
@@ -31,6 +41,8 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	boxGroup.Delete("/:boxid", apiHandler.DeleteBox)
 	boxGroup.Get("/:boxid/review/cards", apiHandler.GetReviewCards)
 	boxGroup.Post("/:boxid/review/respond", apiHandler.RespondToReview)
+	boxGroup.Get("/:boxid/review/reverse/cards", apiHandler.GetReverseReviewCards)
+	boxGroup.Post("/:boxid/review/reverse/respond", apiHandler.RespondToReverseReview)
 	boxGroup.Post("/:boxid/cards", apiHandler.CreateCard)
 	boxGroup.Get("/:boxid/cards/:cardid", apiHandler.GetCardInfo)
 	boxGroup.Post("/:boxid/cards/:cardid/archive", apiHandler.ArchiveCard)
@@ -56,6 +68,8 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup.Post("/boxes/:boxid/set-active", apiHandler.SetActiveBox)
 	dashboardGroup.Get("/boxes/:boxid/review/cards", apiHandler.GetReviewCards)
 	dashboardGroup.Post("/boxes/:boxid/review/respond", apiHandler.RespondToReview)
+	dashboardGroup.Get("/boxes/:boxid/review/reverse/cards", apiHandler.GetReverseReviewCards)
+	dashboardGroup.Post("/boxes/:boxid/review/reverse/respond", apiHandler.RespondToReverseReview)
 
 	dashboardGroup.Post("/boxes/:boxid/cards", apiHandler.CreateCard)
 	dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCardInfo)

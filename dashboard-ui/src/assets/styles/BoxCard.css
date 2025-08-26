@@ -404,23 +404,24 @@
 }
 
 .icon-action-btn {
-    min-width: 100px;
-    height: 48px;
-    border-radius: 12px;
+    min-width: 80px;
+    height: 40px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     text-decoration: none;
     transition: all 0.2s ease;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 0 12px;
+    padding: 6px 10px;
+    box-sizing: border-box;
 }
 
 .icon-action-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
 }
 
@@ -431,13 +432,21 @@
 /* Show text on larger screens */
 @media (min-width: 1024px) {
     .icon-action-btn {
-        min-width: 120px;
-        gap: 10px;
+        min-width: 110px;
+        height: 44px;
+        gap: 8px;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .icon-action-btn svg {
+        width: 18px;
+        height: 18px;
     }
     
     .action-text {
         display: block;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         white-space: nowrap;
     }
 }
@@ -464,6 +473,17 @@
     transform: translateY(-1px);
 }
 
+.icon-action-btn.review-reverse {
+    background: #f3e8ff;
+    color: #8b5cf6;
+}
+
+.icon-action-btn.review-reverse:hover {
+    background: #8b5cf6;
+    color: white;
+    transform: translateY(-1px);
+}
+
 .icon-action-btn.details {
     background: #f3f4f6;
     color: #6b7280;
@@ -482,16 +502,26 @@
     
     .box-card {
         padding: 16px;
+        max-width: 100%;
+        margin: 0 auto;
+        width: 90%;
+        box-sizing: border-box;
     }
     
     .box-card-icon {
         padding: 12px;
         min-height: 140px;
+        max-width: none;
+        width: 100%;
+        margin: 0 auto;
     }
     
     .boxes-grid-icons {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        justify-items: stretch;
+        padding: 1rem;
+        width: 100%;
     }
     
     .floating-add-button {
@@ -500,5 +530,27 @@
         width: 48px;
         height: 48px;
         font-size: 20px;
+    }
+
+    .box-icon-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 16px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .icon-action-btn {
+        min-width: auto;
+        width: 100%;
+        height: 36px;
+        padding: 6px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .box-card-icon {
+        padding: 16px;
+        box-sizing: border-box;
     }
 } 

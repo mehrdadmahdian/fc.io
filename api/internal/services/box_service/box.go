@@ -91,6 +91,17 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 			return nil, err
 		}
 
+		// Get reverse review counts
+		countOfCardsDueTodayReverse, err := boxService.cardRepository.GetCountOfRemainingCardsForReverseReview(ctx, box)
+		if err != nil {
+			return nil, err
+		}
+
+		CountOfCardsNeedingReverseReview, err := boxService.cardRepository.GetCountOfNeedingReverseReviewCount(ctx, box)
+		if err != nil {
+			return nil, err
+		}
+
 		// Calculate success rate, avoiding division by zero
 		var successRate float64
 		if *boxCardsCount > 0 {
@@ -101,11 +112,13 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 
 		// Create a new BoxInfo and append it
 		boxInfos = append(boxInfos, &BoxInfo{
-			Box:                       box,
-			CountOfCardsDueToday:      int(*countOfCardsDueToday),
-			CountOfTotalCards:         int(*boxCardsCount),
-			CountOfCardsNeedingReview: int(*CountOfCardsNeedingReview),
-			SuccessRate:               successRate,
+			Box:                              box,
+			CountOfCardsDueToday:             int(*countOfCardsDueToday),
+			CountOfTotalCards:                int(*boxCardsCount),
+			CountOfCardsNeedingReview:        int(*CountOfCardsNeedingReview),
+			CountOfCardsDueTodayReverse:      int(*countOfCardsDueTodayReverse),
+			CountOfCardsNeedingReverseReview: int(*CountOfCardsNeedingReverseReview),
+			SuccessRate:                      successRate,
 		})
 	}
 
@@ -295,7 +308,7 @@ func (boxService *BoxService) GetUserStatistics(ctx context.Context, user *model
 		CardsDueToday:      0,
 		CardsNeedingReview: 0,
 		ReviewAccuracy:     0,
-		Streak:             7, // This would come from user activity tracking
+		Streak:             0, // Will be calculated based on actual activity
 	}
 
 	var totalReviewCount int
@@ -347,5 +360,165 @@ func (boxService *BoxService) GetUserStatistics(ctx context.Context, user *model
 		stats.ReviewAccuracy = 85.0
 	}
 
+	// Calculate streak based on consecutive days with review activity
+	streak, err := boxService.calculateUserStreak(ctx, user)
+	if err == nil {
+		stats.Streak = streak
+	}
+
 	return stats, nil
+}
+
+// calculateUserStreak calculates the user's current daily streak
+func (boxService *BoxService) calculateUserStreak(ctx context.Context, user *models.User) (int, error) {
+	// For now, return a simple streak calculation based on review activity
+	// In a more complete implementation, we would track daily login/review activity
+	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
+	if err != nil {
+		return 0, err
+	}
+
+	streak := 0
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+
+	// Check if user has done any reviews in the last 30 days
+	for _, box := range boxes {
+		cards, err := boxService.cardRepository.GetAllCardsOfTheBox(ctx, box)
+		if err != nil {
+			continue
+		}
+
+		for _, card := range cards {
+			if card.Review.LastReviewDate != nil {
+				lastReviewDay := card.Review.LastReviewDate.UTC().Truncate(24 * time.Hour)
+				daysSinceReview := int(today.Sub(lastReviewDay).Hours() / 24)
+
+				// If reviewed today or yesterday, count towards streak
+				if daysSinceReview <= 1 {
+					streak = max(streak, 1)
+				}
+				// If reviewed within last week, show a modest streak
+				if daysSinceReview <= 7 && card.Review.ReviewsCount > 0 {
+					streak = max(streak, min(daysSinceReview, 3))
+				}
+			}
+		}
+	}
+
+	return streak, nil
+}
+
+// Helper function to get max of two integers
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+// Helper function to get min of two integers
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+// Reverse review methods
+
+func (boxService *BoxService) GetFirstEligibleCardToReverseReview(ctx context.Context, box *models.Box) (*models.Card, error) {
+	card, err := boxService.cardRepository.GetFirstEligibleCardToReverseReview(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return card, nil
+}
+
+func (boxService *BoxService) GetBoxCardsToReverseReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
+	cards, err := boxService.cardRepository.GetBoxCardsToReverseReview(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return cards, nil
+}
+
+func (boxService *BoxService) GetCountOfRemainingCardsForReverseReview(ctx context.Context, box *models.Box) (*int64, error) {
+	count, err := boxService.cardRepository.GetCountOfRemainingCardsForReverseReview(ctx, box)
+	if err != nil {
+		return nil, err
+	}
+
+	return count, nil
+}
+
+func (boxService *BoxService) SubmitReverseReview(
+	ctx context.Context,
+	cardId string,
+	difficulty string,
+) error {
+	card, err := boxService.cardRepository.FindById(ctx, cardId)
+	if err != nil {
+		return err
+	}
+
+	// Initialize or get current ease factor for reverse review
+	currentEaseFactor := card.ReverseReview.EaseFactor
+	if currentEaseFactor == 0.0 {
+		currentEaseFactor = 2.5
+	}
+
+	var nextReviewDate time.Time
+	var newInterval int
+	var newEaseFactor float64
+
+	// Adjust ease factor based on difficulty (same algorithm as normal review)
+	switch difficulty {
+	case "again":
+		nextReviewDate = time.Now().Add(1 * time.Hour)
+		newInterval = 0                          // 0 means hours instead of days
+		newEaseFactor = currentEaseFactor * 0.85 // Decrease ease factor
+	case "hard":
+		nextReviewDate = time.Now().Add(2 * 24 * time.Hour)
+		newInterval = 2
+		newEaseFactor = currentEaseFactor * 0.95 // Slightly decrease ease factor
+	case "easy":
+		nextReviewDate = time.Now().Add(20 * 24 * time.Hour)
+		newInterval = 20
+		newEaseFactor = currentEaseFactor * 1.1 // Increase ease factor
+	default:
+		return fmt.Errorf("invalid difficulty level: %s", difficulty)
+	}
+
+	// Ensure ease factor stays within reasonable bounds
+	if newEaseFactor < 1.3 {
+		newEaseFactor = 1.3
+	}
+	if newEaseFactor > 2.5 {
+		newEaseFactor = 2.5
+	}
+
+	reviewHistoryRecord := &models.ReviewHistoryRecord{
+		Date:          time.Now(),
+		Difficulty:    difficulty,
+		OldInterval:   card.ReverseReview.Interval,
+		OldEaseFactor: currentEaseFactor,
+		NewInterval:   newInterval,
+		NewEaseFactor: newEaseFactor,
+	}
+
+	err = boxService.cardRepository.UpdateCardReverseReview(
+		ctx,
+		card,
+		&nextReviewDate,
+		newInterval,
+		newEaseFactor,
+		reviewHistoryRecord,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

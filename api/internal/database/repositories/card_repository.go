@@ -345,3 +345,156 @@ func (cardRepository *CardRepository) DeleteCard(ctx context.Context, cardID str
 	_, err = cardRepository.collection.DeleteOne(ctx, filter)
 	return err
 }
+
+// Reverse review methods
+
+func (cardRepository *CardRepository) GetFirstEligibleCardToReverseReview(ctx context.Context, box *models.Box) (*models.Card, error) {
+	currentTime := time.Now()
+
+	filter := bson.M{
+		"box_id":         box.ID,
+		"reverse_review": bson.M{"$ne": nil},
+		"reverse_review.next_due_date": bson.M{
+			"$ne":  nil,
+			"$lte": currentTime,
+		},
+	}
+
+	sort := bson.D{{"reverse_review.next_due_date", 1}}
+
+	var card models.Card
+	err := cardRepository.collection.FindOne(
+		context.Background(),
+		filter,
+		options.FindOne().SetSort(sort),
+	).Decode(&card)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &card, nil
+}
+
+func (cardRepository *CardRepository) GetBoxCardsToReverseReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
+	currentTime := time.Now()
+
+	filter := bson.M{
+		"box_id":         box.ID,
+		"reverse_review": bson.M{"$ne": nil},
+		"reverse_review.next_due_date": bson.M{
+			"$ne":  nil,
+			"$lte": currentTime,
+		},
+	}
+
+	sort := bson.D{{"reverse_review.next_due_date", 1}}
+
+	cursor, err := cardRepository.collection.Find(
+		context.Background(),
+		filter,
+		options.Find().SetSort(sort),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
+	}
+	return cards, nil
+}
+
+func (cardRepository *CardRepository) GetCountOfRemainingCardsForReverseReview(ctx context.Context, box *models.Box) (*int64, error) {
+	currentTime := time.Now()
+
+	filter := bson.M{
+		"box_id":         box.ID,
+		"reverse_review": bson.M{"$ne": nil},
+		"reverse_review.next_due_date": bson.M{
+			"$ne":  nil,
+			"$lte": currentTime,
+		},
+	}
+
+	count, err := cardRepository.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &count, nil
+}
+
+func (repository *CardRepository) GetCountOfNeedingReverseReviewCount(ctx context.Context, box *models.Box) (*int64, error) {
+	filter := bson.M{
+		"box_id":         box.ID,
+		"reverse_review": bson.M{"$ne": nil},
+		"reverse_review.next_due_date": bson.M{
+			"$ne": nil,
+		},
+	}
+
+	count, err := repository.collection.CountDocuments(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	return &count, nil
+}
+
+func (cardRepository *CardRepository) UpdateCardReverseReview(
+	ctx context.Context,
+	card *models.Card,
+	nextReviewDate *time.Time,
+	interval int,
+	easeFactor float64,
+	reviewRecord *models.ReviewHistoryRecord,
+) error {
+	update := bson.M{
+		"$set": bson.M{
+			"reverse_review.next_due_date": nextReviewDate,
+			"reverse_review.interval":      interval,
+			"reverse_review.ease_factor":   easeFactor,
+			"reverse_review.reviews_count": card.ReverseReview.ReviewsCount + 1,
+		},
+		"$push": bson.M{
+			"reverse_review.review_history": reviewRecord,
+		},
+		"$setOnInsert": bson.M{
+			"reverse_review.last_review_date": time.Now(),
+		},
+		"$currentDate": bson.M{
+			"updated_at": true,
+		},
+	}
+	filter := bson.M{"_id": card.ID}
+	_, err := cardRepository.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (cardRepository *CardRepository) SetReverseArchived(ctx context.Context, cardID string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"reverse_review.next_due_date": nil,
+		},
+	}
+	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}

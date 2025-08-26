@@ -131,3 +131,47 @@
         padding: 2rem;
     }
 }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .auth-left {
+        background: #111827;
+    }
+
+    .auth-title,
+    .logo-text {
+        color: #f9fafb;
+    }
+
+    .auth-subtitle {
+        color: #d1d5db;
+    }
+
+    .form-group label {
+        color: #d1d5db;
+    }
+
+    .form-input {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .form-input:focus {
+        border-color: #4f46e5;
+        background: #374151;
+        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .input-icon {
+        color: #6b7280;
+    }
+
+    .auth-footer {
+        color: #d1d5db;
+    }
+}

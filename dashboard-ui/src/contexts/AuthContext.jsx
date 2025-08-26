@@ -103,14 +103,17 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         try {
             const response = await api.post('/auth/login', credentials);
-            const { accessToken, refreshToken, user } = response.data.data;
+            const { accessToken, refreshToken } = response.data.data;
             
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
-            setUser(user);
             setIsAuthenticated(true);
+            
+            // Get user info after login
+            await getUser();
             return true;
         } catch (error) {
+            console.error('Login error:', error);
             return false;
         }
     };
@@ -118,14 +121,17 @@ export const AuthProvider = ({ children }) => {
     const register = async (registerData) => {
         try {
             const response = await api.post('/auth/register', registerData);
-            const { accessToken, refreshToken, user } = response.data.data;
+            const { accessToken, refreshToken } = response.data.data;
             
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
-            setUser(user);
             setIsAuthenticated(true);
+            
+            // Get user info after registration
+            await getUser();
             return true;
         } catch (error) {
+            console.error('Registration error:', error);
             return false;
         }
     };

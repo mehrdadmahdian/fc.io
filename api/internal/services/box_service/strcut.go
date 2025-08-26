@@ -3,11 +3,13 @@ package box_service
 import "github.com/mehrdadmahdian/fc.io/internal/database/models"
 
 type BoxInfo struct {
-	Box                       *models.Box
-	CountOfCardsDueToday      int
-	CountOfTotalCards         int
-	CountOfCardsNeedingReview int
-	SuccessRate               float64
+	Box                              *models.Box
+	CountOfCardsDueToday             int
+	CountOfTotalCards                int
+	CountOfCardsNeedingReview        int
+	CountOfCardsDueTodayReverse      int
+	CountOfCardsNeedingReverseReview int
+	SuccessRate                      float64
 }
 
 type UserStatistics struct {
