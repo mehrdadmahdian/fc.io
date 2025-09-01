@@ -41,8 +41,13 @@ services:
           memory: 128M
 
   mongodb:
-    # Simplified MongoDB for production testing (add auth later)
+    # Simplified MongoDB for production testing (no authentication)
     command: mongod --noauth
+    environment:
+      # Explicitly disable any auth-related initialization
+      - MONGO_INITDB_DATABASE=
+      - MONGO_INITDB_ROOT_USERNAME=
+      - MONGO_INITDB_ROOT_PASSWORD=
     deploy:
       resources:
         limits:
