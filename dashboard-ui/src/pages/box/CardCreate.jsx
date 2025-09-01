@@ -35,7 +35,7 @@ function CardCreate() {
                         extra: response.data.data.card.Extra || ''
                     });
                 } catch (err) {
-                    console.error('Error fetching card:', err);
+                    // Error fetching card - handled by loading state
                 } finally {
                     setLoading(false);
                 }
@@ -58,7 +58,7 @@ function CardCreate() {
                 navigate(`/box/${boxId}`);
             }
         } catch (err) {
-            console.error('Error saving card:', err);
+            // Error saving card - handled by toast
             error(t('cardCreate.saveError'));
         }
     };

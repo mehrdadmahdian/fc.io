@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
@@ -37,7 +37,7 @@ function BoxDetails() {
     const editInputRef = useRef(null);
 
     // Fetch box and cards data
-    const fetchBoxData = async () => {
+    const fetchBoxData = useCallback(async () => {
         try {
             setLoading(true);
             const [boxResponse, cardsResponse] = await Promise.all([
@@ -48,12 +48,12 @@ function BoxDetails() {
             setBox(boxResponse.data.data.box);
             setCards(cardsResponse.data.data.cards || []);
         } catch (error) {
-            console.error('Failed to fetch box data:', error);
+            // Failed to fetch box data - error handled by state
             setError('Failed to load box details');
         } finally {
             setLoading(false);
         }
-    };
+    }, [boxId, api]);
 
     // Filter and search cards
     useEffect(() => {
@@ -82,7 +82,7 @@ function BoxDetails() {
         if (boxId) {
             fetchBoxData();
         }
-    }, [boxId]);
+    }, [boxId, fetchBoxData]);
 
     // Inline editing functions
     const startEditing = (cardId, field, currentValue) => {
@@ -117,7 +117,7 @@ function BoxDetails() {
             cancelEditing();
             success(t('cards.updateSuccess'));
         } catch (error) {
-            console.error('Failed to update card:', error);
+            // Failed to update card - error handled by toast
             showError(t('cards.updateError'));
         }
     };
@@ -129,7 +129,7 @@ function BoxDetails() {
                 setCards(cards.filter(card => card.ID !== cardId));
                 success(t('cards.deleteSuccess'));
             } catch (error) {
-                console.error('Failed to delete card:', error);
+                // Failed to delete card - error handled by toast
                 showError(t('cards.deleteError'));
             }
         }
@@ -141,7 +141,7 @@ function BoxDetails() {
             await fetchBoxData(); // Refresh to update status
             success(t('cards.archiveSuccess'));
         } catch (error) {
-            console.error('Failed to archive card:', error);
+            // Failed to archive card - error handled by toast
             showError(t('cards.archiveError'));
         }
     };
@@ -158,16 +158,6 @@ function BoxDetails() {
         if (card.Review.NextDueDate === null) return 'archived';
         if (card.Review.Interval < 7) return 'learning';
         return 'review';
-    };
-
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'new': return '#3b82f6';
-            case 'learning': return '#f59e0b';
-            case 'review': return '#10b981';
-            case 'archived': return '#6b7280';
-            default: return '#6b7280';
-        }
     };
 
     // Inline edit component

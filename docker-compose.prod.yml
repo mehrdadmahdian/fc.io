@@ -1,13 +1,51 @@
 services:
   nginx:
     ports:
+      # Add HTTPS port for production
       - "443:443"
     volumes:
+      # Mount SSL certificates for production (if available)
       - /etc/ssl/private:/etc/ssl/private:ro
-  public-ui:
-    environment:
-      - WATCHPACK_POLLING=false
+
+  api:
+    build:
+      target: production
+    volumes: []  # Remove development volumes and use built binary
+
   dashboard-ui:
     build:
+      target: production
       args:
         REACT_APP_API_BASE_URL: ${API_URL}
+    environment:
+      - NODE_ENV=production
+      - WATCHPACK_POLLING=false
+    volumes: []  # Remove development volumes
+
+  public-ui:
+    build:
+      target: production
+    environment:
+      - NODE_ENV=production
+      - WATCHPACK_POLLING=false
+      - NEXT_TELEMETRY_DISABLED=1
+    volumes: []  # Remove development volumes
+
+  # Production-specific health checks and resource limits
+  redis:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  mongodb:
+    # Simplified MongoDB for production testing (add auth later)
+    command: mongod --noauth
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M

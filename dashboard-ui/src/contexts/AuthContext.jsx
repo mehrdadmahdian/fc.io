@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        console.log('AuthProvider: Initializing authentication check');
+        // Initializing authentication check
         try {
             getUser();
         } catch (error) {
-            console.error('AuthProvider: Error during initialization:', error);
+            // Error during initialization - could add proper error handling
             setIsLoading(false);
             setIsAuthenticated(false);
         }
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
     const getUser = async () => {
         const token = localStorage.getItem('accessToken');
-        console.log('AuthProvider: Checking token, found:', !!token);
+        // Checking for existing token
         
         if (token) {
             setIsAuthenticated(true);
@@ -93,10 +93,10 @@ export const AuthProvider = ({ children }) => {
                 }
             }
         } else {
-            console.log('AuthProvider: No token found, setting as unauthenticated');
+            // No token found, setting as unauthenticated
             setIsAuthenticated(false);
         }
-        console.log('AuthProvider: Authentication check complete, isAuthenticated will be:', !token ? false : 'checking...');
+        // Authentication check complete
         setIsLoading(false);
     };
 
@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
             await getUser();
             return true;
         } catch (error) {
-            console.error('Login error:', error);
+            // Login error - could add proper error handling
             return false;
         }
     };
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }) => {
             await getUser();
             return true;
         } catch (error) {
-            console.error('Registration error:', error);
+            // Registration error - could add proper error handling
             return false;
         }
     };

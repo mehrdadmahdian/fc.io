@@ -32,9 +32,10 @@ function FormMarkdownTextarea({
         setIsPreviewMode(!isPreviewMode);
     };
 
-    const toggleFullscreen = () => {
-        setIsFullscreen(!isFullscreen);
-    };
+    // Fullscreen functionality - could be implemented later
+    // const toggleFullscreen = () => {
+    //     setIsFullscreen(!isFullscreen);
+    // };
 
     const insertMarkdown = (syntax) => {
         if (textareaRef.current) {
@@ -98,8 +99,6 @@ function FormMarkdownTextarea({
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
     }, [isFullscreen]);
-
-    const containerClass = `markdown-textarea-container ${isFullscreen ? 'fullscreen' : ''}`;
 
     return (
         <div className="form-group">

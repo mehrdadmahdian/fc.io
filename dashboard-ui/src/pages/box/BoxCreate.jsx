@@ -23,7 +23,7 @@ function BoxCreate() {
             // Navigate to dashboard root within the React Router context (no leading slash)
             navigate('/', { replace: true });
         } catch (err) {
-            console.error('Failed to create box:', err);
+            // Failed to create box - error handled by toast
             error(t('boxCreate.createError'));
         }
     };

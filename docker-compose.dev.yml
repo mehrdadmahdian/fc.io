@@ -1,22 +1,54 @@
 services:
+  api:
+    build:
+      target: development
+    volumes:
+      # Mount source code for hot reloading in development
+      - ./api/:/app:delegated
+
   dashboard-ui:
+    build:
+      target: development
     environment:
+      # Development environment variables for hot reload
+      - NODE_ENV=development
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
       - FAST_REFRESH=true
       - WDS_SOCKET_HOST=0.0.0.0
       - WDS_SOCKET_PORT=0
       - REACT_APP_RELOAD_SOCKET=true
+      - GENERATE_SOURCEMAP=false
     volumes:
+      # Mount source code for hot reloading
       - ./dashboard-ui:/app:delegated
       - /app/node_modules
       - dashboard_ui_cache:/app/.npm
     stdin_open: true
     tty: true
+
   public-ui:
+    build:
+      target: development
     environment:
+      # Development environment variables for hot reload
+      - NODE_ENV=development
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
     volumes:
+      # Mount source code for hot reloading
       - ./public-ui:/app:delegated
-      - /app/node_modules 
+      - /app/node_modules
+
+  nginx:
+    # In development, don't copy static files - use proxy instead
+    volumes:
+      - ./docker/nginx/conf.d/:/etc/nginx/templates/
+
+  mongodb:
+    # Disable authentication in development for easier setup
+    command: mongod --noauth
+
+volumes:
+  dashboard_ui_cache:

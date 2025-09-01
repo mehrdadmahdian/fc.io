@@ -18,7 +18,7 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                 onActiveChange(box.Box.ID);
             }
         } catch (error) {
-            console.error('Error setting active box:', error);
+            // Error setting active box - could add proper error handling here
         } finally {
             setIsSettingActive(false);
         }

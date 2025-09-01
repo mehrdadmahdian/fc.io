@@ -52,7 +52,7 @@
 
         const handleResponse = async (difficulty) => {
             try {
-                const response = await api.post(`/dashboard/boxes/${boxId}/review/reverse/respond`, {
+                await api.post(`/dashboard/boxes/${boxId}/review/reverse/respond`, {
                     cardId: reviewData.cards[currentCard].ID,
                     difficulty: difficulty
                 });

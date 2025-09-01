@@ -6,18 +6,18 @@ import './i18n';
 import './index.css';
 import './assets/styles/fonts.css';
 
-console.log('INDEX: Starting React app initialization...');
+// Starting React app initialization
 
 try {
   const rootElement = document.getElementById('root');
-  console.log('INDEX: Root element found:', !!rootElement);
+  // Root element found
   
   if (!rootElement) {
     throw new Error('Root element not found');
   }
 
   const root = ReactDOM.createRoot(rootElement);
-  console.log('INDEX: React root created successfully');
+  // React root created successfully
   
   root.render(
     <React.StrictMode>
@@ -27,9 +27,9 @@ try {
     </React.StrictMode>
   );
   
-  console.log('INDEX: React app rendered successfully');
+  // React app rendered successfully
 } catch (error) {
-  console.error('INDEX: Error initializing React app:', error);
+  // Error initializing React app - could add proper error handling
   
   // Fallback: Add visible error message to the page
   const rootElement = document.getElementById('root');
