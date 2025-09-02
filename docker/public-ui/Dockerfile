@@ -79,8 +79,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Copy public directory if it exists
-COPY --from=builder /app/public ./public
+# Create empty public directory (Next.js apps may not have one)
+RUN mkdir -p ./public
 
 # Set proper permissions
 RUN chown -R nextjs:nodejs /app
