@@ -147,8 +147,13 @@ networks:
 
 volumes:
   redis_data:
-    driver: local
+    external: true
+    name: fcio_redis_data
   mongo_data:
-    driver: local
+    external: true
+    name: fcio_mongo_data
   dashboard_ui_cache:
     driver: local
+  node_modules:
+    external: true
+    name: fcio_node_modules

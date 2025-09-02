@@ -66,6 +66,7 @@ FROM base AS production
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME=0.0.0.0
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -87,7 +88,7 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+    CMD curl -f http://localhost:3000/ || exit 1
 
 # Use dumb-init and start the application
 ENTRYPOINT ["dumb-init", "--"]

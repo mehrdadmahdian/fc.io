@@ -10,7 +10,10 @@ services:
   api:
     build:
       target: production
-    volumes: []  # Remove development volumes and use built binary
+    # Keep essential production volumes for logs and sessions
+    volumes:
+      - ${LOG_PATH:-./logs}:/var/log/
+      - ${SESSION_PATH:-./sessions}:/var/sessions/
 
   dashboard-ui:
     build:
@@ -20,7 +23,10 @@ services:
     environment:
       - NODE_ENV=production
       - WATCHPACK_POLLING=false
-    volumes: []  # Remove development volumes
+    # Remove development volumes but keep production cache
+    volumes:
+      - dashboard_ui_cache:/app/.cache
+      - node_modules:/app/node_modules
 
   public-ui:
     build:
@@ -29,7 +35,9 @@ services:
       - NODE_ENV=production
       - WATCHPACK_POLLING=false
       - NEXT_TELEMETRY_DISABLED=1
-    volumes: []  # Remove development volumes
+    # Remove development volumes but keep production cache
+    volumes:
+      - node_modules:/app/node_modules
 
   # Production-specific health checks and resource limits
   redis:
