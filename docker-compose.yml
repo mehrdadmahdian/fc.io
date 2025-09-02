@@ -151,7 +151,7 @@ volumes:
     name: fcio_redis_data
   mongo_data:
     external: true
-    name: fcio_mongo_data
+    name: fcio_mongo-data
   dashboard_ui_cache:
     driver: local
   node_modules:
