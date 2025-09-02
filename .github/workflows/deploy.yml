@@ -35,7 +35,7 @@ jobs:
                 cd /var/www/fc.io
                 git fetch origin master
                 LAST_DEPLOYED_COMMIT=$(cat deploy/last_deployed_commit)
-                if git diff --name-only "$LAST_DEPLOYED_COMMIT" origin/master | grep -E '(docker-compose.yml|^docker/)'; then
+                if git diff --name-only "$LAST_DEPLOYED_COMMIT" origin/master | grep -E '(docker-compose\.yml|docker-compose\.prod\.yml|^docker/|^public-ui/|^dashboard-ui/|^api/)'; then
                   echo "true" > /tmp/build_required.txt
                 else
                   echo "false" > /tmp/build_required.txt
@@ -49,19 +49,29 @@ jobs:
           BUILD_REQUIRED=$(ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "cat /tmp/build_required.txt")
           echo "build_required=$BUILD_REQUIRED" >> $GITHUB_ENV
 
-      - name: Deploy to server using Docker Compose
+      - name: Deploy to server using start.sh script
         run: |
           ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
             cd /var/www/fc.io
             git fetch origin master && git reset --hard origin/master && git clean -fd
             
+            # Set up environment file for production
+            cp env.production .env
+            
             if [[ "${{ env.build_required }}" == "true" ]]; then
-              echo "Build-related changes detected. Rebuilding containers."
-              docker compose down
-              docker compose up --build -d
+              echo "Build-related changes detected. Stopping and rebuilding containers."
+              ./start.sh stop
+              
+              # Clean up any potentially cached layers
+              docker builder prune -f
+              
+              # Start production environment with rebuild
+              ./start.sh prod
+              
+              echo "Deployment completed with rebuild using start.sh"
             else
-              echo "No build-related changes detected. Starting existing containers."
-              docker compose up -d
+              echo "No build-related changes detected. Restarting existing containers."
+              ./start.sh restart
             fi
 
             git rev-parse HEAD > deploy/last_deployed_commit

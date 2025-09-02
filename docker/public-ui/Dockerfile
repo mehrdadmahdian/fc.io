@@ -72,10 +72,15 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001 -G nodejs
 
+# Copy production dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
 # Copy built application from builder stage  
-# Only copy public directory if it exists
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# Copy public directory if it exists
+COPY --from=builder /app/public ./public
 
 # Set proper permissions
 RUN chown -R nextjs:nodejs /app
