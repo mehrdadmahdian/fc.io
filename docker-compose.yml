@@ -104,7 +104,7 @@ services:
       - fc-network
 
   mongodb:
-    image: mongo:7
+    image: mongo:8
     container_name: mongodb
     restart: unless-stopped
     ports:
