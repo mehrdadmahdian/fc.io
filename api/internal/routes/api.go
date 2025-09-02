@@ -1,12 +1,45 @@
 package routes
 
 import (
+	"os"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/mehrdadmahdian/fc.io/internal/application"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/api_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/middlewares"
 )
+
+// buildAllowedOrigins creates a dynamic list of allowed origins based on environment
+func buildAllowedOrigins() string {
+	baseOrigins := []string{
+		"http://localhost",
+		"http://127.0.0.1",
+		"http://localhost:3000",
+		"http://127.0.0.1:3000",
+	}
+
+	// Add server-specific origins from environment variables
+	serverName := os.Getenv("SERVER_NAME")
+	if serverName != "" {
+		baseOrigins = append(baseOrigins,
+			"http://"+serverName,
+			"https://"+serverName,
+		)
+	}
+
+	// Add custom origins from environment variable (comma-separated)
+	customOrigins := os.Getenv("CORS_ALLOWED_ORIGINS")
+	if customOrigins != "" {
+		origins := strings.Split(customOrigins, ",")
+		for _, origin := range origins {
+			baseOrigins = append(baseOrigins, strings.TrimSpace(origin))
+		}
+	}
+
+	return strings.Join(baseOrigins, ",")
+}
 
 func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Container) {
 	ApiCSPMiddleware := middlewares.ApiCSPMiddleware()
@@ -17,7 +50,7 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 
 	// Add CORS middleware specifically for API routes
 	apiGroup.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost,http://127.0.0.1,http://localhost:3000,http://127.0.0.1:3000",
+		AllowOrigins:     buildAllowedOrigins(),
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 		AllowHeaders:     "Origin,Content-Type,Accept,Authorization,X-Requested-With",
 		AllowCredentials: true,
