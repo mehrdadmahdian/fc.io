@@ -12,6 +12,7 @@ import { api } from '../services/api';
 function Dashboard() {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
+    const [viewMode, setViewMode] = useState('icon'); // 'icon' or 'full'
     const [data, setData] = useState({
         stats: {
             totalBoxes: { value: 0, trend: 0 },
@@ -140,19 +141,37 @@ function Dashboard() {
 
                         <div className="boxes-section">
                             <div className="boxes-header">
+                                <div className="boxes-header-left">
+                                    <div className="view-toggle">
+                                        <button 
+                                            className={`view-toggle-btn ${viewMode === 'icon' ? 'active' : ''}`}
+                                            onClick={() => setViewMode('icon')}
+                                            title={t('dashboard.boxes.viewModes.icon')}
+                                        >
+                                            <i className="fas fa-th"></i>
+                                        </button>
+                                        <button 
+                                            className={`view-toggle-btn ${viewMode === 'full' ? 'active' : ''}`}
+                                            onClick={() => setViewMode('full')}
+                                            title={t('dashboard.boxes.viewModes.full')}
+                                        >
+                                            <i className="fas fa-list"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 <Link to="/box/create" className="btn btn-primary btn-create-box">
                                     <i className="fas fa-plus"></i>
                                     {t('dashboard.boxes.create')}
                                 </Link>
                             </div>
-                            <div className="boxes-grid boxes-grid-icons">
+                            <div className={`boxes-grid ${viewMode === 'icon' ? 'boxes-grid-icons' : 'boxes-grid-full'}`}>
                                 {data.boxes.length > 0 ? (
                                     data.boxes.map((box) => (
                                         <BoxCard 
                                             key={box.Box.ID} 
                                             box={box} 
                                             onActiveChange={handleActiveBoxChange}
-                                            viewMode="icon"
+                                            viewMode={viewMode}
                                         />
                                     ))
                                 ) : (

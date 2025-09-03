@@ -69,6 +69,10 @@
         "details": "Details",
         "edit": "Edit Box",
         "delete": "Delete Box"
+      },
+      "viewModes": {
+        "icon": "Icon View",
+        "full": "Full View"
       }
     },
     "alerts": {
