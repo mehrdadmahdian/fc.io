@@ -1107,14 +1107,14 @@ body {
 /* Boxes Grid Alignment - Responsive overrides */
 @media (min-width: 1200px) {
     .boxes-grid-icons {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 24px;
     }
 }
 
 @media (max-width: 1024px) {
     .boxes-grid-icons {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 18px;
     }
 }
