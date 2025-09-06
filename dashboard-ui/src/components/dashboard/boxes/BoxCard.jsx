@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
 import '../../../assets/styles/BoxCard.css';
 
 const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
     const { t } = useTranslation();
+    const location = useLocation();
     const [isSettingActive, setIsSettingActive] = useState(false);
     
     const handleSetActive = async () => {
@@ -68,7 +69,12 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                 </div>
             </div>
             <div className="box-icon-actions">
-                <Link to={`/box/${box.Box.ID}/cards/create`} className="icon-action-btn add" title={t('dashboard.boxes.actions.addCard')}>
+                <Link 
+                    to={`/box/${box.Box.ID}/cards/create`} 
+                    state={{ from: location.pathname }}
+                    className="icon-action-btn add" 
+                    title={t('dashboard.boxes.actions.addCard')}
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 4.75a.75.75 0 01.75.75v6h6a.75.75 0 010 1.5h-6v6a.75.75 0 01-1.5 0v-6h-6a.75.75 0 010-1.5h6v-6a.75.75 0 01.75-.75z" />
                     </svg>
@@ -137,7 +143,11 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
             </div>
             
             <div className="button-group">
-                <Link to={`/box/${box.Box.ID}/cards/create`} className="button button-add">
+                <Link 
+                    to={`/box/${box.Box.ID}/cards/create`} 
+                    state={{ from: location.pathname }}
+                    className="button button-add"
+                >
                     {t('dashboard.boxes.actions.addCard')}
                 </Link>
                 <Link to={`/box/${box.Box.ID}/review`} className="button button-review">

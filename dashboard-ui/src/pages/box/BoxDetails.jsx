@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardContainer from '../../components/layout/DashboardContainer';
@@ -14,6 +14,7 @@ import '../../assets/styles/BoxDetails.css';
 function BoxDetails() {
     const { t } = useTranslation();
     const { boxId } = useParams();
+    const location = useLocation();
     const { api } = useAuth();
     const { success, error: showError } = useToast();
     
@@ -82,6 +83,13 @@ function BoxDetails() {
             );
         }
         
+        // Sort by most recent first (UpdatedAt descending, then CreatedAt descending)
+        filtered.sort((a, b) => {
+            const aTime = new Date(a.UpdatedAt || a.CreatedAt);
+            const bTime = new Date(b.UpdatedAt || b.CreatedAt);
+            return bTime - aTime; // Descending order (newest first)
+        });
+        
         setFilteredCards(filtered);
         setCurrentPage(1); // Reset to first page when filters change
     }, [cards, statusFilter, searchQuery]);
@@ -112,9 +120,20 @@ function BoxDetails() {
 
     const saveEdit = async (cardId, field) => {
         try {
-            // Convert field name to lowercase for backend API
-            const backendField = field.toLowerCase();
-            const updateData = { [backendField]: editValue };
+            // Find the current card to get all its values
+            const currentCard = cards.find(card => card.ID === cardId);
+            if (!currentCard) {
+                showError(t('cards.updateError'));
+                return;
+            }
+
+            // Prepare update data with all required fields
+            const updateData = {
+                front: field === 'Front' ? editValue : (currentCard.Front || ''),
+                back: field === 'Back' ? editValue : (currentCard.Back || ''),
+                extra: field === 'Extra' ? editValue : (currentCard.Extra || '')
+            };
+
             await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, updateData);
             
             // Update local state
@@ -202,6 +221,41 @@ function BoxDetails() {
         if (card.Review.NextDueDate === null) return 'archived';
         if (card.Review.Interval < 7) return 'learning';
         return 'review';
+    };
+
+    // Format timestamp for display
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp) return '-';
+        
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+        
+        // Less than 1 minute
+        if (diffInSeconds < 60) {
+            return t('time.justNow');
+        }
+        
+        // Less than 1 hour
+        if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return t('time.minutesAgo', { count: minutes });
+        }
+        
+        // Less than 24 hours
+        if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return t('time.hoursAgo', { count: hours });
+        }
+        
+        // Less than 7 days
+        if (diffInSeconds < 604800) {
+            const days = Math.floor(diffInSeconds / 86400);
+            return t('time.daysAgo', { count: days });
+        }
+        
+        // More than 7 days - show actual date
+        return date.toLocaleDateString();
     };
 
     // Inline edit component
@@ -296,6 +350,13 @@ function BoxDetails() {
                         rows={3}
                     />
                 </div>
+                <div className="col-timestamp">
+                    <div className="timestamp-info">
+                        <div className="timestamp-main new-card-timestamp">
+                            {t('cards.willBeCreatedNow')}
+                        </div>
+                    </div>
+                </div>
                 <div className="col-actions">
                     <div className="action-buttons-group">
                         <button 
@@ -368,8 +429,16 @@ function BoxDetails() {
                                         disabled={isCreatingCard}
                                     >
                                         <i className="fas fa-plus"></i>
-                                        {t('cards.add')}
+                                        {t('cards.addQuick')}
                                     </button>
+                                    <Link 
+                                        to={`/box/${boxId}/cards/create`} 
+                                        state={{ from: location.pathname }}
+                                        className="btn btn-outline-primary"
+                                    >
+                                        <i className="fas fa-plus-circle"></i>
+                                        {t('cards.addDetailed')}
+                                    </Link>
                                     <Link to={`/box/${boxId}/review`} className="btn btn-outline-primary">
                                         <i className="fas fa-play"></i>
                                         {t('review.start')}
@@ -417,7 +486,7 @@ function BoxDetails() {
                             </div>
 
                             {/* Cards Table */}
-                            {filteredCards.length === 0 ? (
+                            {filteredCards.length === 0 && !isCreatingCard ? (
                                 <div className="empty-state-modern">
                                     <div className="empty-icon">
                                         <i className="fas fa-search"></i>
@@ -432,14 +501,24 @@ function BoxDetails() {
                                         }
                                     </p>
                                     {!searchQuery && !statusFilter && (
-                                        <button 
-                                            onClick={startCreatingCard} 
-                                            className="btn btn-primary"
-                                            disabled={isCreatingCard}
-                                        >
-                                            <i className="fas fa-plus"></i>
-                                            {t('cards.createFirst')}
-                                        </button>
+                                        <div className="empty-state-buttons">
+                                            <button 
+                                                onClick={startCreatingCard} 
+                                                className="btn btn-primary"
+                                                disabled={isCreatingCard}
+                                            >
+                                                <i className="fas fa-plus"></i>
+                                                {t('cards.addQuick')}
+                                            </button>
+                                            <Link 
+                                                to={`/box/${boxId}/cards/create`} 
+                                                state={{ from: location.pathname }}
+                                                className="btn btn-outline-primary"
+                                            >
+                                                <i className="fas fa-plus-circle"></i>
+                                                {t('cards.addDetailed')}
+                                            </Link>
+                                        </div>
                                     )}
                                 </div>
                             ) : (
@@ -450,6 +529,7 @@ function BoxDetails() {
                                             <div className="col-front">{t('cards.front')}</div>
                                             <div className="col-back">{t('cards.back')}</div>
                                             <div className="col-extra">{t('cards.extra')}</div>
+                                            <div className="col-timestamp">{t('cards.lastModified')}</div>
                                             <div className="col-actions">{t('cards.actions')}</div>
                                         </div>
                                         
@@ -473,10 +553,23 @@ function BoxDetails() {
                                                 <div className="col-extra">
                                                     {renderEditableField(card, 'Extra')}
                                                 </div>
+                                                <div className="col-timestamp">
+                                                    <div className="timestamp-info">
+                                                        <div className="timestamp-main">
+                                                            {formatTimestamp(card.UpdatedAt)}
+                                                        </div>
+                                                        {card.CreatedAt !== card.UpdatedAt && (
+                                                            <div className="timestamp-created">
+                                                                {t('cards.created')}: {formatTimestamp(card.CreatedAt)}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
                                                 <div className="col-actions">
                                                     <div className="action-buttons-group">
                                                         <Link 
                                                             to={`/box/${boxId}/cards/${card.ID}/edit`}
+                                                            state={{ from: location.pathname }}
                                                             className="action-btn edit"
                                                             title={t('cards.edit')}
                                                         >

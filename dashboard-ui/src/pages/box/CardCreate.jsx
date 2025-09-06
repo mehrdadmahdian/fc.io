@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import DashboardContainer from '../../components/layout/DashboardContainer';
@@ -15,6 +15,7 @@ import { useToast } from '../../contexts/ToastContext';
 function CardCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const location = useLocation();
     const { boxId, cardId } = useParams();
     const { success, error } = useToast();
     const [formData, setFormData] = useState({
@@ -23,6 +24,22 @@ function CardCreate() {
         extra: ''
     });
     const [loading, setLoading] = useState(cardId ? true : false);
+
+    // Function to handle navigation back to the appropriate page
+    const navigateBack = () => {
+        // Check if we have a referrer in the location state
+        if (location.state?.from) {
+            navigate(location.state.from);
+        } else {
+            // Check if there's browser history to go back to
+            if (window.history.length > 1) {
+                navigate(-1);
+            } else {
+                // Fallback to box details page
+                navigate(`/box/${boxId}`);
+            }
+        }
+    };
 
     useEffect(() => {
         if (cardId) {
@@ -50,12 +67,12 @@ function CardCreate() {
                 // Update existing card
                 await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, formData);
                 success(t('cardCreate.updateSuccess'));
-                navigate(`/box/${boxId}/review`);    
+                navigateBack();
             } else {
                 // Create new card
                 await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
                 success(t('cardCreate.createSuccess'));
-                navigate(`/box/${boxId}`);
+                navigateBack();
             }
         } catch (err) {
             // Error saving card - handled by toast
@@ -89,7 +106,7 @@ function CardCreate() {
                     <div className="dashboard-box">
                         <Form
                             onSubmit={handleSubmit}
-                            onCancel={() => navigate(`/box/${boxId}`)}
+                            onCancel={navigateBack}
                             submitLabel={cardId ? t('cardCreate.update') : t('cardCreate.save')}
                             cancelLabel={t('common.cancel')}
                             initialData={formData}
