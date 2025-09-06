@@ -11,6 +11,15 @@ on:
         required: false
         default: 'false'
         type: boolean
+      force_deploy:
+        description: 'Force deploy even if no changes detected'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
   build:
@@ -19,54 +28,73 @@ jobs:
     outputs:
       build_timestamp: ${{ steps.timestamp.outputs.timestamp }}
       build_required: ${{ steps.check_changes.outputs.build_required }}
+      commit_sha: ${{ github.sha }}
+      build_number: ${{ github.run_number }}
     
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Generate build timestamp
         id: timestamp
         run: echo "timestamp=$(date +%Y%m%d_%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
 
       - name: Install SSH client
-        run: sudo apt-get install -y openssh-client
+        run: sudo apt-get update && sudo apt-get install -y openssh-client
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Check for build-related changes
         id: check_changes
         run: |
-          ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "[[ -f /var/www/fc.io/deploy/last_deployed_commit ]] && echo 'yes' || echo 'no'" > last_deployed_commit.txt
-
-          if [ -f last_deployed_commit.txt ]; then
-            if grep -q "yes" last_deployed_commit.txt; then
-              ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
-                cd /var/www/fc.io
-                git fetch origin master
-                LAST_DEPLOYED_COMMIT=$(cat deploy/last_deployed_commit)
-                if git diff --name-only "$LAST_DEPLOYED_COMMIT" origin/master | grep -E '(docker-compose\.yml|docker-compose\.prod\.yml|^docker/|^public-ui/|^dashboard-ui/|^api/)'; then
-                  echo "true" > /tmp/build_required.txt
-                else
-                  echo "false" > /tmp/build_required.txt
-                fi
-              "
+          BUILD_REQUIRED="false"
+          
+          # Force deploy if requested
+          if [[ "${{ inputs.force_deploy }}" == "true" ]]; then
+            echo "Force deploy requested"
+            BUILD_REQUIRED="true"
+          else
+            # Check if this is the first deployment
+            if ! ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "test -f /var/www/fc.io/deploy/last_deployed_commit" 2>/dev/null; then
+              echo "First deployment detected"
+              BUILD_REQUIRED="true"
             else
-              ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "echo 'true' > /tmp/build_required.txt"
+              # Get last deployed commit
+              LAST_COMMIT=$(ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "cat /var/www/fc.io/deploy/last_deployed_commit" 2>/dev/null || echo "")
+              
+              if [[ -n "$LAST_COMMIT" ]]; then
+                # Check for changes in build-related files
+                if git diff --name-only "$LAST_COMMIT" HEAD | grep -E '(docker-compose\.yml|docker-compose\.prod\.yml|^docker/|^public-ui/|^dashboard-ui/|^api/|^\.github/workflows/)'; then
+                  echo "Build-related changes detected"
+                  BUILD_REQUIRED="true"
+                else
+                  echo "No build-related changes detected"
+                  BUILD_REQUIRED="false"
+                fi
+              else
+                echo "Could not determine last commit, building anyway"
+                BUILD_REQUIRED="true"
+              fi
             fi
           fi
-
-          BUILD_REQUIRED=$(ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "cat /tmp/build_required.txt")
+          
           echo "build_required=$BUILD_REQUIRED" >> $GITHUB_OUTPUT
 
       - name: Create deployment package
         if: steps.check_changes.outputs.build_required == 'true'
         run: |
+          echo "Creating deployment package..."
+          
           # Create deployment artifact directory
           mkdir -p deployment-package
           
@@ -77,93 +105,353 @@ jobs:
           cp -r api/ deployment-package/
           cp docker-compose.yml deployment-package/
           cp docker-compose.prod.yml deployment-package/
-          cp env.production deployment-package/
           cp start.sh deployment-package/
           
+          # Copy environment files if they exist
+          if [[ -f env.production ]]; then
+            cp env.production deployment-package/
+          fi
+          
+          if [[ -f env.template ]]; then
+            cp env.template deployment-package/
+          fi
+          
           # Create build info
-          echo "BUILD_TIMESTAMP=${{ steps.timestamp.outputs.timestamp }}" > deployment-package/build-info.env
-          echo "COMMIT_SHA=${{ github.sha }}" >> deployment-package/build-info.env
-          echo "BUILD_NUMBER=${{ github.run_number }}" >> deployment-package/build-info.env
+          cat > deployment-package/build-info.env << EOF
+          BUILD_TIMESTAMP=${{ steps.timestamp.outputs.timestamp }}
+          COMMIT_SHA=${{ github.sha }}
+          BUILD_NUMBER=${{ github.run_number }}
+          BRANCH=${{ github.ref_name }}
+          WORKFLOW_RUN_ID=${{ github.run_id }}
+          DEPLOYED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          EOF
           
           # Create deployment package
           tar -czf fc-io-deployment-${{ steps.timestamp.outputs.timestamp }}.tar.gz deployment-package/
+          
+          echo "Deployment package created: $(ls -lh fc-io-deployment-*.tar.gz)"
 
       - name: Upload deployment artifact
         if: steps.check_changes.outputs.build_required == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: fc-io-deployment-${{ steps.timestamp.outputs.timestamp }}
           path: fc-io-deployment-${{ steps.timestamp.outputs.timestamp }}.tar.gz
           retention-days: 30
+          compression-level: 6
 
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
     if: always() && (needs.build.result == 'success' || inputs.deploy_only)
+    environment: production
     
     steps:
-      - name: Checkout the code (for deploy-only mode)
+      - name: Checkout code (for deploy-only mode)
         if: inputs.deploy_only
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download deployment artifact
         if: needs.build.outputs.build_required == 'true' && !inputs.deploy_only
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: fc-io-deployment-${{ needs.build.outputs.build_timestamp }}
 
       - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to server using artifacts
+      - name: Pre-deployment health check
         run: |
-          # Upload artifact if we have one
-          if [[ "${{ needs.build.outputs.build_required }}" == "true" ]] && [[ "${{ inputs.deploy_only }}" != "true" ]]; then
-            echo "Uploading deployment artifact..."
-            scp -o StrictHostKeyChecking=no fc-io-deployment-${{ needs.build.outputs.build_timestamp }}.tar.gz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/"
+          echo "Checking server connectivity and current deployment status..."
+          
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            echo 'Server connection successful'
+            
+            echo 'Current memory usage:'
+            free -h
+            
+            echo 'Current disk usage:'
+            df -h
+            
+            # Check if memory is critically low (less than 1GB available)
+            AVAILABLE_MEM=\$(free -m | awk 'NR==2{print \$7}')
+            echo \"Available memory: \${AVAILABLE_MEM}MB\"
+            
+            if [[ \$AVAILABLE_MEM -lt 1000 ]]; then
+              echo 'WARNING: Low memory detected, running emergency cleanup...'
+              docker system prune -af --volumes --filter 'until=1h'
+              docker builder prune -af
+              echo 'Emergency cleanup completed'
+              echo 'Memory after cleanup:'
+              free -h
+            else
+              echo 'Memory levels are acceptable'
+            fi
+            
+            echo 'Docker status:'
+            docker --version
+            docker compose version
+            echo 'Current running containers:'
+            docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+          "
+
+      - name: Deploy with zero downtime
+        run: |
+          set -e
+          
+          # Set deployment variables
+          TIMESTAMP="${{ needs.build.outputs.build_timestamp || github.run_number }}"
+          DEPLOY_DIR="/var/www/fc.io"
+          BACKUP_DIR="/var/backups/fc.io"
+          TEMP_DIR="/tmp/fc-io-deploy-$TIMESTAMP"
+          
+          echo "Starting zero-downtime deployment..."
+          echo "Timestamp: $TIMESTAMP"
+          echo "Deploy directory: $DEPLOY_DIR"
+          
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            set -e
+            
+            # Create necessary directories
+            sudo mkdir -p $BACKUP_DIR $DEPLOY_DIR $TEMP_DIR
+            sudo chown -R $USER:$USER $BACKUP_DIR $DEPLOY_DIR $TEMP_DIR
+            
+            cd $DEPLOY_DIR
+            
+            # Function to rollback on failure
+            rollback() {
+              echo 'Deployment failed, initiating rollback...'
+              if [[ -d $BACKUP_DIR/current ]]; then
+                echo 'Restoring from backup...'
+                rsync -av --delete $BACKUP_DIR/current/ $DEPLOY_DIR/
+                ./start.sh restart
+                echo 'Rollback completed'
+              fi
+              exit 1
+            }
+            
+            # Set trap for rollback on error
+            trap rollback ERR
+            
+            # Create backup of current deployment
+            echo 'Creating backup of current deployment...'
+            rm -rf $BACKUP_DIR/previous
+            if [[ -d $BACKUP_DIR/current ]]; then
+              mv $BACKUP_DIR/current $BACKUP_DIR/previous
+            fi
+            mkdir -p $BACKUP_DIR/current
+            
+            # Backup current state (excluding large directories)
+            rsync -av --exclude='logs/' --exclude='sessions/' --exclude='node_modules/' --exclude='.git/' $DEPLOY_DIR/ $BACKUP_DIR/current/
+            
+            echo 'Backup completed successfully'
+          "
+          
+          # Upload and extract new deployment if we have an artifact
+          if [[ '${{ needs.build.outputs.build_required }}' == 'true' ]] && [[ '${{ inputs.deploy_only }}' != 'true' ]]; then
+            echo "Uploading new deployment artifact..."
+            scp -o StrictHostKeyChecking=no fc-io-deployment-$TIMESTAMP.tar.gz "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:$TEMP_DIR/"
+            
+            ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+              set -e
+              cd $TEMP_DIR
+              
+              echo 'Extracting deployment package...'
+              tar -xzf fc-io-deployment-$TIMESTAMP.tar.gz
+              
+              echo 'Syncing new files to deployment directory...'
+              rsync -av --delete deployment-package/ $DEPLOY_DIR/
+              
+              # Set up environment
+              cd $DEPLOY_DIR
+              if [[ -f env.production ]]; then
+                cp env.production .env
+              fi
+              
+              # Load build info
+              if [[ -f build-info.env ]]; then
+                source build-info.env
+                echo \"Deploying build: \$BUILD_NUMBER, Commit: \$COMMIT_SHA, Timestamp: \$BUILD_TIMESTAMP\"
+              fi
+            "
+          else
+            echo "Using git-based deployment (no artifact)..."
+            ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+              set -e
+              cd $DEPLOY_DIR
+              
+              echo 'Updating from git repository...'
+              git fetch origin master
+              git reset --hard origin/master
+              git clean -fd
+              
+              if [[ -f env.production ]]; then
+                cp env.production .env
+              fi
+            "
           fi
+          
+          # Perform zero-downtime deployment
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            set -e
+            cd $DEPLOY_DIR
+            
+            # Function to check service health
+            check_health() {
+              local service=\$1
+              local max_attempts=30
+              local attempt=1
+              
+              echo \"Checking health of \$service...\"
+              while [[ \$attempt -le \$max_attempts ]]; do
+                if docker compose ps \$service | grep -q 'healthy\\|Up'; then
+                  echo \"\$service is healthy\"
+                  # Show memory usage after each service deployment
+                  echo \"Memory usage after \$service deployment:\"
+                  free -h | grep -E 'Mem:|Swap:'
+                  return 0
+                fi
+                echo \"Attempt \$attempt/\$max_attempts: \$service not ready yet...\"
+                sleep 10
+                ((attempt++))
+              done
+              echo \"\$service failed to become healthy\"
+              return 1
+            }
+            
+            # Pre-build cleanup to free memory
+            echo 'Pre-build cleanup to ensure sufficient memory...'
+            docker system prune -af --volumes --filter 'until=6h'
+            docker builder prune -af
+            
+            # Build new images
+            echo 'Building new Docker images...'
+            APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --no-cache
+            
+            # Start services with rolling update strategy
+            echo 'Starting rolling deployment...'
+            
+            # Update backend services first (API, databases)
+            echo 'Updating backend services...'
+            APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps redis mongodb
+            
+            # Wait for databases to be ready
+            check_health redis
+            check_health mongodb
+            
+            # Update API service
+            echo 'Updating API service...'
+            APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps api
+            check_health api
+            
+            # Update frontend services
+            echo 'Updating frontend services...'
+            APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps dashboard-ui public-ui
+            check_health dashboard-ui
+            check_health public-ui
+            
+            # Finally update nginx (this is the moment of switchover)
+            echo 'Updating reverse proxy...'
+            APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps nginx
+            check_health nginx
+            
+            # Verify all services are running
+            echo 'Verifying all services...'
+            docker compose ps
+            
+            # Aggressive cleanup to prevent memory issues
+            echo 'Cleaning up Docker resources to free memory...'
+            docker image prune -af --filter 'until=1h'
+            docker container prune -f
+            docker volume prune -f
+            docker network prune -f
+            docker builder prune -af
+            docker system prune -af --volumes --filter 'until=1h'
+            
+            # Record successful deployment
+            echo '${{ github.sha }}' > deploy/last_deployed_commit
+            mkdir -p deploy
+            echo 'Deployment completed successfully at $(date)'
+            
+            # Cleanup temp directory
+            rm -rf $TEMP_DIR
+          "
+
+      - name: Post-deployment verification
+        run: |
+          echo "Running post-deployment verification..."
           
           ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
             cd /var/www/fc.io
             
-            # Handle artifact-based deployment
-            if [[ -f /tmp/fc-io-deployment-${{ needs.build.outputs.build_timestamp }}.tar.gz ]]; then
-              echo "Using deployment artifact for fast deployment..."
-              
-              # Extract artifact
-              cd /tmp
-              tar -xzf fc-io-deployment-${{ needs.build.outputs.build_timestamp }}.tar.gz
-              
-              # Stop services
-              cd /var/www/fc.io && ./start.sh stop
-              
-              # Replace with artifact content
-              rsync -av --delete /tmp/deployment-package/ /var/www/fc.io/
-              cd /var/www/fc.io
-              
-              # Set up environment
-              cp env.production .env
-              source build-info.env
-              
-              echo "Deploying artifact: Build \$BUILD_NUMBER, Commit \$COMMIT_SHA, Timestamp \$BUILD_TIMESTAMP"
-              
-              # Clean up and deploy
-              docker builder prune -f
-              ./start.sh prod
-              
-              # Cleanup
-              rm -f /tmp/fc-io-deployment-*.tar.gz
-              rm -rf /tmp/deployment-package
-              
-              echo "Artifact-based deployment completed in seconds!"
-            else
-              echo "No artifact found, using git-based deployment..."
-              git fetch origin master && git reset --hard origin/master && git clean -fd
-              cp env.production .env
-              ./start.sh restart
-            fi
+            echo 'Final service status:'
+            docker compose ps
+            
+            echo 'Service health checks:'
+            for service in nginx api dashboard-ui public-ui redis mongodb; do
+              if docker compose ps \$service | grep -q 'healthy\\|Up'; then
+                echo \"✅ \$service: OK\"
+              else
+                echo \"❌ \$service: FAILED\"
+              fi
+            done
+            
+            echo 'System resources:'
+            df -h
+            free -h
+            
+            echo 'Recent logs:'
+            docker compose logs --tail=10 nginx api dashboard-ui public-ui
+          "
 
-            git rev-parse HEAD > deploy/last_deployed_commit
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [[ '${{ job.status }}' == 'success' ]]; then
+            echo "✅ Deployment completed successfully!"
+            echo "Build: ${{ needs.build.outputs.build_number || 'git-based' }}"
+            echo "Commit: ${{ github.sha }}"
+            echo "Timestamp: ${{ needs.build.outputs.build_timestamp || github.run_number }}"
+          else
+            echo "❌ Deployment failed!"
+            echo "Check the logs above for details."
+            echo "Automatic rollback should have been triggered."
+          fi
+
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: always()
+    
+    steps:
+      - name: Cleanup old artifacts
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Server cleanup
+        if: needs.deploy.result == 'success'
+        run: |
+          ssh -o StrictHostKeyChecking=no "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "
+            # Keep only last 3 backups
+            cd /var/backups/fc.io
+            ls -t | tail -n +4 | xargs -r rm -rf
+            
+            # Aggressive Docker cleanup to prevent memory issues
+            echo 'Final Docker cleanup to free maximum memory...'
+            docker image prune -af --filter 'until=2h'
+            docker container prune -f
+            docker volume prune -f
+            docker network prune -f
+            docker builder prune -af
+            docker system prune -af --volumes --filter 'until=2h'
+            
+            # Show final memory status
+            echo 'Memory status after cleanup:'
+            free -h
+            df -h
+            
+            echo 'Cleanup completed'
           "

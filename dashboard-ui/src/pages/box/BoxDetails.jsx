@@ -35,6 +35,14 @@ function BoxDetails() {
     const [editingField, setEditingField] = useState(null);
     const [editValue, setEditValue] = useState('');
     const editInputRef = useRef(null);
+    
+    // New card creation
+    const [isCreatingCard, setIsCreatingCard] = useState(false);
+    const [newCardData, setNewCardData] = useState({
+        front: '',
+        back: '',
+        extra: ''
+    });
 
     // Fetch box and cards data
     const fetchBoxData = useCallback(async () => {
@@ -104,7 +112,9 @@ function BoxDetails() {
 
     const saveEdit = async (cardId, field) => {
         try {
-            const updateData = { [field]: editValue };
+            // Convert field name to lowercase for backend API
+            const backendField = field.toLowerCase();
+            const updateData = { [backendField]: editValue };
             await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, updateData);
             
             // Update local state
@@ -144,6 +154,40 @@ function BoxDetails() {
             // Failed to archive card - error handled by toast
             showError(t('cards.archiveError'));
         }
+    };
+
+    // New card creation functions
+    const startCreatingCard = () => {
+        setIsCreatingCard(true);
+        setNewCardData({ front: '', back: '', extra: '' });
+    };
+
+    const cancelCreatingCard = () => {
+        setIsCreatingCard(false);
+        setNewCardData({ front: '', back: '', extra: '' });
+    };
+
+    const saveNewCard = async () => {
+        try {
+            if (!newCardData.front.trim() || !newCardData.back.trim()) {
+                showError(t('cards.frontBackRequired'));
+                return;
+            }
+
+            await api.post(`/dashboard/boxes/${boxId}/cards`, newCardData);
+            await fetchBoxData(); // Refresh to get the new card
+            cancelCreatingCard();
+            success(t('cards.createSuccess'));
+        } catch (error) {
+            showError(t('cards.createError'));
+        }
+    };
+
+    const updateNewCardField = (field, value) => {
+        setNewCardData(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
     // Pagination logic
@@ -213,6 +257,66 @@ function BoxDetails() {
         );
     };
 
+    // Render new card creation row
+    const renderNewCardRow = () => {
+        if (!isCreatingCard) return null;
+
+        return (
+            <div className="table-row new-card-row">
+                <div className="col-status">
+                    <span className="status-badge status-new">
+                        {t('cards.new')}
+                    </span>
+                </div>
+                <div className="col-front">
+                    <textarea
+                        value={newCardData.front}
+                        onChange={(e) => updateNewCardField('front', e.target.value)}
+                        placeholder={t('cards.frontPlaceholder')}
+                        className="inline-edit-textarea"
+                        rows={3}
+                        autoFocus
+                    />
+                </div>
+                <div className="col-back">
+                    <textarea
+                        value={newCardData.back}
+                        onChange={(e) => updateNewCardField('back', e.target.value)}
+                        placeholder={t('cards.backPlaceholder')}
+                        className="inline-edit-textarea"
+                        rows={3}
+                    />
+                </div>
+                <div className="col-extra">
+                    <textarea
+                        value={newCardData.extra}
+                        onChange={(e) => updateNewCardField('extra', e.target.value)}
+                        placeholder={t('cards.extraPlaceholder')}
+                        className="inline-edit-textarea"
+                        rows={3}
+                    />
+                </div>
+                <div className="col-actions">
+                    <div className="action-buttons-group">
+                        <button 
+                            onClick={saveNewCard}
+                            className="btn btn-sm btn-primary"
+                            disabled={!newCardData.front.trim() || !newCardData.back.trim()}
+                        >
+                            <i className="fas fa-check"></i>
+                        </button>
+                        <button 
+                            onClick={cancelCreatingCard}
+                            className="btn btn-sm btn-secondary"
+                        >
+                            <i className="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     if (loading) {
         return (
             <PageTransition>
@@ -258,10 +362,14 @@ function BoxDetails() {
                             {/* Action Bar */}
                             <div className="action-bar">
                                 <div className="action-buttons">
-                                    <Link to={`/box/${boxId}/cards/create`} className="btn btn-primary">
+                                    <button 
+                                        onClick={startCreatingCard} 
+                                        className="btn btn-primary"
+                                        disabled={isCreatingCard}
+                                    >
                                         <i className="fas fa-plus"></i>
                                         {t('cards.add')}
-                                    </Link>
+                                    </button>
                                     <Link to={`/box/${boxId}/review`} className="btn btn-outline-primary">
                                         <i className="fas fa-play"></i>
                                         {t('review.start')}
@@ -324,10 +432,14 @@ function BoxDetails() {
                                         }
                                     </p>
                                     {!searchQuery && !statusFilter && (
-                                        <Link to={`/box/${boxId}/cards/create`} className="btn btn-primary">
+                                        <button 
+                                            onClick={startCreatingCard} 
+                                            className="btn btn-primary"
+                                            disabled={isCreatingCard}
+                                        >
                                             <i className="fas fa-plus"></i>
                                             {t('cards.createFirst')}
-                                        </Link>
+                                        </button>
                                     )}
                                 </div>
                             ) : (
@@ -340,6 +452,8 @@ function BoxDetails() {
                                             <div className="col-extra">{t('cards.extra')}</div>
                                             <div className="col-actions">{t('cards.actions')}</div>
                                         </div>
+                                        
+                                        {renderNewCardRow()}
                                         
                                         {currentCards.map(card => (
                                             <div key={card.ID} className="table-row">

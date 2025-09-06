@@ -123,7 +123,13 @@
     "deleteSuccess": "Card deleted successfully", 
     "deleteError": "Failed to delete card",
     "archiveSuccess": "Card archived successfully",
-    "archiveError": "Failed to archive card"
+    "archiveError": "Failed to archive card",
+    "frontBackRequired": "Front and back fields are required",
+    "createSuccess": "Card created successfully",
+    "createError": "Failed to create card",
+    "frontPlaceholder": "Enter the front side of the card...",
+    "backPlaceholder": "Enter the back side of the card...",
+    "extraPlaceholder": "Enter additional information (optional)..."
   },
   "pagination": {
     "showing": "Showing {{start}} to {{end}} of {{total}} results"
