@@ -41,14 +41,14 @@ show_usage() {
     echo "  clean    - Clean up Docker resources"
     echo "  build    - Force rebuild all images"
     echo "  attach   - Attach to running development environment"
-    echo "  deploy   - Fast zero-downtime deployment (uses scripts/fast-deploy.sh)"
+    echo "  deploy   - Fast zero-downtime deployment (uses fast-deploy.sh)"
     echo ""
     echo "Options:"
     echo "  --build  - Force rebuild images (can be used with dev/prod)"
     echo ""
     echo "Fast Deployment:"
     echo "  ./start.sh deploy          # Zero-downtime rolling deployment"
-    echo "  scripts/fast-deploy.sh     # More deployment options"
+    echo "  fast-deploy.sh     # More deployment options"
     echo ""
     echo "Hot Reload Info:"
     echo "  In development mode, your code changes are automatically reloaded:"
@@ -235,9 +235,9 @@ attach_dev() {
 fast_deploy() {
     print_status "Starting fast zero-downtime deployment..."
     
-    if [ -f "scripts/fast-deploy.sh" ]; then
+    if [ -f "fast-deploy.sh" ]; then
         print_status "Using advanced deployment script..."
-        ./scripts/fast-deploy.sh rolling
+        ./fast-deploy.sh rolling
     else
         print_warning "Advanced deployment script not found, using basic rolling update..."
         
