@@ -574,3 +574,263 @@
         justify-content: center;
     }
 }
+
+/* Compact Control Bar - Inspired by Dashboard List View */
+.compact-control-bar {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.compact-control-bar:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.control-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.control-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.action-buttons-compact {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.compact-btn {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    white-space: nowrap;
+}
+
+.compact-btn i {
+    font-size: 0.7rem;
+}
+
+.compact-btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.compact-btn-primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.compact-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.compact-btn-outline {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.compact-btn-outline:hover {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.stats-compact {
+    display: flex;
+    align-items: center;
+}
+
+.stat-compact {
+    font-size: 0.75rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-weight: 500;
+}
+
+.stat-compact i {
+    font-size: 0.7rem;
+    color: #9ca3af;
+}
+
+.search-box-compact {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box-compact i {
+    position: absolute;
+    left: 0.75rem;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    z-index: 1;
+}
+
+.search-input-compact {
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    background: #f9fafb;
+    color: #374151;
+    width: 200px;
+    transition: all 0.2s ease;
+}
+
+.search-input-compact:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input-compact::placeholder {
+    color: #9ca3af;
+}
+
+.clear-search-compact {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.clear-search-compact:hover {
+    color: #6b7280;
+    background: #f3f4f6;
+}
+
+.filter-pills-compact {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.filter-pill-compact {
+    padding: 0.375rem 0.625rem;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-pill-compact:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+.filter-pill-compact.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.filter-pill-compact.active:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+/* Mobile responsive for compact control bar */
+@media (max-width: 768px) {
+    .compact-control-bar {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0.75rem;
+    }
+    
+    .control-bar-left {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .control-bar-right {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    
+    .action-buttons-compact {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .search-input-compact {
+        width: 100%;
+    }
+    
+    .filter-pills-compact {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .stats-compact {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .compact-control-bar {
+        padding: 0.5rem;
+    }
+    
+    .action-buttons-compact {
+        gap: 0.375rem;
+    }
+    
+    .compact-btn {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.7rem;
+    }
+    
+    .filter-pills-compact {
+        gap: 0.125rem;
+    }
+    
+    .filter-pill-compact {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.6rem;
+    }
+}

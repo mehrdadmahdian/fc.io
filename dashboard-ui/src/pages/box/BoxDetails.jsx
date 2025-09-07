@@ -420,68 +420,69 @@ function BoxDetails() {
                     
                     <div className="dashboard-content">
                         <div className="box-details-content">
-                            {/* Action Bar */}
-                            <div className="action-bar">
-                                <div className="action-buttons">
-                                    <button 
-                                        onClick={startCreatingCard} 
-                                        className="btn btn-primary"
-                                        disabled={isCreatingCard}
-                                    >
-                                        <i className="fas fa-plus"></i>
-                                        {t('cards.addQuick')}
-                                    </button>
-                                    <Link 
-                                        to={`/box/${boxId}/cards/create`} 
-                                        state={{ from: location.pathname }}
-                                        className="btn btn-outline-primary"
-                                    >
-                                        <i className="fas fa-plus-circle"></i>
-                                        {t('cards.addDetailed')}
-                                    </Link>
-                                    <Link to={`/box/${boxId}/review`} className="btn btn-outline-primary">
-                                        <i className="fas fa-play"></i>
-                                        {t('review.start')}
-                                    </Link>
-                                </div>
-                                <div className="stats-summary">
-                                    <span className="stat-item">
-                                        <i className="fas fa-layer-group"></i>
-                                        {filteredCards.length} {t('cards.total')}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Search and Filters */}
-                            <div className="search-filter-bar">
-                                <div className="search-box">
-                                    <i className="fas fa-search"></i>
-                                    <input
-                                        type="text"
-                                        placeholder={t('cards.searchPlaceholder')}
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="search-input"
-                                    />
-                                    {searchQuery && (
+                            {/* Compact Action & Filter Bar */}
+                            <div className="compact-control-bar">
+                                <div className="control-bar-left">
+                                    <div className="action-buttons-compact">
                                         <button 
-                                            onClick={() => setSearchQuery('')}
-                                            className="clear-search"
+                                            onClick={startCreatingCard} 
+                                            className="compact-btn compact-btn-primary"
+                                            disabled={isCreatingCard}
                                         >
-                                            <i className="fas fa-times"></i>
+                                            <i className="fas fa-plus"></i>
+                                            {t('cards.addQuick')}
                                         </button>
-                                    )}
+                                        <Link 
+                                            to={`/box/${boxId}/cards/create`} 
+                                            state={{ from: location.pathname }}
+                                            className="compact-btn compact-btn-outline"
+                                        >
+                                            <i className="fas fa-plus-circle"></i>
+                                            {t('cards.addDetailed')}
+                                        </Link>
+                                        <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-outline">
+                                            <i className="fas fa-play"></i>
+                                            {t('review.start')}
+                                        </Link>
+                                    </div>
+                                    <div className="stats-compact">
+                                        <span className="stat-compact">
+                                            <i className="fas fa-layer-group"></i>
+                                            {filteredCards.length} {t('cards.total')}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="filter-pills">
-                                    {['', 'new', 'learning', 'review', 'archived'].map(status => (
-                                        <button
-                                            key={status}
-                                            onClick={() => setStatusFilter(status)}
-                                            className={`filter-pill ${statusFilter === status ? 'active' : ''}`}
-                                        >
-                                            {status ? t(`cards.${status}`) : t('cards.all')}
-                                        </button>
-                                    ))}
+                                
+                                <div className="control-bar-right">
+                                    <div className="search-box-compact">
+                                        <i className="fas fa-search"></i>
+                                        <input
+                                            type="text"
+                                            placeholder={t('cards.searchPlaceholder')}
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="search-input-compact"
+                                        />
+                                        {searchQuery && (
+                                            <button 
+                                                onClick={() => setSearchQuery('')}
+                                                className="clear-search-compact"
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="filter-pills-compact">
+                                        {['', 'new', 'learning', 'review', 'archived'].map(status => (
+                                            <button
+                                                key={status}
+                                                onClick={() => setStatusFilter(status)}
+                                                className={`filter-pill-compact ${statusFilter === status ? 'active' : ''}`}
+                                            >
+                                                {status ? t(`cards.${status}`) : t('cards.all')}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
