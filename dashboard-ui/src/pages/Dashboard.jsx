@@ -12,7 +12,12 @@ import { api } from '../services/api';
 function Dashboard() {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
-    const [viewMode, setViewMode] = useState('icon'); // 'icon' or 'full'
+    
+    // Load view mode from localStorage, default to 'icon'
+    const [viewMode, setViewMode] = useState(() => {
+        const savedViewMode = localStorage.getItem('dashboard-view-mode');
+        return savedViewMode || 'icon';
+    });
     const [data, setData] = useState({
         stats: {
             totalBoxes: { value: 0, trend: 0 },
@@ -35,6 +40,12 @@ function Dashboard() {
                 }
             }))
         }));
+    };
+
+    // Handle view mode change and save to localStorage
+    const handleViewModeChange = (newViewMode) => {
+        setViewMode(newViewMode);
+        localStorage.setItem('dashboard-view-mode', newViewMode);
     };
 
     useEffect(() => {
@@ -145,14 +156,14 @@ function Dashboard() {
                                     <div className="view-toggle">
                                         <button 
                                             className={`view-toggle-btn ${viewMode === 'icon' ? 'active' : ''}`}
-                                            onClick={() => setViewMode('icon')}
+                                            onClick={() => handleViewModeChange('icon')}
                                             title={t('dashboard.boxes.viewModes.icon')}
                                         >
                                             <i className="fas fa-th"></i>
                                         </button>
                                         <button 
                                             className={`view-toggle-btn ${viewMode === 'full' ? 'active' : ''}`}
-                                            onClick={() => setViewMode('full')}
+                                            onClick={() => handleViewModeChange('full')}
                                             title={t('dashboard.boxes.viewModes.full')}
                                         >
                                             <i className="fas fa-list"></i>

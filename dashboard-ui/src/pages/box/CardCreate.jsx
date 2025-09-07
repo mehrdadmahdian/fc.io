@@ -24,6 +24,7 @@ function CardCreate() {
         extra: ''
     });
     const [loading, setLoading] = useState(cardId ? true : false);
+    const [boxName, setBoxName] = useState('');
 
     // Function to handle navigation back to the appropriate page
     const navigateBack = () => {
@@ -42,6 +43,16 @@ function CardCreate() {
     };
 
     useEffect(() => {
+        // Fetch box information to get the box name
+        const fetchBox = async () => {
+            try {
+                const response = await api.get(`/dashboard/boxes/${boxId}`);
+                setBoxName(response.data.data.box.Name);
+            } catch (err) {
+                // Error fetching box - box name will remain empty
+            }
+        };
+
         if (cardId) {
             const fetchCard = async () => {
                 try {
@@ -59,6 +70,8 @@ function CardCreate() {
             };
             fetchCard();
         }
+
+        fetchBox();
     }, [boxId, cardId]);
 
     const handleSubmit = async (formData) => {
@@ -101,7 +114,10 @@ function CardCreate() {
     return (
         <DashboardContainer>
             <div className="dashboard-container">
-                <PageHeader title={cardId ? t('cardCreate.editTitle') : t('cardCreate.title')} />
+                <PageHeader 
+                    title={cardId ? t('cardCreate.editTitle') : t('cardCreate.title')} 
+                    subtitle={boxName ? `${t('cardCreate.inBox')}: ${boxName}` : ''}
+                />
                 <div className="dashboard-content">
                     <div className="dashboard-box">
                         <Form

@@ -256,6 +256,7 @@
   "cardCreate": {
     "title": "Create New Card",
     "editTitle": "Edit Card",
+    "inBox": "in",
     "subtitle": "Create effective flashcards with markdown support",
     "editSubtitle": "Update your flashcard content with markdown support",
     "question": "Question",
