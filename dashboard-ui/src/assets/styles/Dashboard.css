@@ -1148,6 +1148,18 @@ body {
     gap: 24px;
 }
 
+/* Boxes Grid List View - Compact List */
+.boxes-grid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* Boxes Grid Alignment - Responsive overrides */
 @media (min-width: 1200px) {
     .boxes-grid-icons {
@@ -1158,6 +1170,10 @@ body {
     .boxes-grid-full {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
+    }
+    
+    .boxes-grid-list {
+        margin: 0;
     }
 }
 
@@ -1171,6 +1187,10 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 18px;
     }
+    
+    .boxes-grid-list {
+        margin: 0;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1182,6 +1202,10 @@ body {
     .boxes-grid-full {
         grid-template-columns: 1fr;
         gap: 16px;
+    }
+    
+    .boxes-grid-list {
+        margin: 0;
     }
 }
 
@@ -1200,6 +1224,11 @@ body {
         justify-items: stretch;
         width: 100%;
         padding: 0;
+    }
+    
+    .boxes-grid-list {
+        margin: 0;
+        width: 100%;
     }
     
     .box-card {

@@ -164,7 +164,7 @@ function Dashboard() {
                                     {t('dashboard.boxes.create')}
                                 </Link>
                             </div>
-                            <div className={`boxes-grid ${viewMode === 'icon' ? 'boxes-grid-icons' : 'boxes-grid-full'}`}>
+                            <div className={`boxes-grid ${viewMode === 'icon' ? 'boxes-grid-icons' : 'boxes-grid-list'}`}>
                                 {data.boxes.length > 0 ? (
                                     data.boxes.map((box) => (
                                         <BoxCard 

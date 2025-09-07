@@ -103,67 +103,85 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
         </div>
     );
 
-    // Full view rendering
-    const renderFullView = () => (
-        <div className={`box-card ${box.Box.IsActive ? 'active-box' : ''}`}>
-            <div className="box-header">
-                <h3 className="box-title">{box.Box.Name}</h3>
-                <div className="box-status">
-                    {box.Box.IsActive ? (
-                        <span className="status-badge active">{t('dashboard.boxes.active')}</span>
-                    ) : (
-                        <button 
-                            className="set-active-btn" 
-                            onClick={handleSetActive}
-                            disabled={isSettingActive}
-                        >
-                            {isSettingActive ? t('dashboard.boxes.settingActive') : t('dashboard.boxes.setActive')}
-                        </button>
+    // Compact list view rendering
+    const renderListView = () => (
+        <div className={`box-list-item ${box.Box.IsActive ? 'active-box' : ''}`}>
+            <div className="list-item-main">
+                <div className="list-item-info">
+                    <div className="list-item-header">
+                        <h4 className="list-item-title">{box.Box.Name}</h4>
+                        <div className="list-item-status">
+                            {box.Box.IsActive ? (
+                                <span className="status-badge active">{t('dashboard.boxes.active')}</span>
+                            ) : (
+                                <button 
+                                    className="list-set-active-btn" 
+                                    onClick={handleSetActive}
+                                    disabled={isSettingActive}
+                                    title={t('dashboard.boxes.setActive')}
+                                >
+                                    ✓
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    {box.Box.Description && (
+                        <p className="list-item-description">{box.Box.Description}</p>
                     )}
                 </div>
-            </div>
-            
-            {box.Box.Description && (
-                <p className="box-description">{box.Box.Description}</p>
-            )}
-            
-            <div className="stats-container">
-                <div className="stat-item">
-                    <span className="stat-number">{box.CountOfTotalCards}</span>
-                    <span className="stat-label">{t('dashboard.boxes.CountOfTotalCards')}</span>
+                
+                <div className="list-item-stats">
+                    <div className="list-stat">
+                        <span className="list-stat-number">{box.CountOfTotalCards}</span>
+                        <span className="list-stat-label">{t('dashboard.boxes.totalCards')}</span>
+                    </div>
+                    <div className="list-stat">
+                        <span className="list-stat-number due">{box.CountOfCardsDueToday}</span>
+                        <span className="list-stat-label">{t('dashboard.boxes.dueToday')}</span>
+                    </div>
+                    <div className="list-stat">
+                        <span className="list-stat-number review">{box.CountOfCardsNeedingReview}</span>
+                        <span className="list-stat-label">{t('dashboard.boxes.needingReview')}</span>
+                    </div>
                 </div>
-                <div className="stat-item">
-                    <span className="stat-number">{box.CountOfCardsDueToday}</span>
-                    <span className="stat-label">{t('dashboard.boxes.CountOfCardsDueToday')}</span>
+                
+                <div className="list-item-actions">
+                    <Link 
+                        to={`/box/${box.Box.ID}/cards/create`} 
+                        state={{ from: location.pathname }}
+                        className="list-action-btn add" 
+                        title={t('dashboard.boxes.actions.addCard')}
+                    >
+                        <i className="fas fa-plus"></i>
+                    </Link>
+                    <Link 
+                        to={`/box/${box.Box.ID}/review`} 
+                        className="list-action-btn review" 
+                        title={t('dashboard.boxes.actions.review')}
+                    >
+                        <i className="fas fa-play"></i>
+                    </Link>
+                    <Link 
+                        to={`/box/${box.Box.ID}/review/reverse`} 
+                        className="list-action-btn review-reverse" 
+                        title={t('dashboard.boxes.actions.reviewReverse')}
+                    >
+                        <i className="fas fa-exchange-alt"></i>
+                    </Link>
+                    <Link 
+                        to={`/box/${box.Box.ID}`} 
+                        className="list-action-btn details" 
+                        title={t('dashboard.boxes.actions.details')}
+                    >
+                        <i className="fas fa-info-circle"></i>
+                    </Link>
                 </div>
-                <div className="stat-item">
-                    <span className="stat-number">{box.CountOfCardsNeedingReview}</span>
-                    <span className="stat-label">{t('dashboard.boxes.CountOfCardsNeedingReview')}</span>
-                </div>
-            </div>
-            
-            <div className="button-group">
-                <Link 
-                    to={`/box/${box.Box.ID}/cards/create`} 
-                    state={{ from: location.pathname }}
-                    className="button button-add"
-                >
-                    {t('dashboard.boxes.actions.addCard')}
-                </Link>
-                <Link to={`/box/${box.Box.ID}/review`} className="button button-review">
-                    {t('dashboard.boxes.actions.review')}
-                </Link>
-                <Link to={`/box/${box.Box.ID}/review/reverse`} className="button button-review-reverse">
-                    {t('dashboard.boxes.actions.reviewReverse')}
-                </Link>
-                <Link to={`/box/${box.Box.ID}`} className="button button-primary">
-                    {t('dashboard.boxes.actions.details')}
-                </Link>
             </div>
         </div>
     );
 
-    return viewMode === 'icon' ? renderIconView() : renderFullView();
+
+    return viewMode === 'icon' ? renderIconView() : renderListView();
 };
 
 export default BoxCard;

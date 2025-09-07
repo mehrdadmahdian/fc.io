@@ -30,6 +30,9 @@ RUN chown -R appuser:appgroup /var/cache/nginx && \
 # Update nginx configuration to run as non-root user
 RUN sed -i '/user nginx;/d' /etc/nginx/nginx.conf
 
+# Remove default nginx configuration to prevent conflicts
+RUN rm -f /etc/nginx/conf.d/default.conf
+
 # Switch to non-root user
 USER appuser
 

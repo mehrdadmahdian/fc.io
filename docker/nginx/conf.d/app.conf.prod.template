@@ -11,7 +11,7 @@ server {
 
     listen 80;
 
-    server_name $SERVER_NAME;
+    server_name $SERVER_NAME localhost;
 
     location / {
         proxy_pass http://public-ui-container:3000;
