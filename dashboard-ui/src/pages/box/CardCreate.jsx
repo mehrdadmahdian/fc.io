@@ -1,14 +1,14 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import DashboardContainer from '../../components/layout/DashboardContainer';
-import PageHeader from '../../components/common/PageHeader';
+import ModernContainer from '../../components/layout/ModernContainer';
 import Form from '../../components/form/Form';
 import FormMarkdownTextarea from '../../components/form/FormMarkdownTextarea';
 import { api } from '../../services/api';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Form.css';
 import '../../assets/styles/MarkdownTextarea.css';
+import '../../assets/styles/ModernPage.css';
 import { useEffect, useState } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -95,32 +95,55 @@ function CardCreate() {
 
     if (loading) {
         return (
-            <DashboardContainer>
-                <div className="dashboard-container">
-                    <PageHeader title={t('common.loading')} />
-                    <div className="dashboard-content">
-                        <div className="dashboard-box">
-                            <div className="loading-state">
-                                <div className="loading-spinner"></div>
-                                {t('common.loading')}...
+            <ModernContainer>
+                <div className="modern-page-container">
+                    <div className="modern-title-bar">
+                        <div className="modern-title-content">
+                            <div className="modern-page-title">
+                                <h1>{t('common.loading')}</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modern-content-area">
+                        <div className="modern-content-box">
+                            <div className="modern-content-scroll">
+                                <div className="loading-state">
+                                    <div className="loading-spinner"></div>
+                                    {t('common.loading')}...
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </DashboardContainer>
+            </ModernContainer>
         );
     }
 
     return (
-        <DashboardContainer>
-            <div className="dashboard-container">
-                <PageHeader 
-                    title={cardId ? t('cardCreate.editTitle') : t('cardCreate.title')} 
-                    subtitle={boxName ? `${t('cardCreate.inBox')}: ${boxName}` : ''}
-                />
-                <div className="dashboard-content">
-                    <div className="dashboard-box">
-                        <Form
+        <ModernContainer>
+            <div className="modern-page-container">
+                {/* Fixed Title Bar */}
+                <div className="modern-title-bar">
+                    <div className="modern-title-content">
+                        <button 
+                            className="modern-back-button"
+                            onClick={navigateBack}
+                            title={t('common.back')}
+                        >
+                            <i className="fas fa-arrow-left"></i>
+                        </button>
+                        <div className="modern-page-title">
+                            <h1>{cardId ? t('cardCreate.editTitle') : t('cardCreate.title')}</h1>
+                            {boxName && <span className="subtitle">{t('cardCreate.inBox')}: {boxName}</span>}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="modern-content-area">
+                    <div className="modern-content-box">
+                        <div className="modern-content-scroll">
+                            <Form
                             onSubmit={handleSubmit}
                             onCancel={navigateBack}
                             submitLabel={cardId ? t('cardCreate.update') : t('cardCreate.save')}
@@ -150,11 +173,12 @@ function CardCreate() {
                                 placeholder={t('cardCreate.additionalInfoPlaceholder')}
                                 rows={4}
                             />
-                        </Form>
+                            </Form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </DashboardContainer>
+        </ModernContainer>
     );
 }
 

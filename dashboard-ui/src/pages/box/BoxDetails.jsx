@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import DashboardContainer from '../../components/layout/DashboardContainer';
-import PageHeader from '../../components/common/PageHeader';
-import PageTransition from '../../components/common/PageTransition';
+import ModernContainer from '../../components/layout/ModernContainer';
 import MarkdownContent from '../../components/common/MarkdownContent';
 import { useToast } from '../../contexts/ToastContext';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/BoxCard.css';
 import '../../assets/styles/BoxDetails.css';
+import '../../assets/styles/ModernPage.css';
 
 function BoxDetails() {
     const { t } = useTranslation();
@@ -380,46 +379,89 @@ function BoxDetails() {
 
     if (loading) {
         return (
-            <PageTransition>
-                <DashboardContainer>
-                    <div className="dashboard-container">
-                        <div className="loading-state">
-                            <div className="loading-spinner"></div>
-                            <span>{t('common.loading')}</span>
+            <ModernContainer>
+                <div className="modern-page-container">
+                    <div className="modern-title-bar">
+                        <div className="modern-title-content">
+                            <div className="modern-page-title">
+                                <h1>{t('common.loading')}</h1>
+                            </div>
                         </div>
                     </div>
-                </DashboardContainer>
-            </PageTransition>
+                    <div className="modern-content-area">
+                        <div className="modern-content-box">
+                            <div className="modern-content-scroll">
+                                <div className="loading-state">
+                                    <div className="loading-spinner"></div>
+                                    <span>{t('common.loading')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ModernContainer>
         );
     }
 
     if (error) {
         return (
-            <PageTransition>
-                <DashboardContainer>
-                    <div className="dashboard-container">
-                        <div className="error-state">
-                            <i className="fas fa-exclamation-triangle"></i>
-                            <h2>{t('common.error')}</h2>
-                            <p>{error}</p>
+            <ModernContainer>
+                <div className="modern-page-container">
+                    <div className="modern-title-bar">
+                        <div className="modern-title-content">
+                            <button 
+                                className="modern-back-button"
+                                onClick={() => window.history.length > 1 ? window.history.back() : window.location.href = '/'}
+                                title={t('common.backToDashboard')}
+                            >
+                                <i className="fas fa-arrow-left"></i>
+                            </button>
+                            <div className="modern-page-title">
+                                <h1>{t('common.error')}</h1>
+                            </div>
                         </div>
                     </div>
-                </DashboardContainer>
-            </PageTransition>
+                    <div className="modern-content-area">
+                        <div className="modern-content-box">
+                            <div className="modern-content-scroll">
+                                <div className="error-state">
+                                    <i className="fas fa-exclamation-triangle"></i>
+                                    <h2>{t('common.error')}</h2>
+                                    <p>{error}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ModernContainer>
         );
     }
 
     return (
-        <PageTransition>
-            <DashboardContainer>
-                <div className="dashboard-container">
-                    <PageHeader 
-                        title={box?.Name || t('boxDetails.title')} 
-                        subtitle={box?.Description}
-                    />
-                    
-                    <div className="dashboard-content">
-                        <div className="box-details-content">
+        <ModernContainer>
+            <div className="modern-page-container">
+                {/* Fixed Title Bar */}
+                <div className="modern-title-bar">
+                    <div className="modern-title-content">
+                        <button 
+                            className="modern-back-button"
+                            onClick={() => window.history.length > 1 ? window.history.back() : window.location.href = '/'}
+                            title={t('common.backToDashboard')}
+                        >
+                            <i className="fas fa-arrow-left"></i>
+                        </button>
+                        <div className="modern-page-title">
+                            <h1>{box?.Name || t('boxDetails.title')}</h1>
+                            {box?.Description && <span className="subtitle">{box.Description}</span>}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="modern-content-area">
+                    <div className="modern-content-box">
+                        <div className="modern-content-scroll">
+                            <div className="box-details-content">
                             {/* Compact Action & Filter Bar */}
                             <div className="compact-control-bar">
                                 <div className="control-bar-left">
@@ -648,11 +690,12 @@ function BoxDetails() {
                                     )}
                                 </>
                             )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </DashboardContainer>
-        </PageTransition>
+            </div>
+        </ModernContainer>
     );
 }
 
