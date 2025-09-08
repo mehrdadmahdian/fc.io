@@ -37,8 +37,6 @@ services:
     volumes:
       - ${LOG_PATH:-./logs}:/var/log/
       - ${SESSION_PATH:-./sessions}:/var/sessions/
-      - ./api:/app:cached  # Mount source files for development
-      - ./dumps:/app/dumps  # Persist CLI dumps locally
     depends_on:
       mongodb:
         condition: service_healthy

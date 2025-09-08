@@ -4,13 +4,6 @@ echo "Starting API service..."
 echo "Environment: $APP_ENV"
 echo "Port: $API_SERVER_PORT"
 
-# Ensure dumps directory exists
-mkdir -p /app/dumps
-
-# Ensure Go modules are up to date
-echo "Updating Go modules..."
-go mod tidy
-
 # Install netcat if not present
 if ! command -v nc > /dev/null; then
     echo "Installing netcat..."
@@ -50,15 +43,10 @@ fi
 if [ "$APP_ENV" = "production" ]; then
     echo "Running in production mode..."
     
-    # Binaries are pre-built in builder stage, but rebuild if missing
+    # Check if binary exists, if not build it
     if [ ! -f "./myapp" ]; then
-        echo "Rebuilding application (missing binary)..."
+        echo "Building application..."
         go build -o myapp ./cmd/server/main.go 
-    fi
-    
-    if [ ! -f "./fcli" ]; then
-        echo "Rebuilding CLI tool (missing binary)..."
-        go build -o fcli ./cmd/fcli/main.go
     fi
     
     echo "Starting production server..."
@@ -66,14 +54,10 @@ if [ "$APP_ENV" = "production" ]; then
 else
     echo "Running in development mode..."
     
-    # CLI tool is pre-built, but rebuild if missing or for latest changes
-    echo "Ensuring CLI tool is available for development..."
-    go build -o fcli ./cmd/fcli/main.go
-    
     # Use reflex for hot reloading in development
     if command -v reflex > /dev/null; then
         echo "Starting development server with hot reload..."
-        exec reflex -r "\\.go$" -s -- sh -c 'echo "Change detected, rebuilding..." && go build -o fcli ./cmd/fcli/main.go && go run ./cmd/server/main.go'
+        exec reflex -r "\\.go$" -s -- sh -c 'echo "Change detected, rebuilding..." && go run ./cmd/server/main.go'
     else
         echo "Reflex not found, starting with go run..."
         exec go run ./cmd/server/main.go
