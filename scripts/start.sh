@@ -106,8 +106,8 @@ check_images_exist() {
 
 # Check if containers are running
 check_containers_running() {
-    local running_containers=$(docker compose ps --services --filter "status=running" 2>/dev/null | wc -l)
-    if [ "$running_containers" -gt 0 ]; then
+    local running_services=$(docker compose ps --services --filter "status=running" 2>/dev/null)
+    if [ -n "$running_services" ] && [ "$running_services" != "" ]; then
         return 0  # true - containers are running
     fi
     return 1  # false - no containers running
@@ -141,7 +141,7 @@ start_dev() {
         print_status "✅ Next.js files: Hot reload on save"
     fi
     
-    APP_ENV=development docker compose -f docker-compose.yml -f docker-compose.dev.yml up $build_flag
+    APP_ENV=development docker compose -f docker-compose.yml -f docker-compose.dev.yml up $build_flag -d
 }
 
 # Start production environment

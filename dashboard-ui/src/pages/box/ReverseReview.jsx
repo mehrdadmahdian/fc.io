@@ -1,12 +1,13 @@
     import { useState, useEffect } from 'react';
     import { useParams, useNavigate } from 'react-router-dom';
     import { useTranslation } from 'react-i18next';
-    import DashboardContainer from '../../components/layout/DashboardContainer';
+    import ReviewContainer from '../../components/layout/ReviewContainer';
     import PageHeader from '../../components/common/PageHeader';
     import ReverseReviewCard from '../../components/dashboard/boxes/review/ReverseReviewCard';
     import ReviewProgress from '../../components/dashboard/boxes/review/ReviewProgress';
     import '../../assets/styles/Dashboard.css';
     import '../../assets/styles/Review.css';
+    import '../../assets/styles/CompactReview.css';
     import { api } from '../../services/api';
 
 
@@ -111,31 +112,31 @@
 
         if (loading) {
             return (
-                <DashboardContainer>
+                <ReviewContainer>
                     <div className="dashboard-container">
                         <div className="loading-state">
                             {t('common.loading')}...
                         </div>
                     </div>
-                </DashboardContainer>
+                </ReviewContainer>
             );
         }
 
         if (error) {
             return (
-                <DashboardContainer>
+                <ReviewContainer>
                     <div className="dashboard-container">
                         <div className="error-state">
                             {t('common.error')}: {error}
                         </div>
                     </div>
-                </DashboardContainer>
+                </ReviewContainer>
             );
         }
 
         if (!reviewData || !reviewData.cards || reviewData.cards.length === 0) {
             return (
-                <DashboardContainer>
+                <ReviewContainer>
                     <div className="dashboard-container">
                         <PageHeader title={t('review.reverseTitle')} />
                         <div className="dashboard-content">
@@ -155,64 +156,76 @@
                             </div>
                         </div>
                     </div>
-                </DashboardContainer>
+                </ReviewContainer>
             );
         }
 
         return (
-            <DashboardContainer>
-                <div className="dashboard-container">
-                    <PageHeader title={t('review.reverseTitle', { boxName: reviewData.boxName })} />
-                    <div className="dashboard-content">
-                        <div className="dashboard-box">
-                            {notification && (
-                                <div className="notification-message">
-                                    {notification}
-                                </div>
-                            )}
+            <ReviewContainer>
+                <div className="compact-review-container reverse">
+                    {/* Fixed Title Bar */}
+                    <div className="fixed-title-bar reverse">
+                        <div className="title-content">
+                            <button 
+                                className="back-button"
+                                onClick={() => navigate('/')}
+                                title={t('common.backToDashboard')}
+                            >
+                                <i className="fas fa-arrow-left"></i>
+                            </button>
+                            <div className="page-title">
+                                <h1>{reviewData.boxName}</h1>
+                                <span className="review-mode">Reverse Review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Fixed Progress Bar */}
+                    <div className={`fixed-progress-bar reverse ${showAnswer ? 'show-answer' : ''}`}>
+                        <div className="progress-content">
                             <ReviewProgress 
                                 current={currentCard + 1}
                                 total={totalCards} 
                             />
-                            <div className="review-content">
-                                <ReverseReviewCard 
-                                    card={reviewData.cards[currentCard]}
-                                    showAnswer={showAnswer}
-                                    onShowAnswer={handleShowAnswer}
-                                    onResponse={handleResponse}
-                                    onNext={handleNext}
-                                />
-                            </div>
-                            <div className="action-group">
+                            <div className="progress-actions">
                                 <button 
-                                    className="action-btn edit" 
-                                    title={t('Edit')}
+                                    className="compact-action-btn edit" 
+                                    title={t('review.editCard')}
                                     onClick={handleEdit}
                                 >
                                     <i className="fas fa-edit"></i>
-                                    <span>{t('Edit')}</span>
                                 </button>
                                 <button 
-                                    className="action-btn archive" 
-                                    title={t('Archive')}
+                                    className="compact-action-btn archive" 
+                                    title={t('review.archiveCard')}
                                     onClick={handleArchive}
                                 >
                                     <i className="fas fa-archive"></i>
-                                    <span>{t('Archive')}</span>
-                                </button>
-                                <button className="action-btn flag" title={t('Flag')}>
-                                    <i className="fas fa-flag"></i>
-                                    <span>{t('Flag')}</span>
-                                </button>
-                                <button className="action-btn info" title={t('Info')}>
-                                    <i className="fas fa-info-circle"></i>
-                                    <span>{t('Info')}</span>
                                 </button>
                             </div>
                         </div>
+                        {notification && (
+                            <div className="inline-notification">
+                                <i className="fas fa-check-circle"></i>
+                                <span>{notification}</span>
+                            </div>
+                        )}
                     </div>
+
+                    {/* Scrollable Content Area */}
+                    <div className="scrollable-content">
+                        <ReverseReviewCard 
+                            card={reviewData.cards[currentCard]}
+                            showAnswer={showAnswer}
+                            onShowAnswer={handleShowAnswer}
+                            onResponse={handleResponse}
+                            onNext={handleNext}
+                        />
+                    </div>
+
+                    {/* Fixed Bottom Buttons - handled by ReverseReviewCard component */}
                 </div>
-            </DashboardContainer>
+            </ReviewContainer>
         );
     }
 

@@ -1,19 +1,36 @@
+import { useState, useEffect } from 'react';
+
 const ReviewProgress = ({ current, total }) => {
+    const [animatedProgress, setAnimatedProgress] = useState(0);
+    const progressPercentage = (current / total) * 100;
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setAnimatedProgress(progressPercentage);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [progressPercentage]);
+
     return (
-        <div className="review-progress">
-            <div className="progress-text">
-                Card {current} of {total}
+        <div className="enhanced-progress">
+            <div className="progress-info">
+                <div className="progress-stats">
+                    <span className="current">{current}</span>
+                    <span className="separator">/</span>
+                    <span className="total">{total}</span>
+                </div>
+                <div className="progress-percentage">
+                    {Math.round(progressPercentage)}%
+                </div>
             </div>
-            <div className="progress-bar">
-                {[...Array(total)].map((_, index) => (
-                    <div 
-                        key={index} 
-                        className={`progress-segment ${
-                            index + 1 < current ? 'completed' : 
-                            index + 1 === current ? 'current' : ''
-                        }`}
-                    />
-                ))}
+            <div className="progress-bar-enhanced">
+                <div 
+                    className="progress-fill-enhanced"
+                    style={{ width: `${animatedProgress}%` }}
+                >
+                    <div className="progress-shine"></div>
+                </div>
+                <div className="progress-track-bg"></div>
             </div>
         </div>
     );

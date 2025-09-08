@@ -11,6 +11,12 @@ const NAVIGATION_LINKS = [
     { path: '/settings', icon: 'fa-cog', label: 'nav.settings' }
 ];
 
+const FOOTER_LINKS = [
+    { path: '/privacy', icon: 'fa-shield-alt', label: 'Privacy' },
+    { path: '/terms', icon: 'fa-file-contract', label: 'Terms' },
+    { path: '/contact', icon: 'fa-envelope', label: 'Contact' }
+];
+
 const LANGUAGES = [
     { code: 'en', label: 'EN', fullLabel: 'English' },
     { code: 'fa', label: 'FA', fullLabel: 'فارسی' }
@@ -65,6 +71,19 @@ function Navigation() {
         ))
     );
 
+    const renderFooterLinks = (isMobile = false) => (
+        FOOTER_LINKS.map(({ path, icon, label }) => (
+            <Link 
+                key={path}
+                to={path} 
+                className={isMobile ? "menu-item footer-link" : `nav-link footer-link ${location.pathname === path ? 'active' : ''}`}
+                onClick={() => isMobile && setIsMenuOpen(false)}
+            >
+                <i className={`fas ${icon}`}></i> {label}
+            </Link>
+        ))
+    );
+
     const renderLanguageButtons = (isMobile = false) => (
         LANGUAGES.map(({ code, label, fullLabel }) => (
             <button 
@@ -108,6 +127,8 @@ function Navigation() {
                 <div className={`mobile-nav ${isMenuOpen ? 'active' : ''}`}>
                     <div className="mobile-menu">
                         {renderNavLinks(true)}
+                        <div className="menu-divider"></div>
+                        {renderFooterLinks(true)}
                         <div className="menu-item language-section">
                             <div className="language-buttons">
                                 {renderLanguageButtons(true)}
