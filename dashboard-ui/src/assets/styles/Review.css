@@ -78,7 +78,7 @@
 
 /* Question side styling */
 .question-text {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 600;
     color: var(--neutral-900);
     text-align: center;
@@ -92,7 +92,7 @@
 }
 
 .answer-text {
-    font-size: 1.75rem;
+    font-size: 2.25rem;
     font-weight: 500;
     color: var(--primary);
     text-align: center;
@@ -113,7 +113,7 @@
 /* Markdown content in review cards */
 .review-question-content {
     text-align: center;
-    font-size: 1.75rem;
+    font-size: 2.25rem;
     font-weight: 600;
     color: var(--neutral-900);
     line-height: 1.4;
@@ -121,7 +121,7 @@
 
 .review-answer-content {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 500;
     color: var(--primary);
     line-height: 1.5;

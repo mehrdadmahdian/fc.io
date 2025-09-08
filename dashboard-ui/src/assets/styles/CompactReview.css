@@ -491,7 +491,7 @@
 }
 
 .question-text {
-  font-size: 1.75rem;
+  font-size: 2.25rem;
   font-weight: 600;
   color: #1F2937;
   line-height: 1.4;
@@ -503,7 +503,7 @@
 }
 
 .answer-text {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 500;
   font-style: normal; /* Ensure not italic */
   color: var(--compact-success);

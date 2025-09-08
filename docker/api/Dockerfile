@@ -17,6 +17,9 @@ FROM base AS development
 RUN go install github.com/cespare/reflex@latest && \
     apk add --no-cache curl
 
+# Copy all source files for development
+COPY api/ ./
+
 # Copy entrypoint script
 COPY docker/api/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
@@ -36,7 +39,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:${API_SERVER_PORT}/api/health-check || exit 1
 
 # Use a simple shell script inline for development
-CMD ["/bin/sh", "-c", "echo 'Starting API...'; if [ \"$APP_ENV\" = \"production\" ]; then go build -o myapp ./cmd/server/main.go && ./myapp; else go run ./cmd/server/main.go; fi"]
+CMD ["/bin/sh", "-c", "echo 'Starting API...'; if [ \"$APP_ENV\" = \"production\" ]; then go build -o myapp ./cmd/server/main.go && go build -o fcli ./cmd/fcli/main.go && ./myapp; else go build -o fcli ./cmd/fcli/main.go && go run ./cmd/server/main.go; fi"]
 
 # Builder stage for production
 FROM base AS builder
@@ -44,14 +47,15 @@ FROM base AS builder
 # Copy all source files
 COPY api/ ./
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o myapp ./cmd/server/main.go
+# Build the application and CLI tool
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o myapp ./cmd/server/main.go && \
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o fcli ./cmd/fcli/main.go
 
 # Production stage
-FROM alpine:latest AS production
+FROM golang:1.23-alpine AS production
 
-# Install ca-certificates for HTTPS requests and curl for health checks
-RUN apk --no-cache add ca-certificates tzdata curl
+# Install ca-certificates for HTTPS requests, curl for health checks, and git for Go modules
+RUN apk --no-cache add ca-certificates tzdata curl git
 
 WORKDIR /app
 
@@ -59,10 +63,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S appgroup && \
     adduser -S appuser -u 1001 -G appgroup
 
-# Copy the binary from builder stage
-COPY --from=builder /app/myapp /app/myapp
-COPY --from=builder /app/internal/templates /app/internal/templates
-COPY --from=builder /app/public /app/public
+# Copy ALL source files and pre-built binaries from builder stage
+COPY --from=builder /app/ /app/
 
 # Copy entrypoint script
 COPY docker/api/entrypoint.sh /app/entrypoint.sh
