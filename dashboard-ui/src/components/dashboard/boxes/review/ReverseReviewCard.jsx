@@ -108,9 +108,11 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext 
                 <div className="fixed-response-buttons reverse">
                     <button 
                         className="response-btn-compact again"
-                        onClick={() => onResponse('again')}
-                        disabled={!showAnswer}
-                        title="Again - Study in 1 min"
+                        onClick={() => {
+                            if (!showAnswer) onShowAnswer(true);
+                            else onResponse('again');
+                        }}
+                        title={!showAnswer ? "Reveal answer first" : "Again - Study in 1 min"}
                     >
                         <i className="fas fa-redo"></i>
                         <span>Again</span>
@@ -119,9 +121,11 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext 
                     
                     <button 
                         className="response-btn-compact hard"
-                        onClick={() => onResponse('hard')}
-                        disabled={!showAnswer}
-                        title="Hard - Study in 6 min"
+                        onClick={() => {
+                            if (!showAnswer) onShowAnswer(true);
+                            else onResponse('hard');
+                        }}
+                        title={!showAnswer ? "Reveal answer first" : "Hard - Study in 6 min"}
                     >
                         <i className="fas fa-clock"></i>
                         <span>Hard</span>
@@ -130,9 +134,11 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext 
                     
                     <button 
                         className="response-btn-compact easy"
-                        onClick={() => onResponse('easy')}
-                        disabled={!showAnswer}
-                        title="Easy - Study in 4 days"
+                        onClick={() => {
+                            if (!showAnswer) onShowAnswer(true);
+                            else onResponse('easy');
+                        }}
+                        title={!showAnswer ? "Reveal answer first" : "Easy - Study in 4 days"}
                     >
                         <i className="fas fa-check"></i>
                         <span>Easy</span>

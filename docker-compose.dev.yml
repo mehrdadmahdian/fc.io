@@ -3,7 +3,7 @@ services:
     build:
       target: development
     volumes:
-      # Mount source code for hot reloading in development
+      # Mount entire API directory for hot reloading in development
       - ./api/:/app:delegated
 
   dashboard-ui:
@@ -43,12 +43,18 @@ services:
 
   nginx:
     # In development, don't copy static files - use proxy instead
+    # Inherits build context from base docker-compose.yml
     volumes:
       - ./docker/nginx/conf.d/:/etc/nginx/templates/
 
   mongodb:
     # Disable authentication in development for easier setup
     command: mongod --noauth
+    environment:
+      # Override auth environment variables to prevent conflicts
+      MONGO_INITDB_ROOT_USERNAME: ""
+      MONGO_INITDB_ROOT_PASSWORD: ""
+      MONGO_INITDB_DATABASE: ""
 
 volumes:
   dashboard_ui_cache:

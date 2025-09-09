@@ -35,8 +35,8 @@ EXPOSE ${API_SERVER_PORT}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:${API_SERVER_PORT}/api/health-check || exit 1
 
-# Use a simple shell script inline for development
-CMD ["/bin/sh", "-c", "echo 'Starting API...'; if [ \"$APP_ENV\" = \"production\" ]; then go build -o myapp ./cmd/server/main.go && ./myapp; else go run ./cmd/server/main.go; fi"]
+# Use entrypoint script for development
+CMD ["/bin/sh", "/app/entrypoint.sh"]
 
 # Builder stage for production
 FROM base AS builder
@@ -88,5 +88,5 @@ EXPOSE ${API_SERVER_PORT}
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:${API_SERVER_PORT}/api/health-check || exit 1
 
-# Use direct command for production
-CMD ["./myapp"]
+# Use entrypoint script for production
+CMD ["/bin/sh", "/app/entrypoint.sh"]

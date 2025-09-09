@@ -175,28 +175,27 @@
                             </button>
                             <div className="page-title">
                                 <h1>{reviewData.boxName}</h1>
-                                <span className="review-mode">Review</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Fixed Progress Bar */}
+                    {/* Fixed Progress Bar with Actions */}
                     <div className={`fixed-progress-bar ${showAnswer ? 'show-answer' : ''}`}>
                         <div className="progress-content">
                             <ReviewProgress 
                                 current={currentCard + 1}
                                 total={totalCards} 
                             />
-                            <div className="progress-actions">
+                            <div className="progress-actions-right">
                                 <button 
-                                    className="compact-action-btn edit" 
+                                    className="icon-action-btn edit" 
                                     title={t('review.editCard')}
                                     onClick={handleEdit}
                                 >
                                     <i className="fas fa-edit"></i>
                                 </button>
                                 <button 
-                                    className="compact-action-btn archive" 
+                                    className="icon-action-btn archive" 
                                     title={t('review.archiveCard')}
                                     onClick={handleArchive}
                                 >
