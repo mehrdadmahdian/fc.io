@@ -777,11 +777,29 @@ body {
 /* Make buttons more compact on mobile */
 @media (max-width: 768px) {
     .box-actions {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+        width: 100%;
     }
 
     .box-action-button {
         width: 100%;
+        min-height: 44px;
+    }
+}
+
+/* Extra small mobile devices - stack buttons vertically */
+@media (max-width: 480px) {
+    .box-actions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .box-action-button {
+        min-height: 48px;
+        font-size: 1rem;
     }
 }
 

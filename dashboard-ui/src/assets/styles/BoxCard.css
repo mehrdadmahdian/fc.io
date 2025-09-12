@@ -583,7 +583,7 @@
 
     .box-icon-actions {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 8px;
         margin-top: 16px;
         width: 100%;
@@ -601,6 +601,20 @@
     .box-card-icon {
         padding: 16px;
         box-sizing: border-box;
+    }
+}
+
+/* Extra small mobile devices - stack buttons in 2x2 grid */
+@media (max-width: 480px) {
+    .box-icon-actions {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .icon-action-btn {
+        height: 40px;
+        font-size: 0.75rem;
+        padding: 8px 10px;
     }
 }
 
@@ -808,9 +822,18 @@
     }
     
     .list-item-actions {
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
         padding-top: 0.5rem;
         border-top: 1px solid #f3f4f6;
+        width: 100%;
+    }
+    
+    .list-action-btn {
+        width: 100%;
+        height: 36px;
+        min-width: auto;
     }
     
     .list-item-description {
@@ -821,7 +844,17 @@
     }
 }
 
+/* Extra small mobile devices - list view buttons in 2x2 grid */
 @media (max-width: 480px) {
+    .list-item-actions {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .list-action-btn {
+        height: 40px;
+    }
+    
     .list-item-main {
         padding: 0.5rem 0.75rem;
     }

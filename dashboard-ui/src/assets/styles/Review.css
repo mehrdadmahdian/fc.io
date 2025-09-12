@@ -436,15 +436,18 @@
     }
 
     .response-buttons {
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 8px;
+        margin: 20px 0;
     }
 
     .btn-response {
-        flex: 1 1 calc(50% - 8px);  /* Two buttons per row */
         min-width: 0;
-        padding: 10px 16px;
+        width: 100%;
+        padding: 10px 12px;
         font-size: 14px;
+        text-align: center;
     }
 
     .action-group {
@@ -466,8 +469,28 @@
 
 /* Small Mobile Devices */
 @media (max-width: 480px) {
+    .response-buttons {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
     .btn-response {
-        flex: 1 1 100%;  /* One button per row */
+        padding: 12px 16px;
+        font-size: 15px;
+        min-height: 44px;
+    }
+}
+
+/* Extra small devices - stack buttons vertically */
+@media (max-width: 360px) {
+    .response-buttons {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .btn-response {
+        min-height: 48px;
+        font-size: 16px;
     }
 }
 
