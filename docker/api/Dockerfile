@@ -59,12 +59,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S appgroup && \
     adduser -S appuser -u 1001 -G appgroup
 
-# Copy the binary from builder stage
-COPY --from=builder /app/myapp /app/myapp
-COPY --from=builder /app/internal/templates /app/internal/templates
-COPY --from=builder /app/public /app/public
+COPY --from=builder /app/ /app/
 
-# Copy entrypoint script
 COPY docker/api/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
@@ -80,7 +76,7 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 
 # Expose API port
-ARG API_SERVER_PORT=7000
+ARG API_SERVER_PORT=${API_SERVER_PORT}
 ENV API_SERVER_PORT=${API_SERVER_PORT}
 EXPOSE ${API_SERVER_PORT}
 
