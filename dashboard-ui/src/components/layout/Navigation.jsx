@@ -7,6 +7,9 @@ import '../../assets/styles/Navigation.css';
 
 const NAVIGATION_LINKS = [
     { path: '/', icon: 'fa-home', label: 'nav.dashboard' },
+    { path: '/social/discover', icon: 'fa-compass', label: 'nav.discover' },
+    { path: '/social/feed', icon: 'fa-stream', label: 'nav.feed' },
+    { path: '/social/users/search', icon: 'fa-users', label: 'nav.findUsers' },
     { path: '/profile', icon: 'fa-user-circle', label: 'nav.profile' },
     { path: '/settings', icon: 'fa-cog', label: 'nav.settings' }
 ];

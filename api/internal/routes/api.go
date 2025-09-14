@@ -62,6 +62,24 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	apiGroup.Get("/health-check", api_handlers.Healthcheck)
 
 	apiHandler := applicationContainer.ApiHandler
+	socialHandler := api_handlers.NewSocialHandler(applicationContainer.SocialService)
+
+	// Social routes
+	socialGroup := apiGroup.Group("/social").Use(AuthMiddleware)
+
+	// User following
+	socialGroup.Post("/users/:id/follow", socialHandler.FollowUser)
+	socialGroup.Delete("/users/:id/follow", socialHandler.UnfollowUser)
+	socialGroup.Get("/users/:id/profile", socialHandler.GetUserProfile)
+	socialGroup.Get("/users/search", socialHandler.SearchUsers)
+
+	// Box social features
+	socialGroup.Post("/boxes/:id/fork", socialHandler.ForkBox)
+	socialGroup.Post("/boxes/:id/rate", socialHandler.RateBox)
+	socialGroup.Get("/boxes/public", socialHandler.GetPublicBoxes)
+
+	// Activity feed
+	socialGroup.Get("/feed", socialHandler.GetPersonalizedFeed)
 
 	// Box routes (alternative paths for backward compatibility)
 	boxGroup := apiGroup.Group("/boxes").Use(AuthMiddleware)
@@ -81,6 +99,23 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	boxGroup.Post("/:boxid/cards/:cardid/archive", apiHandler.ArchiveCard)
 	boxGroup.Put("/:boxid/cards/:cardid", apiHandler.UpdateCard)
 	boxGroup.Delete("/:boxid/cards/:cardid", apiHandler.DeleteCard)
+	boxGroup.Post("/:boxid/cards/:cardid/migrate", apiHandler.MigrateCard)
+
+	// Bulk migration endpoint
+	boxGroup.Post("/cards/bulk-migrate", apiHandler.BulkMigrateCards)
+
+	// Progress reset endpoints
+	boxGroup.Post("/:boxid/cards/:cardid/reset-progress", apiHandler.ResetCardProgress)
+	boxGroup.Post("/:boxid/reset-progress", apiHandler.ResetBoxProgress)
+	boxGroup.Post("/cards/bulk-reset", apiHandler.BulkResetCardsProgress)
+
+	// Progress backup and restore endpoints
+	progressGroup := apiGroup.Group("/progress").Use(AuthMiddleware)
+	progressGroup.Post("/backup", apiHandler.CreateBackup)
+	progressGroup.Post("/restore", apiHandler.RestoreFromBackup)
+	progressGroup.Get("/backup-history", apiHandler.GetBackupHistory)
+	progressGroup.Get("/reset-history", apiHandler.GetResetHistory)
+	progressGroup.Delete("/backups/:backupid", apiHandler.DeleteBackup)
 
 	authGroup := apiGroup.Group("/auth")
 	authGroup.Post("/login", apiHandler.Login)
@@ -110,5 +145,14 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	// dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCard)
 	dashboardGroup.Put("/boxes/:boxid/cards/:cardid", apiHandler.UpdateCard)
 	dashboardGroup.Delete("/boxes/:boxid/cards/:cardid", apiHandler.DeleteCard)
+	dashboardGroup.Post("/boxes/:boxid/cards/:cardid/migrate", apiHandler.MigrateCard)
+
+	// Bulk migration endpoint
+	dashboardGroup.Post("/cards/bulk-migrate", apiHandler.BulkMigrateCards)
+
+	// Progress reset endpoints
+	dashboardGroup.Post("/boxes/:boxid/cards/:cardid/reset-progress", apiHandler.ResetCardProgress)
+	dashboardGroup.Post("/boxes/:boxid/reset-progress", apiHandler.ResetBoxProgress)
+	dashboardGroup.Post("/cards/bulk-reset", apiHandler.BulkResetCardsProgress)
 	// dashboardGroup.Post("/boxes/:boxid/cards/:cardid/action", apiHandler.PerformCardAction)
 }

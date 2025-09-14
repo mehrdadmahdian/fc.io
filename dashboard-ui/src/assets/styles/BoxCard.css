@@ -624,7 +624,13 @@
     border-radius: 8px;
     border: 1px solid #e5e7eb;
     transition: all 0.2s ease;
-    margin-bottom: 1px;
+    margin-bottom: 8px;
+    width: 100%;
+    display: block;
+}
+
+.box-list-item:last-child {
+    margin-bottom: 0;
 }
 
 .box-list-item:hover {

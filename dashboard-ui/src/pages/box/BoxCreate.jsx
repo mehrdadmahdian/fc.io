@@ -1,9 +1,11 @@
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ModernContainer from '../../components/layout/ModernContainer';
 import Form from '../../components/form/Form';
 import FormInput from '../../components/form/FormInput';
 import FormTextarea from '../../components/form/FormTextarea';
+import BoxVisibilitySettings from '../../components/social/BoxVisibilitySettings';
 import { api } from '../../services/api';
 import { useToast } from '../../contexts/ToastContext';
 import '../../assets/styles/Dashboard.css';
@@ -14,10 +16,25 @@ function BoxCreate() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { success, error } = useToast();
+    
+    // Social settings state
+    const [visibility, setVisibility] = useState('private');
+    const [tags, setTags] = useState([]);
+    const [language, setLanguage] = useState('en');
+    const [difficulty, setDifficulty] = useState('beginner');
 
     const handleSubmit = async (formData) => {
         try {
-            await api.post('/dashboard/boxes', formData);
+            // Combine form data with social settings
+            const boxData = {
+                ...formData,
+                visibility,
+                tags,
+                language,
+                difficulty
+            };
+            
+            await api.post('/dashboard/boxes', boxData);
             success(t('boxCreate.createSuccess'));
             
             // Navigate to dashboard root within the React Router context (no leading slash)
@@ -75,6 +92,17 @@ function BoxCreate() {
                                 name="description"
                                 placeholder={t('Enter box description')}
                                 maxLength={200}
+                            />
+
+                            <BoxVisibilitySettings
+                                visibility={visibility}
+                                tags={tags}
+                                language={language}
+                                difficulty={difficulty}
+                                onVisibilityChange={setVisibility}
+                                onTagsChange={setTags}
+                                onLanguageChange={setLanguage}
+                                onDifficultyChange={setDifficulty}
                             />
                             </Form>
                         </div>

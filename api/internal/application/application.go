@@ -8,25 +8,31 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/database/seeders"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/api_handlers"
 	"github.com/mehrdadmahdian/fc.io/internal/handlers/web_handlers"
+	"github.com/mehrdadmahdian/fc.io/internal/services/audit_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/card_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	logger "github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/progress_reset_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/redis_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/social_service"
 )
 
 type Container struct {
-	LoggerService *logger_service.LoggerService
-	MongoService  *mongo_service.MongoService
-	RedisService  *redis_service.RedisService
-	AuthService   *auth_service.AuthService
-	BoxService    *box_service.BoxService
-	CardService   *card_service.CardService
-	Seeder        *seeders.Seeder
-	ApiHandler    *api_handlers.ApiHandler
-	WebHandler    *web_handlers.WebHandler
+	LoggerService        *logger_service.LoggerService
+	MongoService         *mongo_service.MongoService
+	RedisService         *redis_service.RedisService
+	AuthService          *auth_service.AuthService
+	AuditService         *audit_service.AuditService
+	BoxService           *box_service.BoxService
+	CardService          *card_service.CardService
+	ProgressResetService *progress_reset_service.ProgressResetService
+	SocialService        *social_service.SocialService
+	Seeder               *seeders.Seeder
+	ApiHandler           *api_handlers.ApiHandler
+	WebHandler           *web_handlers.WebHandler
 }
 
 func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
@@ -111,6 +117,15 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
+	auditLogRepository, err := repositories.NewAuditLogRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "auditLogRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
 	authService, err := auth_service.NewAuthService(userRepository, Cfg.Auth)
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -120,6 +135,63 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		}
 	}
 
+	auditService, err := audit_service.NewAuditService(auditLogRepository)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "auditService",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	progressBackupRepository, err := repositories.NewProgressBackupRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "progressBackupRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	progressResetRepository, err := repositories.NewProgressResetRepository(mongoService)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "progressResetRepository",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	progressResetService, err := progress_reset_service.NewProgressResetService(
+		cardRepository,
+		progressBackupRepository,
+		progressResetRepository,
+	)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "progressResetService",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	// Initialize social repositories
+	database := mongoService.Client().Database("flashcards")
+	userFollowingRepository := repositories.NewUserFollowingRepository(database)
+	boxForkRepository := repositories.NewBoxForkRepository(database)
+	boxRatingRepository := repositories.NewBoxRatingRepository(database)
+	activityFeedRepository := repositories.NewActivityFeedRepository(database)
+
+	// Initialize social service
+	socialService := social_service.NewSocialService(
+		userFollowingRepository,
+		boxForkRepository,
+		boxRatingRepository,
+		activityFeedRepository,
+		boxRepository,
+		userRepository,
+	)
+
 	boxService, err := box_service.NewBoxService(
 		boxRepository,
 		cardRepository,
@@ -127,7 +199,7 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		labelRepository,
 	)
 
-	cardService, err := card_service.NewCardService(cardRepository)
+	cardService, err := card_service.NewCardService(cardRepository, auditService)
 
 	if err != nil {
 		return nil, &ServiceCreationError{
@@ -139,16 +211,19 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 
 	// Create container first so it can be passed to handlers
 	container := &Container{
-		LoggerService: loggerService,
-		MongoService:  mongoService,
-		RedisService:  redisService,
-		AuthService:   authService,
-		BoxService:    boxService,
-		CardService:   cardService,
-		Seeder:        seeder,
+		LoggerService:        loggerService,
+		MongoService:         mongoService,
+		RedisService:         redisService,
+		AuthService:          authService,
+		AuditService:         auditService,
+		BoxService:           boxService,
+		CardService:          cardService,
+		ProgressResetService: progressResetService,
+		SocialService:        socialService,
+		Seeder:               seeder,
 	}
 
-	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService, loggerService)
+	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService, loggerService, progressResetService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",

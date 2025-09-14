@@ -111,10 +111,6 @@ services:
       - "127.0.0.1:${MONGODB_PORT}:27017"
     env_file:
       - .env
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASS}
-      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
     volumes:
       - ./docker/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - fcio_mongo-data:/data/db
@@ -135,6 +131,10 @@ services:
       - "127.0.0.1:${MONGODB_EXPRESS_PORT}:8081"
     env_file:
       - .env
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017
+      ME_CONFIG_BASICAUTH: false
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
     depends_on:
       mongodb:
         condition: service_healthy

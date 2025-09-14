@@ -4,11 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import ModernContainer from '../../components/layout/ModernContainer';
 import MarkdownContent from '../../components/common/MarkdownContent';
+import BoxSelectionModal from '../../components/dashboard/cards/BoxSelectionModal';
+import ProgressResetModal from '../../components/dashboard/cards/ProgressResetModal';
+import BoxEditModal from '../../components/social/BoxEditModal';
 import { useToast } from '../../contexts/ToastContext';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/BoxCard.css';
 import '../../assets/styles/BoxDetails.css';
 import '../../assets/styles/ModernPage.css';
+import '../../assets/styles/Migration.css';
+import '../../assets/styles/ProgressReset.css';
 
 function BoxDetails() {
     const { t } = useTranslation();
@@ -43,6 +48,20 @@ function BoxDetails() {
         back: '',
         extra: ''
     });
+    
+    // Card migration
+    const [selectedCards, setSelectedCards] = useState(new Set());
+    const [isMigrationModalOpen, setIsMigrationModalOpen] = useState(false);
+    const [migrationCardIds, setMigrationCardIds] = useState([]);
+    const [bulkSelectMode, setBulkSelectMode] = useState(false);
+    
+    // Progress reset
+    const [isProgressResetModalOpen, setIsProgressResetModalOpen] = useState(false);
+    const [resetType, setResetType] = useState('card'); // 'card', 'box', 'bulk'
+    
+    // Box edit modal
+    const [showBoxEditModal, setShowBoxEditModal] = useState(false);
+    const [resetCardIds, setResetCardIds] = useState([]);
 
     // Fetch box and cards data
     const fetchBoxData = useCallback(async () => {
@@ -206,6 +225,140 @@ function BoxDetails() {
             ...prev,
             [field]: value
         }));
+    };
+
+    // Card migration functions
+    const toggleCardSelection = (cardId) => {
+        setSelectedCards(prev => {
+            const newSelection = new Set(prev);
+            if (newSelection.has(cardId)) {
+                newSelection.delete(cardId);
+            } else {
+                newSelection.add(cardId);
+            }
+            return newSelection;
+        });
+    };
+
+    const selectAllCards = () => {
+        setSelectedCards(new Set(currentCards.map(card => card.ID)));
+    };
+
+    const clearSelection = () => {
+        setSelectedCards(new Set());
+        setBulkSelectMode(false);
+    };
+
+    const handleBoxUpdate = (updatedBox) => {
+        setBox(updatedBox);
+    };
+
+    const handleSingleCardMigration = (cardId) => {
+        setMigrationCardIds([cardId]);
+        setIsMigrationModalOpen(true);
+    };
+
+    const handleBulkMigration = () => {
+        if (selectedCards.size === 0) {
+            showError(t('migration.noCardsSelected'));
+            return;
+        }
+        setMigrationCardIds(Array.from(selectedCards));
+        setIsMigrationModalOpen(true);
+    };
+
+    const handleMigrationConfirm = async ({ targetBoxId, preserveProgress, cardIds }) => {
+        try {
+            if (cardIds.length === 1) {
+                // Single card migration
+                await api.post(`/dashboard/boxes/${boxId}/cards/${cardIds[0]}/migrate`, {
+                    target_box_id: targetBoxId,
+                    preserve_progress: preserveProgress
+                });
+                success(t('migration.singleCardSuccess'));
+            } else {
+                // Bulk migration
+                const response = await api.post('/dashboard/cards/bulk-migrate', {
+                    card_ids: cardIds,
+                    target_box_id: targetBoxId,
+                    preserve_progress: preserveProgress
+                });
+                
+                const result = response.data.data.migration_result;
+                if (result.total_failed > 0) {
+                    success(t('migration.bulkPartialSuccess', {
+                        successful: result.total_successful,
+                        failed: result.total_failed
+                    }));
+                } else {
+                    success(t('migration.bulkSuccess', { count: result.total_successful }));
+                }
+            }
+            
+            // Refresh data and close modal
+            await fetchBoxData();
+            setIsMigrationModalOpen(false);
+            clearSelection();
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+            showError(t('migration.error') + ': ' + errorMessage);
+        }
+    };
+
+    const toggleBulkSelectMode = () => {
+        setBulkSelectMode(!bulkSelectMode);
+        if (bulkSelectMode) {
+            clearSelection();
+        }
+    };
+
+    // Progress Reset Handlers
+    const handleSingleCardReset = (cardId) => {
+        setResetType('card');
+        setResetCardIds([cardId]);
+        setIsProgressResetModalOpen(true);
+    };
+
+    const handleBulkReset = () => {
+        if (selectedCards.size === 0) return;
+        
+        setResetType('bulk');
+        setResetCardIds(Array.from(selectedCards));
+        setIsProgressResetModalOpen(true);
+    };
+
+    const handleBoxReset = () => {
+        setResetType('box');
+        setResetCardIds([]);
+        setIsProgressResetModalOpen(true);
+    };
+
+    const handleProgressResetConfirm = async (result) => {
+        try {
+            if (result.total_successful > 0) {
+                if (result.total_failed > 0) {
+                    success(t('progress_reset.partial_success', {
+                        successful: result.total_successful,
+                        failed: result.total_failed
+                    }));
+                } else {
+                    success(t('progress_reset.success_message', { 
+                        successful: result.total_successful,
+                        total: result.total_requested 
+                    }));
+                }
+            }
+            
+            // Refresh data and close modal
+            await fetchBoxData();
+            setIsProgressResetModalOpen(false);
+            if (bulkSelectMode) {
+                clearSelection();
+            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.message || error.message;
+            showError(t('progress_reset.error_message') + ': ' + errorMessage);
+        }
     };
 
     // Pagination logic
@@ -454,6 +607,16 @@ function BoxDetails() {
                             <h1>{box?.Name || t('boxDetails.title')}</h1>
                             {box?.Description && <span className="subtitle">{box.Description}</span>}
                         </div>
+                        <div className="modern-title-actions">
+                            <button 
+                                className="modern-action-button"
+                                onClick={() => setShowBoxEditModal(true)}
+                                title={t('boxDetails.editBox')}
+                            >
+                                <i className="fas fa-edit"></i>
+                                <span>{t('boxDetails.editBox')}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -486,12 +649,26 @@ function BoxDetails() {
                                             <i className="fas fa-play"></i>
                                             {t('review.start')}
                                         </Link>
+                                        <button 
+                                            onClick={handleBoxReset}
+                                            className="compact-btn compact-btn-danger"
+                                            title={t('progress_reset.box_reset_warning')}
+                                        >
+                                            <i className="fas fa-undo-alt"></i>
+                                            {t('progress_reset.box_reset')}
+                                        </button>
                                     </div>
                                     <div className="stats-compact">
                                         <span className="stat-compact">
                                             <i className="fas fa-layer-group"></i>
                                             {filteredCards.length} {t('cards.total')}
                                         </span>
+                                        {selectedCards.size > 0 && (
+                                            <span className="stat-compact selected">
+                                                <i className="fas fa-check-square"></i>
+                                                {selectedCards.size} {t('cards.selected')}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 
@@ -527,6 +704,61 @@ function BoxDetails() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Bulk Actions Bar */}
+                            {filteredCards.length > 0 && (
+                                <div className="bulk-actions-bar">
+                                    <div className="bulk-actions-left">
+                                        <button 
+                                            onClick={toggleBulkSelectMode}
+                                            className={`compact-btn ${bulkSelectMode ? 'compact-btn-primary' : 'compact-btn-outline'}`}
+                                        >
+                                            <i className={`fas ${bulkSelectMode ? 'fa-times' : 'fa-check-square'}`}></i>
+                                            {bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}
+                                        </button>
+                                        
+                                        {bulkSelectMode && (
+                                            <>
+                                                <button 
+                                                    onClick={selectAllCards}
+                                                    className="compact-btn compact-btn-outline"
+                                                    disabled={selectedCards.size === currentCards.length}
+                                                >
+                                                    <i className="fas fa-check-double"></i>
+                                                    {t('cards.selectAll')}
+                                                </button>
+                                                <button 
+                                                    onClick={clearSelection}
+                                                    className="compact-btn compact-btn-outline"
+                                                    disabled={selectedCards.size === 0}
+                                                >
+                                                    <i className="fas fa-times"></i>
+                                                    {t('cards.clearSelection')}
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                    
+                                    {selectedCards.size > 0 && (
+                                        <div className="bulk-actions-right">
+                                            <button 
+                                                onClick={handleBulkMigration}
+                                                className="compact-btn compact-btn-warning"
+                                            >
+                                                <i className="fas fa-arrow-right"></i>
+                                                {t('migration.migrateSelected', { count: selectedCards.size })}
+                                            </button>
+                                            <button 
+                                                onClick={handleBulkReset}
+                                                className="compact-btn compact-btn-danger"
+                                            >
+                                                <i className="fas fa-undo"></i>
+                                                {t('progress_reset.bulk_reset')} ({selectedCards.size})
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Cards Table */}
                             {filteredCards.length === 0 && !isCreatingCard ? (
@@ -568,6 +800,21 @@ function BoxDetails() {
                                 <>
                                     <div className="cards-table">
                                         <div className="table-header">
+                                            {bulkSelectMode && (
+                                                <div className="col-select">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedCards.size === currentCards.length && currentCards.length > 0}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                selectAllCards();
+                                                            } else {
+                                                                clearSelection();
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                             <div className="col-status">{t('cards.status')}</div>
                                             <div className="col-front">{t('cards.front')}</div>
                                             <div className="col-back">{t('cards.back')}</div>
@@ -579,7 +826,16 @@ function BoxDetails() {
                                         {renderNewCardRow()}
                                         
                                         {currentCards.map(card => (
-                                            <div key={card.ID} className="table-row">
+                                            <div key={card.ID} className={`table-row ${selectedCards.has(card.ID) ? 'selected' : ''}`}>
+                                                {bulkSelectMode && (
+                                                    <div className="col-select">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedCards.has(card.ID)}
+                                                            onChange={() => toggleCardSelection(card.ID)}
+                                                        />
+                                                    </div>
+                                                )}
                                                 <div className="col-status">
                                                     <span 
                                                         className={`status-badge status-${getCardStatusBadge(card)}`}
@@ -618,6 +874,20 @@ function BoxDetails() {
                                                         >
                                                             <i className="fas fa-external-link-alt"></i>
                                                         </Link>
+                                                        <button 
+                                                            onClick={() => handleSingleCardMigration(card.ID)}
+                                                            className="action-btn migrate"
+                                                            title={t('migration.migrateCard')}
+                                                        >
+                                                            <i className="fas fa-arrow-right"></i>
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleSingleCardReset(card.ID)}
+                                                            className="action-btn reset"
+                                                            title={t('progress_reset.reset_progress')}
+                                                        >
+                                                            <i className="fas fa-undo"></i>
+                                                        </button>
                                                         <button 
                                                             onClick={() => handleArchiveCard(card.ID)}
                                                             className="action-btn archive"
@@ -695,6 +965,34 @@ function BoxDetails() {
                     </div>
                 </div>
             </div>
+            
+            {/* Migration Modal */}
+            <BoxSelectionModal
+                isOpen={isMigrationModalOpen}
+                onClose={() => setIsMigrationModalOpen(false)}
+                onConfirm={handleMigrationConfirm}
+                cardIds={migrationCardIds}
+                currentBoxId={boxId}
+            />
+            
+            {/* Progress Reset Modal */}
+            <ProgressResetModal
+                isOpen={isProgressResetModalOpen}
+                onClose={() => setIsProgressResetModalOpen(false)}
+                onConfirm={handleProgressResetConfirm}
+                resetType={resetType}
+                cardIds={resetCardIds}
+                boxId={resetType === 'box' ? boxId : null}
+                currentBoxId={boxId}
+            />
+            
+            {/* Box Edit Modal */}
+            <BoxEditModal
+                box={box}
+                isOpen={showBoxEditModal}
+                onClose={() => setShowBoxEditModal(false)}
+                onBoxUpdate={handleBoxUpdate}
+            />
         </ModernContainer>
     );
 }

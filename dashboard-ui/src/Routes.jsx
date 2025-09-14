@@ -10,6 +10,11 @@ import ReverseReview from './pages/box/ReverseReview';
 import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
 import BoxDetails from './pages/box/BoxDetails';
+// Social pages
+import PublicBoxes from './pages/social/PublicBoxes';
+import ActivityFeed from './pages/social/ActivityFeed';
+import UserProfile from './pages/social/UserProfile';
+import UserSearch from './pages/social/UserSearch';
 
 const Routes = () => {
     const { isAuthenticated, isLoading } = useAuth();
@@ -61,6 +66,24 @@ const Routes = () => {
             <Route 
                 path="/box/:boxId" 
                 element={isAuthenticated ? <BoxDetails /> : <Navigate to="/auth/login" />} 
+            />
+            
+            {/* Social routes */}
+            <Route 
+                path="/social/discover" 
+                element={isAuthenticated ? <PublicBoxes /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/social/feed" 
+                element={isAuthenticated ? <ActivityFeed /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/social/users/search" 
+                element={isAuthenticated ? <UserSearch /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/users/:userId/profile" 
+                element={isAuthenticated ? <UserProfile /> : <Navigate to="/auth/login" />} 
             />
         </RouterRoutes>
     );

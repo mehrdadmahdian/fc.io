@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Navigation from '../components/layout/Navigation';
+import DashboardContainer from '../components/layout/DashboardContainer';
 import BoxCard from '../components/dashboard/boxes/BoxCard';
 import StatsCard from '../components/dashboard/StatsCard';
-import Footer from '../components/layout/Footer';
 import '../assets/styles/Dashboard.css';
-import PageTransition from '../components/common/PageTransition';
 import { api } from '../services/api';
 
 function Dashboard() {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     
-    // Load view mode from localStorage, default to 'icon'
-    const [viewMode, setViewMode] = useState(() => {
-        const savedViewMode = localStorage.getItem('dashboard-view-mode');
-        return savedViewMode || 'icon';
-    });
     const [data, setData] = useState({
         stats: {
             totalBoxes: { value: 0, trend: 0 },
@@ -42,11 +35,6 @@ function Dashboard() {
         }));
     };
 
-    // Handle view mode change and save to localStorage
-    const handleViewModeChange = (newViewMode) => {
-        setViewMode(newViewMode);
-        localStorage.setItem('dashboard-view-mode', newViewMode);
-    };
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -85,126 +73,99 @@ function Dashboard() {
 
     if (loading) {
         return (
-            <PageTransition>
-                <div className="dashboard-layout">
-                    <Navigation />
-                    <main className="dashboard-main">
-                        <div className="dashboard-container">
-                            <div className="dashboard-header">
-                                <h1 className="dashboard-title">{t('dashboard.loading')}</h1>
-                            </div>
-                        </div>
-                    </main>
-                    <Footer />
+            <DashboardContainer>
+                <div className="dashboard-container">
+                    <div className="dashboard-header">
+                        <h1 className="dashboard-title">{t('dashboard.loading')}</h1>
+                    </div>
                 </div>
-            </PageTransition>
+            </DashboardContainer>
         );
     }
 
     return (
-        <PageTransition>
-            <div className="dashboard-layout">
-                <Navigation />
-                <main className="dashboard-main">
-                    <div className="dashboard-container">
-                        <div className="stats-container">
-                            <StatsCard 
-                                icon="fa-box"
-                                title="dashboard.stats.boxes"
-                                value={data.stats.totalBoxes.value}
-                                trend={data.stats.totalBoxes.trend}
-                            />
+        <DashboardContainer>
+            <div className="dashboard-container">
+                <div className="stats-container">
+                    <StatsCard 
+                        icon="fa-box"
+                        title="dashboard.stats.boxes"
+                        value={data.stats.totalBoxes.value}
+                        trend={data.stats.totalBoxes.trend}
+                    />
 
-                            <div className="stat-card combined-cards-stats">
-                                <div className="stat-header">
-                                    <div className="stat-icon">
-                                        <i className="fas fa-layer-group"></i>
-                                    </div>
+                    <div className="stat-card combined-cards-stats">
+                        <div className="stat-header">
+                            <div className="stat-icon">
+                                <i className="fas fa-layer-group"></i>
+                            </div>
+                        </div>
+                        <div className="stat-content">
+                            <div className="combined-stats-row">
+                                <div className="stat-item">
+                                    <h3 className="stat-value">{data.stats.totalCards.value}</h3>
+                                    <p className="stat-title">Total Cards</p>
                                 </div>
-                                <div className="stat-content">
-                                    <div className="combined-stats-row">
-                                        <div className="stat-item">
-                                            <h3 className="stat-value">{data.stats.totalCards.value}</h3>
-                                            <p className="stat-title">Total Cards</p>
-                                        </div>
-                                        <div className="stat-divider">|</div>
-                                        <div className="stat-item">
-                                            <h3 className="stat-value">{data.stats.todayDue?.value || 0}</h3>
-                                            <p className="stat-title">Due Today</p>
-                                        </div>
-                                    </div>
+                                <div className="stat-divider">|</div>
+                                <div className="stat-item">
+                                    <h3 className="stat-value">{data.stats.todayDue?.value || 0}</h3>
+                                    <p className="stat-title">Due Today</p>
                                 </div>
                             </div>
-
-                            <StatsCard 
-                                icon="fa-chart-line"
-                                title="dashboard.stats.accuracy"
-                                value={`${data.stats.reviewAccuracy.value}%`}
-                                trend={data.stats.reviewAccuracy.trend}
-                            />
-                            <StatsCard 
-                                icon="fa-fire"
-                                title="dashboard.stats.streak"
-                                value={data.stats.streak.value}
-                                trend={data.stats.streak.trend}
-                            />
                         </div>
+                    </div>
 
-                        <div className="boxes-section">
-                            <div className="boxes-header">
-                                <div className="boxes-header-left">
-                                    <div className="view-toggle">
-                                        <button 
-                                            className={`view-toggle-btn ${viewMode === 'icon' ? 'active' : ''}`}
-                                            onClick={() => handleViewModeChange('icon')}
-                                            title={t('dashboard.boxes.viewModes.icon')}
-                                        >
-                                            <i className="fas fa-th"></i>
-                                        </button>
-                                        <button 
-                                            className={`view-toggle-btn ${viewMode === 'full' ? 'active' : ''}`}
-                                            onClick={() => handleViewModeChange('full')}
-                                            title={t('dashboard.boxes.viewModes.full')}
-                                        >
-                                            <i className="fas fa-list"></i>
-                                        </button>
-                                    </div>
+                    <StatsCard 
+                        icon="fa-chart-line"
+                        title="dashboard.stats.accuracy"
+                        value={`${data.stats.reviewAccuracy.value}%`}
+                        trend={data.stats.reviewAccuracy.trend}
+                    />
+                    <StatsCard 
+                        icon="fa-fire"
+                        title="dashboard.stats.streak"
+                        value={data.stats.streak.value}
+                        trend={data.stats.streak.trend}
+                    />
+                </div>
+
+                <div className="boxes-section">
+                    <div className="boxes-header">
+                        <div className="boxes-header-left">
+                            <h2>{t('dashboard.boxes.title')}</h2>
+                        </div>
+                        <Link to="/box/create" className="btn btn-primary btn-create-box">
+                            <i className="fas fa-plus"></i>
+                            {t('dashboard.boxes.create')}
+                        </Link>
+                    </div>
+                    <div className="boxes-grid-list">
+                        {data.boxes.length > 0 ? (
+                            data.boxes.map((box) => (
+                                <BoxCard 
+                                    key={box.Box.ID} 
+                                    box={box} 
+                                    onActiveChange={handleActiveBoxChange}
+                                    viewMode="full"
+                                />
+                            ))
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-icon">
+                                    <i className="fas fa-box"></i>
                                 </div>
-                                <Link to="/box/create" className="btn btn-primary btn-create-box">
+                                <h3>{t('dashboard.boxes.empty')}</h3>
+                                <p>{t('dashboard.boxes.createDesc')}</p>
+                                <Link to="/box/create" className="btn btn-primary">
                                     <i className="fas fa-plus"></i>
                                     {t('dashboard.boxes.create')}
                                 </Link>
                             </div>
-                            <div className={`boxes-grid ${viewMode === 'icon' ? 'boxes-grid-icons' : 'boxes-grid-list'}`}>
-                                {data.boxes.length > 0 ? (
-                                    data.boxes.map((box) => (
-                                        <BoxCard 
-                                            key={box.Box.ID} 
-                                            box={box} 
-                                            onActiveChange={handleActiveBoxChange}
-                                            viewMode={viewMode}
-                                        />
-                                    ))
-                                ) : (
-                                    <div className="empty-state">
-                                        <div className="empty-icon">
-                                            <i className="fas fa-box"></i>
-                                        </div>
-                                        <h3>{t('dashboard.boxes.empty')}</h3>
-                                        <p>{t('dashboard.boxes.createDesc')}</p>
-                                        <Link to="/box/create" className="btn btn-primary">
-                                            <i className="fas fa-plus"></i>
-                                            {t('dashboard.boxes.create')}
-                                        </Link>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        )}
                     </div>
-                </main>
-                <Footer />
+                </div>
             </div>
-        </PageTransition>
+        </DashboardContainer>
     );
 }
 
