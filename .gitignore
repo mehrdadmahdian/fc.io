@@ -4,3 +4,4 @@
 .env.production
 /.mongodb
 .env.bak
+.env.prod
