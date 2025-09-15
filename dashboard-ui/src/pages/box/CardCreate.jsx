@@ -156,7 +156,7 @@ function CardCreate() {
                                 name="front"
                                 required={true}
                                 placeholder={t('cardCreate.questionPlaceholder')}
-                                rows={6}
+                                rows={2}
                             />
 
                             <FormMarkdownTextarea
@@ -164,14 +164,14 @@ function CardCreate() {
                                 name="back"
                                 placeholder={t('cardCreate.answerPlaceholder')}
                                 required={true}
-                                rows={6}
+                                rows={2}
                             />
 
                             <FormMarkdownTextarea
                                 label={t('cardCreate.additionalInfo')}
                                 name="extra"
                                 placeholder={t('cardCreate.additionalInfoPlaceholder')}
-                                rows={4}
+                                rows={2}
                             />
                             </Form>
                         </div>

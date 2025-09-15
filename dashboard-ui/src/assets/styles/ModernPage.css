@@ -108,7 +108,7 @@
 /* ===== SCROLLABLE CONTENT AREA ===== */
 .modern-content-area {
   position: fixed;
-  top: 160px; /* Below title bar with spacing */
+  top: 170px; /* Below title bar with spacing */
   bottom: 1rem; /* Bottom padding from screen edge */
   left: 50%;
   transform: translateX(-50%);
@@ -200,6 +200,16 @@
   margin-top: auto;
 }
 
+/* Form Actions Styling */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding: 1.25rem 0;
+  margin-top: 1.5rem;
+  border-top: 1px solid #E5E7EB;
+}
+
 .modern-btn {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -237,6 +247,51 @@
 }
 
 .modern-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Form Button Styling */
+.form-actions .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--modern-transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  border: none;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.form-actions .btn-primary {
+  background: var(--modern-primary);
+  color: white;
+}
+
+.form-actions .btn-primary:hover:not(:disabled) {
+  background: #4F46E5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.form-actions .btn-secondary {
+  background: #F3F4F6;
+  color: var(--modern-neutral);
+  border: 1px solid #D1D5DB;
+}
+
+.form-actions .btn-secondary:hover:not(:disabled) {
+  background: #E5E7EB;
+  color: #374151;
+}
+
+.form-actions .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
@@ -319,11 +374,11 @@
   }
   
   .modern-content-area {
-    top: 150px;
+    top: 160px;
   }
   
   .modern-content-scroll {
-    padding: 1rem;
+    padding: 0.75rem;
   }
   
   .modern-button-group {
@@ -333,6 +388,19 @@
   
   .modern-btn {
     justify-content: center;
+  }
+  
+  .form-actions {
+    padding: 0.75rem 0;
+    margin-top: 1rem;
+    flex-direction: column;
+  }
+  
+  .form-actions .btn {
+    justify-content: center;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
   }
   
   .modern-filter-bar {
