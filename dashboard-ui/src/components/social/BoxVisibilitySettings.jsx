@@ -30,20 +30,24 @@ const BoxVisibilitySettings = ({
     const difficultyOptions = [
         { value: 'beginner', label: t('social.difficulty.beginner') },
         { value: 'intermediate', label: t('social.difficulty.intermediate') },
-        { value: 'advanced', label: t('social.difficulty.advanced') }
+        { value: 'advanced', label: t('social.difficulty.advanced') },
+        { value: 'expert', label: t('social.difficulty.expert') }
     ];
 
+    // Content language - the language the flashcards are written in, suitable for all subjects
     const languageOptions = [
-        { value: 'en', label: t('social.languages.english') },
-        { value: 'es', label: t('social.languages.spanish') },
-        { value: 'fr', label: t('social.languages.french') },
-        { value: 'de', label: t('social.languages.german') },
-        { value: 'it', label: t('social.languages.italian') },
-        { value: 'pt', label: t('social.languages.portuguese') },
-        { value: 'ru', label: t('social.languages.russian') },
-        { value: 'ja', label: t('social.languages.japanese') },
-        { value: 'ko', label: t('social.languages.korean') },
-        { value: 'zh', label: t('social.languages.chinese') }
+        { value: 'en', label: t('social.contentLanguages.english') },
+        { value: 'es', label: t('social.contentLanguages.spanish') },
+        { value: 'fr', label: t('social.contentLanguages.french') },
+        { value: 'de', label: t('social.contentLanguages.german') },
+        { value: 'it', label: t('social.contentLanguages.italian') },
+        { value: 'pt', label: t('social.contentLanguages.portuguese') },
+        { value: 'ru', label: t('social.contentLanguages.russian') },
+        { value: 'ja', label: t('social.contentLanguages.japanese') },
+        { value: 'ko', label: t('social.contentLanguages.korean') },
+        { value: 'zh', label: t('social.contentLanguages.chinese') },
+        { value: 'ar', label: t('social.contentLanguages.arabic') },
+        { value: 'hi', label: t('social.contentLanguages.hindi') }
     ];
 
     return (
@@ -106,7 +110,7 @@ const BoxVisibilitySettings = ({
                     />
 
                     <FormSelect
-                        label={t('social.boxSettings.language')}
+                        label={t('social.boxSettings.contentLanguage')}
                         name="language"
                         value={language}
                         onChange={(e) => onLanguageChange(e.target.value)}

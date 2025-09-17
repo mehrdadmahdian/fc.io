@@ -96,17 +96,33 @@ func (boxRepository *BoxRepository) GetBoxByID(ctx context.Context, boxID string
 	return &box, nil
 }
 
-func (boxRepository *BoxRepository) UpdateBox(ctx context.Context, boxID string, name string, description string) error {
+func (boxRepository *BoxRepository) UpdateBox(ctx context.Context, boxID string, name string, description string, visibility string, tags []string, language string, difficulty string) error {
 	objectID, err := primitive.ObjectIDFromHex(boxID)
 	if err != nil {
 		return err
 	}
 
+	updateFields := bson.M{
+		"name":        name,
+		"description": description,
+	}
+
+	// Only update fields that are provided (non-empty)
+	if visibility != "" {
+		updateFields["visibility"] = visibility
+	}
+	if tags != nil {
+		updateFields["tags"] = tags
+	}
+	if language != "" {
+		updateFields["language"] = language
+	}
+	if difficulty != "" {
+		updateFields["difficulty"] = difficulty
+	}
+
 	update := bson.M{
-		"$set": bson.M{
-			"name":        name,
-			"description": description,
-		},
+		"$set": updateFields,
 	}
 
 	_, err = boxRepository.collection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
@@ -172,4 +188,77 @@ func (boxRepository *BoxRepository) GetActiveBoxForUser(ctx context.Context, use
 	}
 
 	return &box, nil
+}
+
+// GetPublicBoxes returns public boxes with filtering and pagination
+func (boxRepository *BoxRepository) GetPublicBoxes(ctx context.Context, tags []string, language string, difficulty string, sortBy string, limit, skip int) ([]*models.Box, error) {
+	var boxes []*models.Box
+
+	// Build filter query
+	filter := bson.M{
+		"visibility": models.BoxVisibilityPublic,
+	}
+
+	// Add tag filter if provided
+	if len(tags) > 0 && tags[0] != "" {
+		filter["tags"] = bson.M{"$in": tags}
+	}
+
+	// Add language filter if provided
+	if language != "" {
+		filter["language"] = language
+	}
+
+	// Add difficulty filter if provided
+	if difficulty != "" {
+		filter["difficulty"] = difficulty
+	}
+
+	// Build sort options
+	var sortOptions bson.D
+	switch sortBy {
+	case "name":
+		sortOptions = bson.D{{Key: "name", Value: 1}}
+	case "created_at":
+		sortOptions = bson.D{{Key: "created_at", Value: -1}}
+	case "updated_at":
+		sortOptions = bson.D{{Key: "updated_at", Value: -1}}
+	case "rating":
+		// Sort by average rating (assuming it exists in box document)
+		sortOptions = bson.D{{Key: "average_rating", Value: -1}, {Key: "created_at", Value: -1}}
+	case "popularity":
+		// Sort by fork count or view count (assuming it exists)
+		sortOptions = bson.D{{Key: "fork_count", Value: -1}, {Key: "created_at", Value: -1}}
+	default:
+		sortOptions = bson.D{{Key: "created_at", Value: -1}}
+	}
+
+	// Build find options
+	limitVal := int64(limit)
+	skipVal := int64(skip)
+	findOptions := &options.FindOptions{
+		Sort:  sortOptions,
+		Limit: &limitVal,
+		Skip:  &skipVal,
+	}
+
+	cursor, err := boxRepository.collection.Find(ctx, filter, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		var box models.Box
+		if err := cursor.Decode(&box); err != nil {
+			return nil, err
+		}
+		boxes = append(boxes, &box)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return boxes, nil
 }

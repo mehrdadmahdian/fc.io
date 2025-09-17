@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../contexts/ToastContext';
+import { useAuth } from '../../contexts/AuthContext';
 import BoxVisibilitySettings from './BoxVisibilitySettings';
 
 const BoxEditModal = ({ box, isOpen, onClose, onBoxUpdate }) => {
     const { t } = useTranslation();
     const { success, error } = useToast();
+    const { api } = useAuth();
     
     const [formData, setFormData] = useState({
         name: '',
@@ -21,13 +23,13 @@ const BoxEditModal = ({ box, isOpen, onClose, onBoxUpdate }) => {
     useEffect(() => {
         if (box && isOpen) {
             setFormData({
-                name: box.name || '',
-                description: box.description || ''
+                name: box.Name || '',
+                description: box.Description || ''
             });
-            setVisibility(box.visibility || 'private');
-            setTags(box.tags || []);
-            setLanguage(box.language || 'en');
-            setDifficulty(box.difficulty || 'beginner');
+            setVisibility(box.Visibility || 'private');
+            setTags(box.Tags || []);
+            setLanguage(box.Language || 'en');
+            setDifficulty(box.Difficulty || 'beginner');
         }
     }, [box, isOpen]);
 
@@ -50,15 +52,15 @@ const BoxEditModal = ({ box, isOpen, onClose, onBoxUpdate }) => {
         setIsLoading(true);
         try {
             const updateData = {
-                ...formData,
+                name: formData.name,
+                description: formData.description,
                 visibility,
                 tags,
                 language,
                 difficulty
             };
 
-            // This would need to be implemented in the API
-            // await api.put(`/dashboard/boxes/${box.id}`, updateData);
+            await api.put(`/dashboard/boxes/${box.ID}`, updateData);
             
             success(t('boxEdit.updateSuccess'));
             
@@ -67,7 +69,8 @@ const BoxEditModal = ({ box, isOpen, onClose, onBoxUpdate }) => {
             }
             onClose();
         } catch (err) {
-            error(t('boxEdit.updateError'));
+            console.error('Error updating box:', err);
+            error(err.response?.data?.message || t('boxEdit.updateError'));
         } finally {
             setIsLoading(false);
         }

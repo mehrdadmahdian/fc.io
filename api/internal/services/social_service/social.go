@@ -221,16 +221,12 @@ func (s *SocialService) GetPersonalizedFeed(ctx context.Context, userID primitiv
 
 // GetPublicBoxes returns discoverable public boxes with filters
 func (s *SocialService) GetPublicBoxes(ctx context.Context, tags []string, language string, difficulty string, sortBy string, limit, skip int) ([]*models.Box, error) {
-	// This would need to be implemented in the box repository
-	// For now, return an error indicating it needs implementation
-	return nil, errors.New("GetPublicBoxes needs to be implemented in BoxRepository")
+	return s.boxRepo.GetPublicBoxes(ctx, tags, language, difficulty, sortBy, limit, skip)
 }
 
 // SearchUsers searches for users by username or display name
 func (s *SocialService) SearchUsers(ctx context.Context, query string, limit, skip int) ([]*models.User, error) {
-	// This would need to be implemented in the user repository
-	// For now, return an error indicating it needs implementation
-	return nil, errors.New("SearchUsers needs to be implemented in UserRepository")
+	return s.userRepo.SearchUsers(ctx, query, limit, skip)
 }
 
 // Helper methods for updating counts (in production, these should be async)

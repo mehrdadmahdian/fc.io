@@ -607,16 +607,6 @@ function BoxDetails() {
                             <h1>{box?.Name || t('boxDetails.title')}</h1>
                             {box?.Description && <span className="subtitle">{box.Description}</span>}
                         </div>
-                        <div className="modern-title-actions">
-                            <button 
-                                className="modern-action-button"
-                                onClick={() => setShowBoxEditModal(true)}
-                                title={t('boxDetails.editBox')}
-                            >
-                                <i className="fas fa-edit"></i>
-                                <span>{t('boxDetails.editBox')}</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -625,10 +615,18 @@ function BoxDetails() {
                     <div className="modern-content-box">
                         <div className="modern-content-scroll">
                             <div className="box-details-content">
-                            {/* Compact Action & Filter Bar */}
-                            <div className="compact-control-bar">
-                                <div className="control-bar-left">
+                            {/* Box Actions Bar */}
+                            <div className="box-actions-bar">
+                                <div className="box-actions-left">
                                     <div className="action-buttons-compact">
+                                        <button 
+                                            className="compact-btn compact-btn-primary"
+                                            onClick={() => setShowBoxEditModal(true)}
+                                            title={t('boxDetails.editBox')}
+                                        >
+                                            <i className="fas fa-edit"></i>
+                                            {t('boxDetails.editBox')}
+                                        </button>
                                         <button 
                                             onClick={startCreatingCard} 
                                             className="compact-btn compact-btn-primary"
@@ -645,7 +643,7 @@ function BoxDetails() {
                                             <i className="fas fa-plus-circle"></i>
                                             {t('cards.addDetailed')}
                                         </Link>
-                                        <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-outline">
+                                        <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-success">
                                             <i className="fas fa-play"></i>
                                             {t('review.start')}
                                         </Link>
@@ -658,6 +656,65 @@ function BoxDetails() {
                                             {t('progress_reset.box_reset')}
                                         </button>
                                     </div>
+                                </div>
+                                
+                                {/* Bulk Actions in same bar */}
+                                <div className="box-actions-right">
+                                    <button 
+                                        onClick={toggleBulkSelectMode}
+                                        className={`compact-btn ${bulkSelectMode ? 'compact-btn-primary' : 'compact-btn-outline'}`}
+                                    >
+                                        <i className={`fas ${bulkSelectMode ? 'fa-times' : 'fa-check-square'}`}></i>
+                                        {bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}
+                                    </button>
+                                    
+                                    {bulkSelectMode && (
+                                        <>
+                                            <button 
+                                                onClick={selectAllCards}
+                                                className="compact-btn compact-btn-outline"
+                                                disabled={selectedCards.size === currentCards.length}
+                                            >
+                                                <i className="fas fa-check-double"></i>
+                                                {t('cards.selectAll')}
+                                            </button>
+                                            <button 
+                                                onClick={clearSelection}
+                                                className="compact-btn compact-btn-outline"
+                                                disabled={selectedCards.size === 0}
+                                            >
+                                                <i className="fas fa-times"></i>
+                                                {t('cards.clearSelection')}
+                                            </button>
+                                            
+                                            {selectedCards.size > 0 && (
+                                                <>
+                                                    <button 
+                                                        onClick={handleBulkMigration}
+                                                        className="compact-btn compact-btn-warning"
+                                                        disabled={selectedCards.size === 0}
+                                                    >
+                                                        <i className="fas fa-arrow-right"></i>
+                                                        {t('migration.migrateSelected', { count: selectedCards.size })}
+                                                    </button>
+                                                    <button 
+                                                        onClick={handleBulkReset}
+                                                        className="compact-btn compact-btn-danger"
+                                                        disabled={selectedCards.size === 0}
+                                                    >
+                                                        <i className="fas fa-undo-alt"></i>
+                                                        {t('progress_reset.bulk_reset')} ({selectedCards.size})
+                                                    </button>
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Card Filtering & Search Bar */}
+                            <div className="card-filter-bar">
+                                <div className="filter-bar-left">
                                     <div className="stats-compact">
                                         <span className="stat-compact">
                                             <i className="fas fa-layer-group"></i>
@@ -672,7 +729,7 @@ function BoxDetails() {
                                     </div>
                                 </div>
                                 
-                                <div className="control-bar-right">
+                                <div className="filter-bar-right">
                                     <div className="search-box-compact">
                                         <i className="fas fa-search"></i>
                                         <input
@@ -705,60 +762,6 @@ function BoxDetails() {
                                 </div>
                             </div>
 
-                            {/* Bulk Actions Bar */}
-                            {filteredCards.length > 0 && (
-                                <div className="bulk-actions-bar">
-                                    <div className="bulk-actions-left">
-                                        <button 
-                                            onClick={toggleBulkSelectMode}
-                                            className={`compact-btn ${bulkSelectMode ? 'compact-btn-primary' : 'compact-btn-outline'}`}
-                                        >
-                                            <i className={`fas ${bulkSelectMode ? 'fa-times' : 'fa-check-square'}`}></i>
-                                            {bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}
-                                        </button>
-                                        
-                                        {bulkSelectMode && (
-                                            <>
-                                                <button 
-                                                    onClick={selectAllCards}
-                                                    className="compact-btn compact-btn-outline"
-                                                    disabled={selectedCards.size === currentCards.length}
-                                                >
-                                                    <i className="fas fa-check-double"></i>
-                                                    {t('cards.selectAll')}
-                                                </button>
-                                                <button 
-                                                    onClick={clearSelection}
-                                                    className="compact-btn compact-btn-outline"
-                                                    disabled={selectedCards.size === 0}
-                                                >
-                                                    <i className="fas fa-times"></i>
-                                                    {t('cards.clearSelection')}
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                    
-                                    {selectedCards.size > 0 && (
-                                        <div className="bulk-actions-right">
-                                            <button 
-                                                onClick={handleBulkMigration}
-                                                className="compact-btn compact-btn-warning"
-                                            >
-                                                <i className="fas fa-arrow-right"></i>
-                                                {t('migration.migrateSelected', { count: selectedCards.size })}
-                                            </button>
-                                            <button 
-                                                onClick={handleBulkReset}
-                                                className="compact-btn compact-btn-danger"
-                                            >
-                                                <i className="fas fa-undo"></i>
-                                                {t('progress_reset.bulk_reset')} ({selectedCards.size})
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
 
                             {/* Cards Table */}
                             {filteredCards.length === 0 && !isCreatingCard ? (
@@ -865,42 +868,47 @@ function BoxDetails() {
                                                     </div>
                                                 </div>
                                                 <div className="col-actions">
-                                                    <div className="action-buttons-group">
+                                                    <div className="card-action-buttons">
                                                         <Link 
                                                             to={`/box/${boxId}/cards/${card.ID}/edit`}
                                                             state={{ from: location.pathname }}
-                                                            className="action-btn edit"
+                                                            className="card-action-btn edit-btn"
                                                             title={t('cards.edit')}
                                                         >
-                                                            <i className="fas fa-external-link-alt"></i>
+                                                            <i className="fas fa-edit"></i>
+                                                            <span className="action-label">{t('cards.edit')}</span>
                                                         </Link>
                                                         <button 
                                                             onClick={() => handleSingleCardMigration(card.ID)}
-                                                            className="action-btn migrate"
+                                                            className="card-action-btn migrate-btn"
                                                             title={t('migration.migrateCard')}
                                                         >
                                                             <i className="fas fa-arrow-right"></i>
+                                                            <span className="action-label">{t('migration.move_to_box')}</span>
                                                         </button>
                                                         <button 
                                                             onClick={() => handleSingleCardReset(card.ID)}
-                                                            className="action-btn reset"
+                                                            className="card-action-btn reset-btn"
                                                             title={t('progress_reset.reset_progress')}
                                                         >
-                                                            <i className="fas fa-undo"></i>
+                                                            <i className="fas fa-undo-alt"></i>
+                                                            <span className="action-label">Reset</span>
                                                         </button>
                                                         <button 
                                                             onClick={() => handleArchiveCard(card.ID)}
-                                                            className="action-btn archive"
+                                                            className="card-action-btn archive-btn"
                                                             title={t('cards.archive')}
                                                         >
                                                             <i className="fas fa-archive"></i>
+                                                            <span className="action-label">{t('cards.archive')}</span>
                                                         </button>
                                                         <button 
                                                             onClick={() => handleDeleteCard(card.ID)}
-                                                            className="action-btn delete"
+                                                            className="card-action-btn delete-btn"
                                                             title={t('cards.delete')}
                                                         >
-                                                            <i className="fas fa-trash"></i>
+                                                            <i className="fas fa-trash-alt"></i>
+                                                            <span className="action-label">{t('cards.delete')}</span>
                                                         </button>
                                                     </div>
                                                 </div>

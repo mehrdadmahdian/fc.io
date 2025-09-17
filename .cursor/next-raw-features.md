@@ -1,0 +1,2 @@
+- use image, video and other content in flashcards not just text.
+- add presentation mode using reveals.js

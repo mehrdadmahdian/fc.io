@@ -189,7 +189,7 @@
 
 .table-header {
     display: grid;
-    grid-template-columns: 70px 1fr 1fr 1fr 120px 100px;
+    grid-template-columns: 70px 1fr 1fr 1fr 120px minmax(280px, 320px);
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: #f8fafc;
@@ -203,7 +203,7 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 70px 1fr 1fr 1fr 120px 100px;
+    grid-template-columns: 70px 1fr 1fr 1fr 120px minmax(280px, 320px);
     gap: 0.5rem;
     padding: 0.75rem;
     border-bottom: 1px solid #f3f4f6;
@@ -357,7 +357,130 @@
     font-size: 0.75rem;
 }
 
-/* Action Buttons */
+/* Card Action Buttons - Improved */
+.card-action-buttons {
+    display: flex;
+    gap: 0.375rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-width: 240px; /* Ensure minimum width */
+}
+
+.card-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    min-width: 44px; /* Minimum tap target */
+    justify-content: center;
+}
+
+.card-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-action-btn i {
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+/* Action Labels - Hidden on mobile, shown on larger screens */
+.action-label {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .action-label {
+        display: inline;
+    }
+    .card-action-btn {
+        min-width: 80px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .card-action-buttons {
+        gap: 0.5rem;
+    }
+    .card-action-btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.8rem;
+        min-width: 90px;
+    }
+}
+
+/* Color-coded action buttons */
+.edit-btn {
+    border-color: #dbeafe;
+    color: #1d4ed8;
+    background: #f0f9ff;
+}
+
+.edit-btn:hover {
+    border-color: #1d4ed8;
+    background: #1d4ed8;
+    color: white;
+}
+
+.migrate-btn {
+    border-color: #fed7aa;
+    color: #ea580c;
+    background: #fff7ed;
+}
+
+.migrate-btn:hover {
+    border-color: #ea580c;
+    background: #ea580c;
+    color: white;
+}
+
+.reset-btn {
+    border-color: #fde68a;
+    color: #d97706;
+    background: #fffbeb;
+}
+
+.reset-btn:hover {
+    border-color: #d97706;
+    background: #d97706;
+    color: white;
+}
+
+.archive-btn {
+    border-color: #e5e7eb;
+    color: #6b7280;
+    background: #f9fafb;
+}
+
+.archive-btn:hover {
+    border-color: #6b7280;
+    background: #6b7280;
+    color: white;
+}
+
+.delete-btn {
+    border-color: #fecaca;
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.delete-btn:hover {
+    border-color: #dc2626;
+    background: #dc2626;
+    color: white;
+}
+
+/* Legacy action buttons - keeping for backward compatibility */
 .action-buttons-group {
     display: flex;
     gap: 0.25rem;
@@ -575,7 +698,72 @@
     }
 }
 
-/* Compact Control Bar - Inspired by Dashboard List View */
+/* Box Actions Bar */
+.box-actions-bar {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    overflow-x: auto; /* Fix overflow on desktop */
+    min-height: 60px;
+}
+
+.box-actions-bar:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.box-actions-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.box-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+/* Card Filter Bar */
+.card-filter-bar {
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    overflow-x: auto; /* Fix overflow on desktop */
+    min-height: 50px;
+}
+
+.filter-bar-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.filter-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+/* Legacy Compact Control Bar - keeping for backward compatibility */
 .compact-control-bar {
     background: white;
     border-radius: 8px;
@@ -660,6 +848,42 @@
     background: #f1f5f9;
     color: #475569;
     border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.compact-btn-success {
+    background: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+}
+
+.compact-btn-success:hover {
+    background: #059669;
+    border-color: #047857;
+    transform: translateY(-1px);
+}
+
+.compact-btn-danger {
+    background: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+}
+
+.compact-btn-danger:hover {
+    background: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
+}
+
+.compact-btn-warning {
+    background: #f59e0b;
+    color: white;
+    border: 1px solid #f59e0b;
+}
+
+.compact-btn-warning:hover {
+    background: #d97706;
+    border-color: #b45309;
     transform: translateY(-1px);
 }
 
@@ -772,8 +996,37 @@
     border-color: #2563eb;
 }
 
-/* Mobile responsive for compact control bar */
+/* Mobile responsive for new bar layouts */
 @media (max-width: 768px) {
+    .box-actions-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .box-actions-left,
+    .box-actions-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .card-filter-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.5rem;
+    }
+    
+    .filter-bar-left,
+    .filter-bar-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Legacy compact control bar mobile styles */
     .compact-control-bar {
         grid-template-columns: 1fr;
         gap: 1rem;

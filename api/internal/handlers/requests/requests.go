@@ -53,8 +53,12 @@ type CreateBoxRequest struct {
 }
 
 type UpdateBoxRequest struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description"`
+	Name        string   `json:"name" validate:"required"`
+	Description string   `json:"description"`
+	Visibility  string   `json:"visibility"`
+	Tags        []string `json:"tags"`
+	Language    string   `json:"language"`
+	Difficulty  string   `json:"difficulty"`
 }
 
 // Card Migration Requests

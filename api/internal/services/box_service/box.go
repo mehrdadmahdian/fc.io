@@ -277,8 +277,8 @@ func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box, 
 	return boxService.cardRepository.GetAllCardsOfTheBox(ctx, box)
 }
 
-func (boxService *BoxService) UpdateBox(ctx context.Context, boxID string, name string, description string) error {
-	return boxService.boxRepository.UpdateBox(ctx, boxID, name, description)
+func (boxService *BoxService) UpdateBox(ctx context.Context, boxID string, name string, description string, visibility string, tags []string, language string, difficulty string) error {
+	return boxService.boxRepository.UpdateBox(ctx, boxID, name, description, visibility, tags, language, difficulty)
 }
 
 func (boxService *BoxService) DeleteBox(ctx context.Context, boxID string) error {

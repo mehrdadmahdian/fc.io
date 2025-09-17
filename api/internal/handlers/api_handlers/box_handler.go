@@ -207,7 +207,7 @@ func (handler *ApiHandler) EditBox(c *fiber.Ctx) error {
 		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
 	}
 
-	err = handler.boxService.UpdateBox(c.Context(), boxID, request.Name, request.Description)
+	err = handler.boxService.UpdateBox(c.Context(), boxID, request.Name, request.Description, request.Visibility, request.Tags, request.Language, request.Difficulty)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update box"), nil)
 	}
