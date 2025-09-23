@@ -632,5 +632,31 @@
   },
   "boxDetails": {
     "editBox": "Edit Box"
+  },
+  "globalReview": {
+    "title": "Global Review",
+    "reverseTitle": "Global Reverse Review",
+    "mode": "All Boxes",
+    "reverseMode": "All Boxes (Reverse)",
+    "tooltip": "Review cards from all boxes together",
+    "cardsReady": "cards ready",
+    "cardsToReview": "Cards to Review",
+    "ready": "Ready",
+    "review": "Review",
+    "reverse": "Reverse",
+    "reverseReview": "Reverse Review",
+    "normalReview": "Normal Review",
+    "noCards": "All caught up!",
+    "noCardsMessage": {
+      "title": "No Cards to Review",
+      "message": "Great job! You've completed all reviews across all your boxes.",
+      "messageReverse": "Great job! You've completed all reverse reviews across all your boxes."
+    }
+  },
+  "floatingAdd": {
+    "addToActiveBox": "Add card to {{boxName}}",
+    "createBoxFirst": "Create a box first",
+    "noActiveBox": "No active box",
+    "tooltip": "Quick add card to active box"
   }
 } 

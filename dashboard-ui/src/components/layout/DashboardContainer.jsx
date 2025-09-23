@@ -1,6 +1,7 @@
 import Navigation from './Navigation';
 import Footer from './Footer';
 import PageTransition from '../common/PageTransition';
+import FloatingAddButton from '../common/FloatingAddButton';
 
 function DashboardContainer({ children }) {
     return (
@@ -11,6 +12,9 @@ function DashboardContainer({ children }) {
                     {children}
                 </main>
                 <Footer />
+                
+                {/* Global floating components */}
+                <FloatingAddButton />
             </div>
         </PageTransition>
     );

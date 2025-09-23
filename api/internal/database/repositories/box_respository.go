@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
@@ -105,21 +106,14 @@ func (boxRepository *BoxRepository) UpdateBox(ctx context.Context, boxID string,
 	updateFields := bson.M{
 		"name":        name,
 		"description": description,
+		"updated_at":  time.Now(),
 	}
 
-	// Only update fields that are provided (non-empty)
-	if visibility != "" {
-		updateFields["visibility"] = visibility
-	}
-	if tags != nil {
-		updateFields["tags"] = tags
-	}
-	if language != "" {
-		updateFields["language"] = language
-	}
-	if difficulty != "" {
-		updateFields["difficulty"] = difficulty
-	}
+	// Always update these fields (they should not be conditionally skipped)
+	updateFields["visibility"] = visibility
+	updateFields["tags"] = tags
+	updateFields["language"] = language
+	updateFields["difficulty"] = difficulty
 
 	update := bson.M{
 		"$set": updateFields,

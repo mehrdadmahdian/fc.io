@@ -139,6 +139,10 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup.Get("/boxes/:boxid/review/reverse/cards", apiHandler.GetReverseReviewCards)
 	dashboardGroup.Post("/boxes/:boxid/review/reverse/respond", apiHandler.RespondToReverseReview)
 
+	// Global review endpoints (all boxes together)
+	dashboardGroup.Get("/review/global/cards", apiHandler.GetGlobalReviewCards)
+	dashboardGroup.Get("/review/global/reverse/cards", apiHandler.GetGlobalReverseReviewCards)
+
 	dashboardGroup.Post("/boxes/:boxid/cards", apiHandler.CreateCard)
 	dashboardGroup.Get("/boxes/:boxid/cards/:cardid", apiHandler.GetCardInfo)
 	dashboardGroup.Post("/boxes/:boxid/cards/:cardid/archive", apiHandler.ArchiveCard)

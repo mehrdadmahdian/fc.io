@@ -1,3 +1,24 @@
+/* Review Mode Badges */
+.review-mode-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.review-mode-badge.global {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.review-mode-badge.global.reverse {
+    background: linear-gradient(135deg, #8a2be2 0%, #9370db 100%);
+    color: white;
+}
+
 /* Progress Component */
 .review-progress {
     width: 100%;

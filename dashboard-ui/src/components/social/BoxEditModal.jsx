@@ -60,12 +60,13 @@ const BoxEditModal = ({ box, isOpen, onClose, onBoxUpdate }) => {
                 difficulty
             };
 
-            await api.put(`/dashboard/boxes/${box.ID}`, updateData);
+            const response = await api.put(`/dashboard/boxes/${box.ID}`, updateData);
             
             success(t('boxEdit.updateSuccess'));
             
-            if (onBoxUpdate) {
-                onBoxUpdate({ ...box, ...updateData });
+            // Use the updated box data returned from the API
+            if (onBoxUpdate && response.data.data.box) {
+                onBoxUpdate(response.data.data.box);
             }
             onClose();
         } catch (err) {

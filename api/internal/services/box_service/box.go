@@ -424,6 +424,44 @@ func min(a, b int) int {
 	return b
 }
 
+// Global review methods - get cards from all boxes
+
+func (boxService *BoxService) GetAllUserCardsToReview(ctx context.Context, user *models.User) ([]*models.Card, error) {
+	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	var allCards []*models.Card
+	for _, box := range boxes {
+		cards, err := boxService.cardRepository.GetBoxCardsToReview(ctx, box)
+		if err != nil {
+			continue // Skip this box if there's an error, don't fail the entire request
+		}
+		allCards = append(allCards, cards...)
+	}
+
+	return allCards, nil
+}
+
+func (boxService *BoxService) GetAllUserCardsToReverseReview(ctx context.Context, user *models.User) ([]*models.Card, error) {
+	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	var allCards []*models.Card
+	for _, box := range boxes {
+		cards, err := boxService.cardRepository.GetBoxCardsToReverseReview(ctx, box)
+		if err != nil {
+			continue // Skip this box if there's an error, don't fail the entire request
+		}
+		allCards = append(allCards, cards...)
+	}
+
+	return allCards, nil
+}
+
 // Reverse review methods
 
 func (boxService *BoxService) GetFirstEligibleCardToReverseReview(ctx context.Context, box *models.Box) (*models.Card, error) {

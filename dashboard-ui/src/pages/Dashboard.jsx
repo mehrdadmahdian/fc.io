@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import DashboardContainer from '../components/layout/DashboardContainer';
 import BoxCard from '../components/dashboard/boxes/BoxCard';
 import StatsCard from '../components/dashboard/StatsCard';
+import GlobalReviewCard from '../components/dashboard/GlobalReviewCard';
 import '../assets/styles/Dashboard.css';
 import { api } from '../services/api';
 
@@ -87,6 +88,7 @@ function Dashboard() {
         <DashboardContainer>
             <div className="dashboard-container">
                 <div className="stats-container">
+                <GlobalReviewCard />
                     <StatsCard 
                         icon="fa-box"
                         title="dashboard.stats.boxes"
@@ -114,13 +116,6 @@ function Dashboard() {
                             </div>
                         </div>
                     </div>
-
-                    <StatsCard 
-                        icon="fa-chart-line"
-                        title="dashboard.stats.accuracy"
-                        value={`${data.stats.reviewAccuracy.value}%`}
-                        trend={data.stats.reviewAccuracy.trend}
-                    />
                     <StatsCard 
                         icon="fa-fire"
                         title="dashboard.stats.streak"

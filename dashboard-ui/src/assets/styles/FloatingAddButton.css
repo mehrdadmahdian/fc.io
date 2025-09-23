@@ -1,0 +1,169 @@
+/* Floating Add Button - Bottom right corner */
+
+.floating-add-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: visible;
+}
+
+.floating-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+    background: linear-gradient(135deg, #5CBF60 0%, #4CAF50 100%);
+}
+
+.floating-add-btn:active {
+    transform: translateY(0);
+}
+
+.floating-add-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+}
+
+.floating-add-btn.no-active-box {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.floating-add-btn.no-active-box:hover {
+    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
+    background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+}
+
+.add-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.add-icon svg {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease;
+}
+
+.floating-add-btn:hover .add-icon svg {
+    transform: rotate(90deg);
+}
+
+.no-active-warning {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-add-btn.no-active-box:hover .no-active-warning {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.no-active-warning::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 20px;
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .floating-add-btn {
+        width: 48px;
+        height: 48px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .add-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .add-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .no-active-warning {
+        font-size: 11px;
+        padding: 6px 10px;
+        margin-bottom: 6px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+    .floating-add-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .no-active-warning {
+        display: none; /* Hide tooltip on very small screens */
+    }
+}
+
+/* Animation for button appearance */
+@keyframes floatInUp {
+    from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.3);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.floating-add-btn {
+    animation: floatInUp 0.5s ease-out;
+}
+
+/* Pulse animation to draw attention when no active box */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.floating-add-btn.no-active-box {
+    animation: pulse 2s infinite, floatInUp 0.5s ease-out;
+}

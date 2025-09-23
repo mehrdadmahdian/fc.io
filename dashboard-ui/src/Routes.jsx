@@ -7,6 +7,8 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import BoxReview from './pages/box/Review';
 import ReverseReview from './pages/box/ReverseReview';
+import GlobalReview from './pages/box/GlobalReview';
+import GlobalReverseReview from './pages/box/GlobalReverseReview';
 import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
 import BoxDetails from './pages/box/BoxDetails';
@@ -63,6 +65,17 @@ const Routes = () => {
                 path="/box/:boxId/review/reverse" 
                 element={isAuthenticated ? <ReverseReview /> : <Navigate to="/auth/login" />} 
             />
+            
+            {/* Global review routes */}
+            <Route 
+                path="/review/global" 
+                element={isAuthenticated ? <GlobalReview /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/review/global/reverse" 
+                element={isAuthenticated ? <GlobalReverseReview /> : <Navigate to="/auth/login" />} 
+            />
+            
             <Route 
                 path="/box/:boxId" 
                 element={isAuthenticated ? <BoxDetails /> : <Navigate to="/auth/login" />} 

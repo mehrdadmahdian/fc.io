@@ -251,6 +251,8 @@ function BoxDetails() {
 
     const handleBoxUpdate = (updatedBox) => {
         setBox(updatedBox);
+        // Optionally refresh the entire box data to ensure consistency
+        // fetchBoxData(); // Uncomment if needed for full refresh
     };
 
     const handleSingleCardMigration = (cardId) => {

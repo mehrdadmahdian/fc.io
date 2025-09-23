@@ -480,6 +480,32 @@
     color: white;
 }
 
+/* Box Edit Modal - Fix overflow when showing public visibility options */
+.box-edit-modal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.box-edit-modal .modal-content {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.box-edit-modal .modal-footer {
+    flex-shrink: 0;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 0;
+}
+
+/* Ensure form scrolls properly */
+.box-edit-modal form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
 /* Legacy action buttons - keeping for backward compatibility */
 .action-buttons-group {
     display: flex;
@@ -1085,5 +1111,14 @@
     .filter-pill-compact {
         padding: 0.25rem 0.5rem;
         font-size: 0.6rem;
+    }
+
+    /* Box Edit Modal mobile adjustments */
+    .box-edit-modal .modal-body {
+        max-height: 60vh; /* Smaller height on mobile */
+    }
+
+    .box-edit-modal .modal-content {
+        max-height: 85vh; /* Smaller overall height on mobile */
     }
 }
