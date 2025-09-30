@@ -36,12 +36,12 @@
     transform: none;
 }
 
-.floating-add-btn.no-active-box {
+.floating-add-btn.no-boxes {
     background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
     box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
 }
 
-.floating-add-btn.no-active-box:hover {
+.floating-add-btn.no-boxes:hover {
     box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
     background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
 }
@@ -81,7 +81,7 @@
     pointer-events: none;
 }
 
-.floating-add-btn.no-active-box:hover .no-active-warning {
+.floating-add-btn.no-boxes:hover .no-active-warning {
     opacity: 1;
     transform: translateY(0);
 }
@@ -164,6 +164,6 @@
     }
 }
 
-.floating-add-btn.no-active-box {
+.floating-add-btn.no-boxes {
     animation: pulse 2s infinite, floatInUp 0.5s ease-out;
 }

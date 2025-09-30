@@ -167,5 +167,41 @@
       "password": "Enter your password",
       "confirmPassword": "Confirm your password"
     }
+  },
+  "floatingAdd": {
+    "addToActiveBox": "افزودن کارت به {{boxName}}",
+    "createBoxFirst": "ابتدا یک جعبه ایجاد کنید",
+    "noActiveBox": "جعبه فعالی وجود ندارد",
+    "noBoxes": "ابتدا یک جعبه ایجاد کنید",
+    "quickAddToBox": "افزودن سریع به {{boxName}}",
+    "quickAddCard": "افزودن سریع کارت",
+    "tooltip": "افزودن سریع کارت به جعبه فعال"
+  },
+  "quickAdd": {
+    "title": "افزودن سریع کارت",
+    "selectBox": "افزودن به جعبه",
+    "selectBoxRequired": "لطفاً یک جعبه انتخاب کنید",
+    "question": "سوال",
+    "answer": "پاسخ",
+    "additionalInfo": "اطلاعات تکمیلی",
+    "hint": "راهنما",
+    "questionPlaceholder": "چه چیزی می‌خواهید یاد بگیرید؟",
+    "answerPlaceholder": "پاسخ یا توضیح...",
+    "additionalInfoPlaceholder": "یادداشت‌ها یا مثال‌های اضافی (اختیاری)...",
+    "hintPlaceholder": "راهنمایی برای به یاد آوردن (اختیاری)...",
+    "frontAndBackRequired": "سوال و پاسخ الزامی است",
+    "noActiveBoxError": "جعبه فعالی یافت نشد. لطفاً ابتدا یک جعبه فعال تنظیم کنید.",
+    "cardCreated": "کارت با موفقیت ایجاد شد!",
+    "createError": "ایجاد کارت انجام نشد",
+    "createCard": "ایجاد کارت",
+    "creating": "در حال ایجاد...",
+    "submitShortcut": "برای ارسال",
+    "cancelShortcut": "برای لغو"
+  },
+  "common": {
+    "cancel": "لغو",
+    "loading": "در حال بارگذاری",
+    "optional": "اختیاری",
+    "characters": "کاراکتر"
   }
 } 
