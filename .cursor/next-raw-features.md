@@ -1,2 +1,9 @@
 - use image, video and other content in flashcards not just text.
 - add presentation mode using reveals.js
+- add hint (not extra)
+- small icons in details page
+- remove from env
+- taking list of words and add them bulkly
+- add temp domain name to the list of cors
+- check cors is applied for all routes.
+- configurable number of actions and spaced timing for all box. default must be default     
