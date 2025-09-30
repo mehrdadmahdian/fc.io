@@ -46,7 +46,8 @@ function BoxDetails() {
     const [newCardData, setNewCardData] = useState({
         front: '',
         back: '',
-        extra: ''
+        extra: '',
+        hint: ''
     });
     
     // Card migration
@@ -149,7 +150,8 @@ function BoxDetails() {
             const updateData = {
                 front: field === 'Front' ? editValue : (currentCard.Front || ''),
                 back: field === 'Back' ? editValue : (currentCard.Back || ''),
-                extra: field === 'Extra' ? editValue : (currentCard.Extra || '')
+                extra: field === 'Extra' ? editValue : (currentCard.Extra || ''),
+                hint: field === 'Hint' ? editValue : (currentCard.Hint || '')
             };
 
             await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, updateData);
@@ -196,12 +198,12 @@ function BoxDetails() {
     // New card creation functions
     const startCreatingCard = () => {
         setIsCreatingCard(true);
-        setNewCardData({ front: '', back: '', extra: '' });
+        setNewCardData({ front: '', back: '', extra: '', hint: '' });
     };
 
     const cancelCreatingCard = () => {
         setIsCreatingCard(false);
-        setNewCardData({ front: '', back: '', extra: '' });
+        setNewCardData({ front: '', back: '', extra: '', hint: '' });
     };
 
     const saveNewCard = async () => {
@@ -225,6 +227,19 @@ function BoxDetails() {
             ...prev,
             [field]: value
         }));
+    };
+
+    const handleNewCardKeyPress = (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            if (newCardData.front.trim() && newCardData.back.trim()) {
+                saveNewCard();
+            }
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            cancelCreatingCard();
+        }
     };
 
     // Card migration functions
@@ -465,67 +480,105 @@ function BoxDetails() {
         );
     };
 
-    // Render new card creation row
-    const renderNewCardRow = () => {
+    // Render compact new card creation form
+    const renderNewCardForm = () => {
         if (!isCreatingCard) return null;
 
         return (
-            <div className="table-row new-card-row">
-                <div className="col-status">
-                    <span className="status-badge status-new">
-                        {t('cards.new')}
-                    </span>
-                </div>
-                <div className="col-front">
-                    <textarea
-                        value={newCardData.front}
-                        onChange={(e) => updateNewCardField('front', e.target.value)}
-                        placeholder={t('cards.frontPlaceholder')}
-                        className="inline-edit-textarea"
-                        rows={3}
-                        autoFocus
-                    />
-                </div>
-                <div className="col-back">
-                    <textarea
-                        value={newCardData.back}
-                        onChange={(e) => updateNewCardField('back', e.target.value)}
-                        placeholder={t('cards.backPlaceholder')}
-                        className="inline-edit-textarea"
-                        rows={3}
-                    />
-                </div>
-                <div className="col-extra">
-                    <textarea
-                        value={newCardData.extra}
-                        onChange={(e) => updateNewCardField('extra', e.target.value)}
-                        placeholder={t('cards.extraPlaceholder')}
-                        className="inline-edit-textarea"
-                        rows={3}
-                    />
-                </div>
-                <div className="col-timestamp">
-                    <div className="timestamp-info">
-                        <div className="timestamp-main new-card-timestamp">
-                            {t('cards.willBeCreatedNow')}
+            <div className="fast-card-creator">
+                <div className="fast-card-overlay" onClick={cancelCreatingCard}></div>
+                <div className="fast-card-form">
+                    <div className="fast-card-header">
+                        <div className="fast-card-title">
+                            <i className="fas fa-plus-circle"></i>
+                            {t('cards.quickAdd')}
                         </div>
-                    </div>
-                </div>
-                <div className="col-actions">
-                    <div className="action-buttons-group">
                         <button 
-                            onClick={saveNewCard}
-                            className="btn btn-sm btn-primary"
-                            disabled={!newCardData.front.trim() || !newCardData.back.trim()}
-                        >
-                            <i className="fas fa-check"></i>
-                        </button>
-                        <button 
+                            className="fast-card-close"
                             onClick={cancelCreatingCard}
-                            className="btn btn-sm btn-secondary"
+                            title={t('common.cancel')}
                         >
                             <i className="fas fa-times"></i>
                         </button>
+                    </div>
+                    
+                    <div className="fast-card-fields">
+                        <div className="fast-field">
+                            <label className="fast-field-label">
+                                {t('cards.front')} <span className="required">*</span>
+                            </label>
+                            <textarea
+                                value={newCardData.front}
+                                onChange={(e) => updateNewCardField('front', e.target.value)}
+                                onKeyDown={handleNewCardKeyPress}
+                                placeholder={t('cards.frontPlaceholder')}
+                                className="fast-field-input"
+                                rows={2}
+                                autoFocus
+                            />
+                        </div>
+                        
+                        <div className="fast-field">
+                            <label className="fast-field-label">
+                                {t('cards.back')} <span className="required">*</span>
+                            </label>
+                            <textarea
+                                value={newCardData.back}
+                                onChange={(e) => updateNewCardField('back', e.target.value)}
+                                onKeyDown={handleNewCardKeyPress}
+                                placeholder={t('cards.backPlaceholder')}
+                                className="fast-field-input"
+                                rows={2}
+                            />
+                        </div>
+                        
+                        <div className="fast-field">
+                            <label className="fast-field-label">{t('cards.extra')}</label>
+                            <textarea
+                                value={newCardData.extra}
+                                onChange={(e) => updateNewCardField('extra', e.target.value)}
+                                onKeyDown={handleNewCardKeyPress}
+                                placeholder={t('cards.extraPlaceholder')}
+                                className="fast-field-input"
+                                rows={2}
+                            />
+                        </div>
+                        
+                        <div className="fast-field">
+                            <label className="fast-field-label">{t('cards.hint')}</label>
+                            <textarea
+                                value={newCardData.hint}
+                                onChange={(e) => updateNewCardField('hint', e.target.value)}
+                                onKeyDown={handleNewCardKeyPress}
+                                placeholder={t('cards.hintPlaceholder')}
+                                className="fast-field-input"
+                                rows={2}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="fast-card-actions">
+                        <div className="fast-card-hint">
+                            <kbd>Ctrl</kbd> + <kbd>Enter</kbd> {t('cardCreate.toSave')}
+                        </div>
+                        <div className="fast-card-buttons">
+                            <button 
+                                onClick={cancelCreatingCard}
+                                className="fast-btn fast-btn-cancel"
+                            >
+                                {t('common.cancel')}
+                            </button>
+                            <button 
+                                onClick={saveNewCard}
+                                className={`fast-btn fast-btn-save ${
+                                    newCardData.front.trim() && newCardData.back.trim() ? 'ready' : ''
+                                }`}
+                                disabled={!newCardData.front.trim() || !newCardData.back.trim()}
+                            >
+                                <i className="fas fa-check"></i>
+                                {t('common.save')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -627,7 +680,7 @@ function BoxDetails() {
                                             title={t('boxDetails.editBox')}
                                         >
                                             <i className="fas fa-edit"></i>
-                                            {t('boxDetails.editBox')}
+                                            <span className="action-text">{t('boxDetails.editBox')}</span>
                                         </button>
                                         <button 
                                             onClick={startCreatingCard} 
@@ -635,7 +688,7 @@ function BoxDetails() {
                                             disabled={isCreatingCard}
                                         >
                                             <i className="fas fa-plus"></i>
-                                            {t('cards.addQuick')}
+                                            <span className="action-text">{t('cards.addQuick')}</span>
                                         </button>
                                         <Link 
                                             to={`/box/${boxId}/cards/create`} 
@@ -643,11 +696,15 @@ function BoxDetails() {
                                             className="compact-btn compact-btn-outline"
                                         >
                                             <i className="fas fa-plus-circle"></i>
-                                            {t('cards.addDetailed')}
+                                            <span className="action-text">{t('cards.addDetailed')}</span>
                                         </Link>
                                         <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-success">
                                             <i className="fas fa-play"></i>
-                                            {t('review.start')}
+                                            <span className="action-text">{t('review.start')}</span>
+                                        </Link>
+                                        <Link to={`/box/${boxId}/presentation`} className="compact-btn compact-btn-presentation">
+                                            <i className="fas fa-slideshare"></i>
+                                            <span className="action-text">{t('presentation.start')}</span>
                                         </Link>
                                         <button 
                                             onClick={handleBoxReset}
@@ -655,7 +712,7 @@ function BoxDetails() {
                                             title={t('progress_reset.box_reset_warning')}
                                         >
                                             <i className="fas fa-undo-alt"></i>
-                                            {t('progress_reset.box_reset')}
+                                            <span className="action-text">{t('progress_reset.box_reset')}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -667,7 +724,7 @@ function BoxDetails() {
                                         className={`compact-btn ${bulkSelectMode ? 'compact-btn-primary' : 'compact-btn-outline'}`}
                                     >
                                         <i className={`fas ${bulkSelectMode ? 'fa-times' : 'fa-check-square'}`}></i>
-                                        {bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}
+                                        <span className="action-text">{bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}</span>
                                     </button>
                                     
                                     {bulkSelectMode && (
@@ -678,7 +735,7 @@ function BoxDetails() {
                                                 disabled={selectedCards.size === currentCards.length}
                                             >
                                                 <i className="fas fa-check-double"></i>
-                                                {t('cards.selectAll')}
+                                                <span className="action-text">{t('cards.selectAll')}</span>
                                             </button>
                                             <button 
                                                 onClick={clearSelection}
@@ -686,7 +743,7 @@ function BoxDetails() {
                                                 disabled={selectedCards.size === 0}
                                             >
                                                 <i className="fas fa-times"></i>
-                                                {t('cards.clearSelection')}
+                                                <span className="action-text">{t('cards.clearSelection')}</span>
                                             </button>
                                             
                                             {selectedCards.size > 0 && (
@@ -697,7 +754,7 @@ function BoxDetails() {
                                                         disabled={selectedCards.size === 0}
                                                     >
                                                         <i className="fas fa-arrow-right"></i>
-                                                        {t('migration.migrateSelected', { count: selectedCards.size })}
+                                                        <span className="action-text">{t('migration.migrateSelected', { count: selectedCards.size })}</span>
                                                     </button>
                                                     <button 
                                                         onClick={handleBulkReset}
@@ -705,7 +762,7 @@ function BoxDetails() {
                                                         disabled={selectedCards.size === 0}
                                                     >
                                                         <i className="fas fa-undo-alt"></i>
-                                                        {t('progress_reset.bulk_reset')} ({selectedCards.size})
+                                                        <span className="action-text">{t('progress_reset.bulk_reset')} ({selectedCards.size})</span>
                                                     </button>
                                                 </>
                                             )}
@@ -820,15 +877,16 @@ function BoxDetails() {
                                                     />
                                                 </div>
                                             )}
-                                            <div className="col-status">{t('cards.status')}</div>
-                                            <div className="col-front">{t('cards.front')}</div>
-                                            <div className="col-back">{t('cards.back')}</div>
-                                            <div className="col-extra">{t('cards.extra')}</div>
-                                            <div className="col-timestamp">{t('cards.lastModified')}</div>
-                                            <div className="col-actions">{t('cards.actions')}</div>
+                            <div className="col-status">{t('cards.status')}</div>
+                            <div className="col-front">{t('cards.front')}</div>
+                            <div className="col-back">{t('cards.back')}</div>
+                            <div className="col-extra">{t('cards.extra')}</div>
+                            <div className="col-hint">{t('cards.hint')}</div>
+                            <div className="col-timestamp">{t('cards.lastModified')}</div>
+                            <div className="col-actions">{t('cards.actions')}</div>
                                         </div>
                                         
-                                        {renderNewCardRow()}
+                                        {/* Fast card creator form */}
                                         
                                         {currentCards.map(card => (
                                             <div key={card.ID} className={`table-row ${selectedCards.has(card.ID) ? 'selected' : ''}`}>
@@ -856,6 +914,9 @@ function BoxDetails() {
                                                 </div>
                                                 <div className="col-extra">
                                                     {renderEditableField(card, 'Extra')}
+                                                </div>
+                                                <div className="col-hint">
+                                                    {renderEditableField(card, 'Hint')}
                                                 </div>
                                                 <div className="col-timestamp">
                                                     <div className="timestamp-info">
@@ -975,6 +1036,9 @@ function BoxDetails() {
                     </div>
                 </div>
             </div>
+            
+            {/* Fast Card Creator */}
+            {renderNewCardForm()}
             
             {/* Migration Modal */}
             <BoxSelectionModal

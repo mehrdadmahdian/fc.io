@@ -30,8 +30,8 @@ func (cardService *CardService) ArchiveCard(ctx context.Context, cardID string) 
 	return cardService.cardRepository.SetArchived(ctx, cardID)
 }
 
-func (cardService *CardService) UpdateCard(ctx context.Context, cardID string, front string, back string, extra string) error {
-	return cardService.cardRepository.UpdateCardContent(ctx, cardID, front, back, extra)
+func (cardService *CardService) UpdateCard(ctx context.Context, cardID string, front string, back string, extra string, hint string) error {
+	return cardService.cardRepository.UpdateCardContent(ctx, cardID, front, back, extra, hint)
 }
 
 func (cardService *CardService) DeleteCard(ctx context.Context, cardID string) error {

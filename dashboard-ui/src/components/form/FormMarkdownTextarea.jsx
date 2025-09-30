@@ -104,7 +104,6 @@ function FormMarkdownTextarea({
         <div className="form-group">
             <label htmlFor={name} className="markdown-label">
                 {label}
-                {required && <span className="required-asterisk">*</span>}
             </label>
             
             <div className="markdown-toolbar-top">
@@ -225,11 +224,6 @@ function FormMarkdownTextarea({
             </div>
 
             {error && <div className="form-error">{error}</div>}
-            {maxLength && (
-                <div className="character-count">
-                    {value.length}/{maxLength}
-                </div>
-            )}
         </div>
     );
 }

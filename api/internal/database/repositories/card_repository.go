@@ -317,7 +317,7 @@ func (cardRepository *CardRepository) GetCardsByStatus(ctx context.Context, box 
 	return cards, nil
 }
 
-func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, cardID string, front string, back string, extra string) error {
+func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, cardID string, front string, back string, extra string, hint string) error {
 	objectId, err := models.StringToObjectID(cardID)
 	if err != nil {
 		return err
@@ -329,6 +329,7 @@ func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, car
 			"front":      front,
 			"back":       back,
 			"extra":      extra,
+			"hint":       hint,
 			"updated_at": time.Now(),
 		},
 	}

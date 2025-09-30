@@ -2,14 +2,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ModernContainer from '../../components/layout/ModernContainer';
-import Form from '../../components/form/Form';
 import FormMarkdownTextarea from '../../components/form/FormMarkdownTextarea';
 import { api } from '../../services/api';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/Form.css';
-import '../../assets/styles/MarkdownTextarea.css';
 import '../../assets/styles/ModernPage.css';
-import { useEffect, useState } from 'react';
+import '../../assets/styles/MarkdownTextarea.css';
+import { useEffect, useState, useRef } from 'react';
 import { useToast } from '../../contexts/ToastContext';
 
 function CardCreate() {
@@ -21,10 +20,13 @@ function CardCreate() {
     const [formData, setFormData] = useState({
         front: '',
         back: '',
-        extra: ''
+        extra: '',
+        hint: ''
     });
     const [loading, setLoading] = useState(cardId ? true : false);
     const [boxName, setBoxName] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const formRef = useRef(null);
 
     // Function to handle navigation back to the appropriate page
     const navigateBack = () => {
@@ -43,6 +45,12 @@ function CardCreate() {
     };
 
     useEffect(() => {
+        // Handle window resize for mobile detection
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        
         // Fetch box information to get the box name
         const fetchBox = async () => {
             try {
@@ -60,7 +68,8 @@ function CardCreate() {
                     setFormData({
                         front: response.data.data.card.Front,
                         back: response.data.data.card.Back,
-                        extra: response.data.data.card.Extra || ''
+                        extra: response.data.data.card.Extra || '',
+                        hint: response.data.data.card.Hint || ''
                     });
                 } catch (err) {
                     // Error fetching card - handled by loading state
@@ -72,18 +81,27 @@ function CardCreate() {
         }
 
         fetchBox();
+        
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, [boxId, cardId]);
 
-    const handleSubmit = async (formData) => {
+    const handleSubmit = async (submitFormData) => {
+        // Simple validation check
+        if (!submitFormData.front.trim() || !submitFormData.back.trim()) {
+            error(t('cardCreate.frontAndBackRequired', 'Both question and answer are required.'));
+            return;
+        }
         try {
             if (cardId) {
                 // Update existing card
-                await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, formData);
+                await api.put(`/dashboard/boxes/${boxId}/cards/${cardId}`, submitFormData);
                 success(t('cardCreate.updateSuccess'));
                 navigateBack();
             } else {
                 // Create new card
-                await api.post(`/dashboard/boxes/${boxId}/cards`, formData);
+                await api.post(`/dashboard/boxes/${boxId}/cards`, submitFormData);
                 success(t('cardCreate.createSuccess'));
                 navigateBack();
             }
@@ -91,6 +109,13 @@ function CardCreate() {
             // Error saving card - handled by toast
             error(t('cardCreate.saveError'));
         }
+    };
+    
+    const handleFieldChange = (fieldName, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [fieldName]: value
+        }));
     };
 
     if (loading) {
@@ -134,7 +159,7 @@ function CardCreate() {
                         </button>
                         <div className="modern-page-title">
                             <h1>{cardId ? t('cardCreate.editTitle') : t('cardCreate.title')}</h1>
-                            {boxName && <span className="subtitle">{t('cardCreate.inBox')}: {boxName}</span>}
+                            {boxName && <span className="subtitle">{boxName}</span>}
                         </div>
                     </div>
                 </div>
@@ -143,38 +168,78 @@ function CardCreate() {
                 <div className="modern-content-area">
                     <div className="modern-content-box">
                         <div className="modern-content-scroll">
-                            <Form
-                            onSubmit={handleSubmit}
-                            onCancel={navigateBack}
-                            submitLabel={cardId ? t('cardCreate.update') : t('cardCreate.save')}
-                            cancelLabel={t('common.cancel')}
-                            initialData={formData}
-                            validateForm={true}
-                        >
-                            <FormMarkdownTextarea
-                                label={`${t('cardCreate.question')} *`}
-                                name="front"
-                                required={true}
-                                placeholder={t('cardCreate.questionPlaceholder')}
-                                rows={2}
-                            />
+                            <div className="compact-form">
+                                {/* Question Field */}
+                                <FormMarkdownTextarea
+                                    label={t('cardCreate.question')}
+                                    name="front"
+                                    value={formData.front}
+                                    onChange={(e) => handleFieldChange('front', e.target.value)}
+                                    placeholder={t('cardCreate.questionPlaceholder')}
+                                    required={true}
+                                    rows={3}
+                                />
 
-                            <FormMarkdownTextarea
-                                label={`${t('cardCreate.answer')} *`}
-                                name="back"
-                                placeholder={t('cardCreate.answerPlaceholder')}
-                                required={true}
-                                rows={2}
-                            />
+                                {/* Answer Field */}
+                                <FormMarkdownTextarea
+                                    label={t('cardCreate.answer')}
+                                    name="back"
+                                    value={formData.back}
+                                    onChange={(e) => handleFieldChange('back', e.target.value)}
+                                    placeholder={t('cardCreate.answerPlaceholder')}
+                                    required={true}
+                                    rows={3}
+                                />
 
-                            <FormMarkdownTextarea
-                                label={t('cardCreate.additionalInfo')}
-                                name="extra"
-                                placeholder={t('cardCreate.additionalInfoPlaceholder')}
-                                rows={2}
-                            />
-                            </Form>
+                                {/* Extra Field */}
+                                <FormMarkdownTextarea
+                                    label={t('cardCreate.additionalInfo')}
+                                    name="extra"
+                                    value={formData.extra}
+                                    onChange={(e) => handleFieldChange('extra', e.target.value)}
+                                    placeholder={t('cardCreate.additionalInfoPlaceholder')}
+                                    required={false}
+                                    rows={2}
+                                />
+
+                                {/* Hint Field */}
+                                <div className="compact-form-group">
+                                    <label className="compact-form-label" htmlFor="hint">
+                                        {t('cardCreate.hint')}
+                                    </label>
+                                    <input
+                                        id="hint"
+                                        type="text"
+                                        className="compact-form-input"
+                                        value={formData.hint}
+                                        onChange={(e) => handleFieldChange('hint', e.target.value)}
+                                        placeholder={t('cardCreate.hintPlaceholder')}
+                                    />
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Sticky Action Buttons */}
+                <div className="sticky-actions">
+                    <div className="sticky-actions-content">
+                        <button 
+                            type="button"
+                            onClick={navigateBack}
+                            className="sticky-btn sticky-btn-cancel"
+                        >
+                            <i className="fas fa-times"></i>
+                            {t('common.cancel')}
+                        </button>
+                        <button 
+                            type="button"
+                            onClick={() => handleSubmit(formData)}
+                            className="sticky-btn sticky-btn-save"
+                        >
+                            <i className="fas fa-check"></i>
+                            {cardId ? t('cardCreate.update') : t('cardCreate.save')}
+                        </button>
                     </div>
                 </div>
             </div>

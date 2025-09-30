@@ -16,6 +16,7 @@ type Card struct {
 	Front         string               `bson:"front"`
 	Back          string               `bson:"back"`
 	Extra         string               `bson:"extra"`
+	Hint          string               `bson:"hint"`
 	Review        Review               `bson:"review"`
 	ReverseReview Review               `bson:"reverse_review"`
 	CreatedAt     time.Time            `bson:"created_at"`
@@ -50,6 +51,7 @@ func NewCard(
 	front string,
 	back string,
 	Extra string,
+	hint string,
 ) (*Card, error) {
 	boxObjectId, err := StringToObjectID(boxID)
 	if err != nil {
@@ -76,6 +78,7 @@ func NewCard(
 		Front:     front,
 		Back:      back,
 		Extra:     Extra,
+		Hint:      hint,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Review: Review{

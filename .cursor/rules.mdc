@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# design
+- everything design added should be responsive for desktop and mobile and more suitable for mobile.
+- 
+# frontend
+- create and use reusable componenets as much as possible.
+# backend

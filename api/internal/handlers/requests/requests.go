@@ -20,6 +20,7 @@ type StoreCardRequest struct {
 	Front    string   `json:"front" validate:"required"`
 	Back     string   `json:"back" validate:"required"`
 	Extra    string   `json:"extra"`
+	Hint     string   `json:"hint"`
 	LabelIds []string `json:"labelIds" validate:"required"`
 }
 
@@ -37,6 +38,7 @@ type CreateCardRequest struct {
 	Front string `json:"front" validate:"required"`
 	Back  string `json:"back" validate:"required"`
 	Extra string `json:"extra"`
+	Hint  string `json:"hint"`
 	// LabelIds []string `json:"labelIds" validate:"required"`
 }
 
@@ -44,6 +46,7 @@ type EditCardRequest struct {
 	Front string `json:"front" validate:"required"`
 	Back  string `json:"back" validate:"required"`
 	Extra string `json:"extra"`
+	Hint  string `json:"hint"`
 	// LabelIds []string `json:"labelIds" validate:"required"`
 }
 

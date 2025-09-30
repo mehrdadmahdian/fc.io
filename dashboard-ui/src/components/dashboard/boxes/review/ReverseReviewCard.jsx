@@ -6,6 +6,7 @@ import MarkdownContent from '../../../common/MarkdownContent';
 function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext }) {
     const { t } = useTranslation();
     const [showStats, setShowStats] = useState(false);
+    const [showHint, setShowHint] = useState(false);
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
     const cardRef = useRef(null);
@@ -81,6 +82,27 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext 
                             <div className="question-side">
                                 <div className="content-text">
                                     <MarkdownContent content={card.Back} className="question-text" />
+                                    {showHint && card.Hint && (
+                                        <div className="hint-text">
+                                            <div className="hint-label">{t('review.hint')}:</div>
+                                            <MarkdownContent content={card.Hint} className="hint-content" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="card-actions">
+                                    {card.Hint && (
+                                        <button 
+                                            className="hint-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowHint(!showHint);
+                                            }}
+                                            title={showHint ? t('review.hideHint') : t('review.showHint')}
+                                        >
+                                            <i className={`fas ${showHint ? 'fa-eye-slash' : 'fa-lightbulb'}`}></i>
+                                            {showHint ? t('review.hideHint') : t('review.showHint')}
+                                        </button>
+                                    )}
                                 </div>
                                 <div className="swipe-hint">
                                     <span>Tap or swipe → to reveal</span>
@@ -93,6 +115,12 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext 
                                     {card.Extra && (
                                         <div className="extra-text">
                                             <MarkdownContent content={card.Extra} className="extra-content" />
+                                        </div>
+                                    )}
+                                    {card.Hint && (
+                                        <div className="hint-text">
+                                            <div className="hint-label">{t('review.hint')}:</div>
+                                            <MarkdownContent content={card.Hint} className="hint-content" />
                                         </div>
                                     )}
                                 </div>

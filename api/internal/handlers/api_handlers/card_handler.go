@@ -29,6 +29,7 @@ func (handler *ApiHandler) CreateCard(c *fiber.Ctx) error {
 		request.Front,
 		request.Back,
 		request.Extra,
+		request.Hint,
 	)
 
 	if err != nil {
@@ -93,7 +94,7 @@ func (handler *ApiHandler) UpdateCard(c *fiber.Ctx) error {
 		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
 	}
 
-	err = handler.cardService.UpdateCard(c.Context(), cardID, request.Front, request.Back, request.Extra)
+	err = handler.cardService.UpdateCard(c.Context(), cardID, request.Front, request.Back, request.Extra, request.Hint)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update card"), nil)
 	}

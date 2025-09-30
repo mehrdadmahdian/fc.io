@@ -65,6 +65,7 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		request.Front,
 		request.Back,
 		request.Extra,
+		request.Hint,
 	)
 
 	if err != nil {

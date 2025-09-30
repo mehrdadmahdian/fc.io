@@ -189,7 +189,7 @@
 
 .table-header {
     display: grid;
-    grid-template-columns: 70px 1fr 1fr 1fr 120px minmax(280px, 320px);
+    grid-template-columns: 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px);
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: #f8fafc;
@@ -203,7 +203,7 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 70px 1fr 1fr 1fr 120px minmax(280px, 320px);
+    grid-template-columns: 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px);
     gap: 0.5rem;
     padding: 0.75rem;
     border-bottom: 1px solid #f3f4f6;
@@ -913,6 +913,19 @@
     transform: translateY(-1px);
 }
 
+.compact-btn-presentation {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    color: white;
+    border: 1px solid #8b5cf6;
+}
+
+.compact-btn-presentation:hover {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    border-color: #7c3aed;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
 .stats-compact {
     display: flex;
     align-items: center;
@@ -1120,5 +1133,400 @@
 
     .box-edit-modal .modal-content {
         max-height: 85vh; /* Smaller overall height on mobile */
+    }
+}
+
+/* ===== DESKTOP ACTION ICONS OPTIMIZATION ===== */
+
+/* Hide action labels on all devices for cleaner look */
+.card-action-btn .action-label,
+.compact-btn .action-text {
+    display: none;
+}
+
+/* Icon-only button styling for all devices */
+.card-action-btn {
+    padding: 0.5rem 0.75rem;
+    min-width: 2.5rem;
+    justify-content: center;
+}
+
+.compact-btn {
+    padding: 0.5rem 0.75rem;
+    min-width: 2.5rem;
+    justify-content: center;
+}
+
+/* Ensure icons are properly centered and sized */
+.card-action-btn i,
+.compact-btn i {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Tighter spacing for icon-only buttons */
+.card-action-buttons {
+    gap: 0.375rem;
+}
+
+.action-buttons-compact {
+    gap: 0.375rem;
+}
+
+/* Enhanced tooltips for icon-only buttons */
+.card-action-btn[title]:hover::after,
+.compact-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 0.375rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1001;
+    pointer-events: none;
+    opacity: 0;
+    animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+.card-action-btn[title]:hover::before,
+.compact-btn[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    z-index: 1001;
+    pointer-events: none;
+    opacity: 0;
+    animation: tooltipFadeIn 0.2s ease-out forwards;
+}
+
+.card-action-btn:hover,
+.compact-btn:hover {
+    position: relative;
+}
+
+@keyframes tooltipFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(2px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    /* Slightly larger touch targets on mobile */
+    .card-action-btn {
+        min-width: 44px; /* iOS recommended touch target */
+        min-height: 44px;
+        padding: 0.75rem;
+    }
+    
+    .compact-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.75rem;
+    }
+    
+    /* Better spacing on mobile */
+    .card-action-buttons {
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .action-buttons-compact {
+        gap: 0.5rem;
+    }
+    
+    /* Larger tooltips on mobile for better visibility */
+    .card-action-btn[title]:hover::after,
+    .compact-btn[title]:hover::after {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.75rem;
+        bottom: calc(100% + 12px);
+    }
+    
+    .card-action-btn[title]:hover::before,
+    .compact-btn[title]:hover::before {
+        bottom: calc(100% + 6px);
+    }
+}
+
+/* ===== FAST CARD CREATOR ===== */
+
+.fast-card-creator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.fast-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+}
+
+.fast-card-form {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 320px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.fast-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #E5E7EB;
+    background: #F8FAFC;
+}
+
+.fast-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 0.9rem;
+}
+
+.fast-card-title i {
+    color: #6366F1;
+    font-size: 0.875rem;
+}
+
+.fast-card-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    color: #9CA3AF;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.fast-card-close:hover {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.fast-card-fields {
+    padding: 1.25rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.fast-field {
+    margin-bottom: 1rem;
+}
+
+.fast-field:last-child {
+    margin-bottom: 0;
+}
+
+.fast-field-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.fast-field-label .required {
+    color: #EF4444;
+    margin-left: 0.25rem;
+}
+
+.fast-field-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    resize: vertical;
+    transition: all 0.15s ease;
+    font-family: inherit;
+    min-height: auto;
+}
+
+.fast-field-input:focus {
+    outline: none;
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.fast-field-input::placeholder {
+    color: #9CA3AF;
+    font-size: 0.8125rem;
+}
+
+.fast-card-actions {
+    border-top: 1px solid #E5E7EB;
+    padding: 1rem 1.25rem;
+    background: #F8FAFC;
+}
+
+.fast-card-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-bottom: 0.875rem;
+    font-size: 0.6875rem;
+    color: #6B7280;
+    text-align: center;
+}
+
+.fast-card-hint kbd {
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    border-radius: 3px;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.625rem;
+    font-family: inherit;
+    font-weight: 600;
+    color: #374151;
+}
+
+.fast-card-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.fast-btn {
+    padding: 0.625rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 70px;
+    justify-content: center;
+}
+
+.fast-btn-cancel {
+    background: white;
+    color: #6B7280;
+    border: 1px solid #D1D5DB;
+}
+
+.fast-btn-cancel:hover {
+    background: #F9FAFB;
+    border-color: #9CA3AF;
+    color: #374151;
+}
+
+.fast-btn-save {
+    background: #6366F1;
+    color: white;
+}
+
+.fast-btn-save:hover:not(:disabled) {
+    background: #4F46E5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.fast-btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.fast-btn-save.ready {
+    animation: readyPulse 2s ease-in-out infinite;
+}
+
+@keyframes readyPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .fast-card-form {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    .fast-card-fields {
+        padding: 1rem;
+        max-height: 50vh;
+    }
+    
+    .fast-field-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 0.75rem;
+    }
+    
+    .fast-card-buttons {
+        flex-direction: column;
+    }
+    
+    .fast-btn {
+        width: 100%;
+        padding: 0.75rem;
     }
 }
