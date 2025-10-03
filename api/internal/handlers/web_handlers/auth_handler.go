@@ -42,10 +42,10 @@ func (webHandler *WebHandler) PostLogin(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenStruct.Token,
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
+		Expires:  time.Now().Add(30 * 24 * time.Hour),
 		HTTPOnly: true,
 		Secure:   true,
-		SameSite: "Strict",
+		SameSite: "Lax",
 	})
 	return c.Redirect("/web/dashboard/", fiber.StatusFound)
 }
@@ -76,10 +76,10 @@ func (webHandler *WebHandler) PostRegister(c *fiber.Ctx) error {
 	c.Cookie(&fiber.Cookie{
 		Name:     "token",
 		Value:    tokenStruct.Token,
-		Expires:  time.Now().Add(7 * 24 * time.Hour),
+		Expires:  time.Now().Add(30 * 24 * time.Hour),
 		HTTPOnly: true,
 		Secure:   true,
-		SameSite: "Strict",
+		SameSite: "Lax",
 	})
 
 	err = webHandler.boxService.SetupBoxForUser(c.Context(), user)
