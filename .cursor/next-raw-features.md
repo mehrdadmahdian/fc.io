@@ -5,4 +5,9 @@
 - check cors is applied for all routes.
 - configurable number of actions and spaced timing for all box. default must be default     
 - sometimes after loading frontend buttons are shaking and not working. fix it.
-
+- add feature to label cards and possible to review cards based on the labels
+- should be possible put cards directly ready for review while adding a new card and also from the details page.
+- card status is not understandable. new/learning/ archived and etc. should be something like : Review needed cards, archived cards, labled cards.
+- presentation page must follow the overal design
+- change css styling to tailwind
+- make everything componenet.
