@@ -177,12 +177,48 @@ func (handler *ApiHandler) GetBox(c *fiber.Ctx) error {
 func (handler *ApiHandler) GetBoxCards(c *fiber.Ctx) error {
 	boxID := c.Params("boxid")
 	statusFilter := c.Query("status", "")
+	searchQuery := c.Query("search", "")
+	sortBy := c.Query("sort_by", "updated_at")
+	sortOrder := c.QueryInt("sort_order", -1) // -1 for descending, 1 for ascending
+
+	// Check if pagination parameters are provided
+	page := c.QueryInt("page", 0)
+	pageSize := c.QueryInt("page_size", 0)
 
 	box, err := handler.boxService.GetBox(c.Context(), boxID)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"), nil)
 	}
 
+	// If pagination parameters are provided, use paginated endpoint
+	if page > 0 && pageSize > 0 {
+		result, err := handler.boxService.GetBoxCardsPaginated(
+			c.Context(),
+			box,
+			page,
+			pageSize,
+			statusFilter,
+			searchQuery,
+			sortBy,
+			sortOrder,
+		)
+		if err != nil {
+			return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box cards"), nil)
+		}
+
+		return JsonSuccess(c, utils.PointerString("box cards fetched successfully"), &map[string]interface{}{
+			"box":   box,
+			"cards": result.Cards,
+			"pagination": map[string]interface{}{
+				"page":        result.Page,
+				"page_size":   result.PageSize,
+				"total":       result.Total,
+				"total_pages": result.TotalPages,
+			},
+		})
+	}
+
+	// Otherwise, use the original non-paginated endpoint for backward compatibility
 	cards, err := handler.boxService.GetBoxCards(c.Context(), box, statusFilter)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box cards"), nil)

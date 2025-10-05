@@ -26,14 +26,15 @@ function BoxDetails() {
     const [loading, setLoading] = useState(true);
     const [box, setBox] = useState(null);
     const [cards, setCards] = useState([]);
-    const [filteredCards, setFilteredCards] = useState([]);
     const [statusFilter, setStatusFilter] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState('');
     
-    // Pagination
+    // Pagination (server-side)
     const [currentPage, setCurrentPage] = useState(1);
     const [cardsPerPage] = useState(10);
+    const [totalCards, setTotalCards] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
     
     // Inline editing
     const [editingCard, setEditingCard] = useState(null);
@@ -64,60 +65,62 @@ function BoxDetails() {
     const [showBoxEditModal, setShowBoxEditModal] = useState(false);
     const [resetCardIds, setResetCardIds] = useState([]);
 
-    // Fetch box and cards data
+    // Fetch box and cards data with server-side pagination and filtering
     const fetchBoxData = useCallback(async () => {
         try {
             setLoading(true);
+            
+            // Build query parameters for pagination, search, and filtering
+            const params = new URLSearchParams({
+                page: currentPage.toString(),
+                page_size: cardsPerPage.toString(),
+                sort_by: 'updated_at',
+                sort_order: '-1' // Descending order
+            });
+            
+            if (statusFilter) {
+                params.append('status', statusFilter);
+            }
+            
+            if (searchQuery.trim()) {
+                params.append('search', searchQuery.trim());
+            }
+            
             const [boxResponse, cardsResponse] = await Promise.all([
                 api.get(`/dashboard/boxes/${boxId}`),
-                api.get(`/dashboard/boxes/${boxId}/cards`)
+                api.get(`/dashboard/boxes/${boxId}/cards?${params.toString()}`)
             ]);
             
             setBox(boxResponse.data.data.box);
             setCards(cardsResponse.data.data.cards || []);
+            
+            // Set pagination metadata if available
+            if (cardsResponse.data.data.pagination) {
+                setTotalCards(cardsResponse.data.data.pagination.total);
+                setTotalPages(cardsResponse.data.data.pagination.total_pages);
+            } else {
+                // Fallback for non-paginated response (backward compatibility)
+                setTotalCards(cardsResponse.data.data.cards?.length || 0);
+                setTotalPages(1);
+            }
         } catch (error) {
-            // Failed to fetch box data - error handled by state
             setError('Failed to load box details');
         } finally {
             setLoading(false);
         }
-    }, [boxId, api]);
+    }, [boxId, api, currentPage, cardsPerPage, statusFilter, searchQuery]);
 
-    // Filter and search cards
-    useEffect(() => {
-        let filtered = cards;
-        
-        // Apply status filter
-        if (statusFilter) {
-            filtered = filtered.filter(card => getCardStatusBadge(card) === statusFilter);
-        }
-        
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(card => 
-                card.Front.toLowerCase().includes(query) ||
-                card.Back.toLowerCase().includes(query) ||
-                (card.Extra && card.Extra.toLowerCase().includes(query))
-            );
-        }
-        
-        // Sort by most recent first (UpdatedAt descending, then CreatedAt descending)
-        filtered.sort((a, b) => {
-            const aTime = new Date(a.UpdatedAt || a.CreatedAt);
-            const bTime = new Date(b.UpdatedAt || b.CreatedAt);
-            return bTime - aTime; // Descending order (newest first)
-        });
-        
-        setFilteredCards(filtered);
-        setCurrentPage(1); // Reset to first page when filters change
-    }, [cards, statusFilter, searchQuery]);
-
+    // Fetch data when dependencies change
     useEffect(() => {
         if (boxId) {
             fetchBoxData();
         }
     }, [boxId, fetchBoxData]);
+
+    // Reset to page 1 when filters or search query change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [statusFilter, searchQuery]);
 
     // Inline editing functions
     const startEditing = (cardId, field, currentValue) => {
@@ -379,10 +382,10 @@ function BoxDetails() {
     };
 
     // Pagination logic
-    const indexOfLastCard = currentPage * cardsPerPage;
-    const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-    const currentCards = filteredCards.slice(indexOfFirstCard, indexOfLastCard);
-    const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+    // With server-side pagination, cards already contains only the current page
+    const currentCards = cards;
+    const indexOfFirstCard = (currentPage - 1) * cardsPerPage;
+    const indexOfLastCard = Math.min(indexOfFirstCard + cards.length, totalCards);
 
     const getCardStatusBadge = (card) => {
         if (!card.Review) return 'new';
@@ -777,7 +780,7 @@ function BoxDetails() {
                                     <div className="stats-compact">
                                         <span className="stat-compact">
                                             <i className="fas fa-layer-group"></i>
-                                            {filteredCards.length} {t('cards.total')}
+                                            {totalCards} {t('cards.total')}
                                         </span>
                                         {selectedCards.size > 0 && (
                                             <span className="stat-compact selected">
@@ -823,7 +826,7 @@ function BoxDetails() {
 
 
                             {/* Cards Table */}
-                            {filteredCards.length === 0 && !isCreatingCard ? (
+                            {totalCards === 0 && !isCreatingCard ? (
                                 <div className="empty-state-modern">
                                     <div className="empty-icon">
                                         <i className="fas fa-search"></i>
@@ -985,8 +988,8 @@ function BoxDetails() {
                                             <div className="pagination-info">
                                                 {t('pagination.showing', {
                                                     start: indexOfFirstCard + 1,
-                                                    end: Math.min(indexOfLastCard, filteredCards.length),
-                                                    total: filteredCards.length
+                                                    end: indexOfLastCard,
+                                                    total: totalCards
                                                 })}
                                             </div>
                                             <div className="pagination-controls">

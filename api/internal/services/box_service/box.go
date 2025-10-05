@@ -277,6 +277,19 @@ func (boxService *BoxService) GetBoxCards(ctx context.Context, box *models.Box, 
 	return boxService.cardRepository.GetAllCardsOfTheBox(ctx, box)
 }
 
+func (boxService *BoxService) GetBoxCardsPaginated(
+	ctx context.Context,
+	box *models.Box,
+	page int,
+	pageSize int,
+	statusFilter string,
+	searchQuery string,
+	sortBy string,
+	sortOrder int,
+) (*repositories.PaginatedCardsResult, error) {
+	return boxService.cardRepository.GetBoxCardsPaginated(ctx, box, page, pageSize, statusFilter, searchQuery, sortBy, sortOrder)
+}
+
 func (boxService *BoxService) UpdateBox(ctx context.Context, boxID string, name string, description string, visibility string, tags []string, language string, difficulty string) error {
 	return boxService.boxRepository.UpdateBox(ctx, boxID, name, description, visibility, tags, language, difficulty)
 }

@@ -98,6 +98,106 @@ func (cardRepository *CardRepository) GetAllCardsOfTheBox(ctx context.Context, b
 	return cards, nil
 }
 
+// PaginatedCardsResult contains paginated card results and metadata
+type PaginatedCardsResult struct {
+	Cards      []*models.Card
+	Total      int64
+	Page       int
+	PageSize   int
+	TotalPages int
+}
+
+// GetBoxCardsPaginated retrieves cards with pagination, filtering, search, and sorting
+func (cardRepository *CardRepository) GetBoxCardsPaginated(
+	ctx context.Context,
+	box *models.Box,
+	page int,
+	pageSize int,
+	statusFilter string,
+	searchQuery string,
+	sortBy string,
+	sortOrder int,
+) (*PaginatedCardsResult, error) {
+	// Build match filter
+	matchFilter := bson.M{"box_id": box.ID}
+
+	// Apply status filter
+	if statusFilter != "" {
+		switch statusFilter {
+		case "new":
+			matchFilter["review.reviews_count"] = 0
+		case "learning":
+			matchFilter["review.reviews_count"] = bson.M{"$gt": 0}
+			matchFilter["review.interval"] = bson.M{"$lt": 7}
+		case "review":
+			matchFilter["review.interval"] = bson.M{"$gte": 7}
+		case "archived":
+			matchFilter["review.next_due_date"] = nil
+		}
+	}
+
+	// Apply search filter (search in front, back, and extra fields)
+	if searchQuery != "" {
+		matchFilter["$or"] = []bson.M{
+			{"front": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"back": bson.M{"$regex": searchQuery, "$options": "i"}},
+			{"extra": bson.M{"$regex": searchQuery, "$options": "i"}},
+		}
+	}
+
+	// Count total documents matching the filter
+	total, err := cardRepository.collection.CountDocuments(ctx, matchFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	// Calculate pagination
+	skip := (page - 1) * pageSize
+	totalPages := int((total + int64(pageSize) - 1) / int64(pageSize))
+
+	// Build sort order
+	sortField := "updated_at"
+	if sortBy != "" {
+		sortField = sortBy
+	}
+	if sortOrder != -1 && sortOrder != 1 {
+		sortOrder = -1 // Default to descending
+	}
+
+	// Build aggregation pipeline
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: matchFilter}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "labels",
+			"localField":   "label_ids",
+			"foreignField": "_id",
+			"as":           "labels",
+		}}},
+		{{Key: "$sort", Value: bson.D{{Key: sortField, Value: sortOrder}}}},
+		{{Key: "$skip", Value: skip}},
+		{{Key: "$limit", Value: pageSize}},
+	}
+
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
+	}
+
+	return &PaginatedCardsResult{
+		Cards:      cards,
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		TotalPages: totalPages,
+	}, nil
+}
+
 func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.Context, box *models.Box) (*models.Card, error) {
 	currentTime := time.Now()
 
