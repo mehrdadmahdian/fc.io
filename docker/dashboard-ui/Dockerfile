@@ -59,9 +59,9 @@ WORKDIR /app
 # Copy package files
 COPY dashboard-ui/package.json dashboard-ui/package-lock.json* ./
 
-# Install dependencies
+# Install dependencies (including devDependencies needed for build)
 RUN npm cache clean --force && \
-    npm ci --legacy-peer-deps --only=production --ignore-scripts
+    npm ci --legacy-peer-deps --ignore-scripts
 
 # Copy source code
 COPY dashboard-ui/ .
