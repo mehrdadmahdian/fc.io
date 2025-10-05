@@ -7,6 +7,8 @@ import MarkdownContent from '../../components/common/MarkdownContent';
 import BoxSelectionModal from '../../components/dashboard/cards/BoxSelectionModal';
 import ProgressResetModal from '../../components/dashboard/cards/ProgressResetModal';
 import BoxEditModal from '../../components/social/BoxEditModal';
+import StatusFilter from '../../components/ui/StatusFilter';
+import ActionsMenu from '../../components/ui/ActionsMenu';
 import { useToast } from '../../contexts/ToastContext';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/BoxCard.css';
@@ -810,17 +812,10 @@ function BoxDetails() {
                                             </button>
                                         )}
                                     </div>
-                                    <div className="filter-pills-compact">
-                                        {['', 'new', 'learning', 'review', 'archived'].map(status => (
-                                            <button
-                                                key={status}
-                                                onClick={() => setStatusFilter(status)}
-                                                className={`filter-pill-compact ${statusFilter === status ? 'active' : ''}`}
-                                            >
-                                                {status ? t(`cards.${status}`) : t('cards.all')}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <StatusFilter 
+                                        value={statusFilter}
+                                        onChange={setStatusFilter}
+                                    />
                                 </div>
                             </div>
 
@@ -934,49 +929,51 @@ function BoxDetails() {
                                                     </div>
                                                 </div>
                                                 <div className="col-actions">
-                                                    <div className="card-action-buttons">
-                                                        <Link 
-                                                            to={`/box/${boxId}/cards/${card.ID}/edit`}
-                                                            state={{ from: location.pathname }}
-                                                            className="card-action-btn edit-btn"
-                                                            title={t('cards.edit')}
-                                                        >
-                                                            <i className="fas fa-edit"></i>
-                                                            <span className="action-label">{t('cards.edit')}</span>
-                                                        </Link>
-                                                        <button 
-                                                            onClick={() => handleSingleCardMigration(card.ID)}
-                                                            className="card-action-btn migrate-btn"
-                                                            title={t('migration.migrateCard')}
-                                                        >
-                                                            <i className="fas fa-arrow-right"></i>
-                                                            <span className="action-label">{t('migration.move_to_box')}</span>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handleSingleCardReset(card.ID)}
-                                                            className="card-action-btn reset-btn"
-                                                            title={t('progress_reset.reset_progress')}
-                                                        >
-                                                            <i className="fas fa-undo-alt"></i>
-                                                            <span className="action-label">Reset</span>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handleArchiveCard(card.ID)}
-                                                            className="card-action-btn archive-btn"
-                                                            title={t('cards.archive')}
-                                                        >
-                                                            <i className="fas fa-archive"></i>
-                                                            <span className="action-label">{t('cards.archive')}</span>
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => handleDeleteCard(card.ID)}
-                                                            className="card-action-btn delete-btn"
-                                                            title={t('cards.delete')}
-                                                        >
-                                                            <i className="fas fa-trash-alt"></i>
-                                                            <span className="action-label">{t('cards.delete')}</span>
-                                                        </button>
-                                                    </div>
+                                                    <ActionsMenu
+                                                        buttonContent={
+                                                            <>
+                                                                <i className="fas fa-ellipsis-h"></i>
+                                                                <span className="action-label">{t('cards.actions')}</span>
+                                                            </>
+                                                        }
+                                                        buttonClassName="card-action-btn actions-btn"
+                                                        actions={[
+                                                            {
+                                                                id: 'edit',
+                                                                label: t('cards.edit'),
+                                                                icon: 'fa-edit',
+                                                                onClick: () => {
+                                                                    window.location.href = `/dashboard/box/${boxId}/cards/${card.ID}/edit`;
+                                                                }
+                                                            },
+                                                            {
+                                                                id: 'migrate',
+                                                                label: t('migration.move_to_box'),
+                                                                icon: 'fa-arrow-right',
+                                                                onClick: () => handleSingleCardMigration(card.ID)
+                                                            },
+                                                            {
+                                                                id: 'reset',
+                                                                label: 'Reset',
+                                                                icon: 'fa-undo-alt',
+                                                                onClick: () => handleSingleCardReset(card.ID)
+                                                            },
+                                                            {
+                                                                id: 'archive',
+                                                                label: t('cards.archive'),
+                                                                icon: 'fa-archive',
+                                                                onClick: () => handleArchiveCard(card.ID)
+                                                            },
+                                                            { divider: true },
+                                                            {
+                                                                id: 'delete',
+                                                                label: t('cards.delete'),
+                                                                icon: 'fa-trash-alt',
+                                                                danger: true,
+                                                                onClick: () => handleDeleteCard(card.ID)
+                                                            }
+                                                        ]}
+                                                    />
                                                 </div>
                                             </div>
                                         ))}

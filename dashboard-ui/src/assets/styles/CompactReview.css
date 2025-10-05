@@ -657,8 +657,8 @@
 
 /* ===== ALWAYS VISIBLE RESPONSE BUTTONS ===== */
 .fixed-response-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
   background: #F8FAFC;
@@ -669,6 +669,19 @@
 .fixed-response-buttons.reverse {
   border-top-color: var(--compact-reverse);
   background: rgba(250, 247, 255, 0.5);
+}
+
+.response-row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.response-row.primary {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.response-row.secondary {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .response-btn-compact {
@@ -766,6 +779,26 @@
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+.response-btn-compact.archive {
+  color: #8B5CF6;
+}
+
+.response-btn-compact.archive:hover:not(:disabled) {
+  background: #FAF5FF;
+  color: #7C3AED;
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.response-btn-compact.next {
+  color: var(--compact-neutral);
+}
+
+.response-btn-compact.next:hover:not(:disabled) {
+  background: #F9FAFB;
+  color: #374151;
+  border-color: rgba(107, 114, 128, 0.3);
+}
+
 .response-btn-compact.skip {
   color: var(--compact-neutral);
 }
@@ -781,12 +814,12 @@
 }
 
 /* Visual indication for front mode buttons */
-.compact-review-card:not(.show-answer) .response-btn-compact:not(.skip) {
+.compact-review-card:not(.show-answer) .response-btn-compact:not(.next):not(.archive) {
   opacity: 0.7;
   position: relative;
 }
 
-.compact-review-card:not(.show-answer) .response-btn-compact:not(.skip)::after {
+.compact-review-card:not(.show-answer) .response-btn-compact:not(.next):not(.archive)::after {
   content: "Reveal";
   position: absolute;
   bottom: -2px;
@@ -797,12 +830,12 @@
   font-weight: 500;
 }
 
-.compact-review-card:not(.show-answer) .response-btn-compact:not(.skip):hover {
+.compact-review-card:not(.show-answer) .response-btn-compact:not(.next):not(.archive):hover {
   opacity: 1;
   transform: translateY(-3px) scale(1.02);
 }
 
-.compact-review-card.show-answer .response-btn-compact:not(.skip)::after {
+.compact-review-card.show-answer .response-btn-compact:not(.next):not(.archive)::after {
   display: none;
 }
 
@@ -1097,9 +1130,10 @@
 }
 
 /* ===== BUTTON PULSE FOR AVAILABLE ACTIONS ===== */
-.response-btn-compact:not(:disabled) {
+/* Removed animation to prevent cursor flickering */
+/* .response-btn-compact:not(:disabled) {
   animation: buttonReady 2s ease-in-out infinite;
-}
+} */
 
 @keyframes buttonReady {
   0%, 100% { 
@@ -1110,9 +1144,10 @@
   }
 }
 
-.response-btn-compact.again:not(:disabled) {
+/* Removed to prevent cursor flickering */
+/* .response-btn-compact.again:not(:disabled) {
   animation: buttonReadyRed 2s ease-in-out infinite;
-}
+} */
 
 @keyframes buttonReadyRed {
   0%, 100% { 
@@ -1123,9 +1158,10 @@
   }
 }
 
-.response-btn-compact.hard:not(:disabled) {
+/* Removed to prevent cursor flickering */
+/* .response-btn-compact.hard:not(:disabled) {
   animation: buttonReadyYellow 2s ease-in-out infinite;
-}
+} */
 
 @keyframes buttonReadyYellow {
   0%, 100% { 
@@ -1136,9 +1172,10 @@
   }
 }
 
-.response-btn-compact.easy:not(:disabled) {
+/* Removed to prevent cursor flickering */
+/* .response-btn-compact.easy:not(:disabled) {
   animation: buttonReadyGreen 2s ease-in-out infinite;
-}
+} */
 
 @keyframes buttonReadyGreen {
   0%, 100% { 
@@ -1281,5 +1318,47 @@
   
   .hint-content {
     font-size: 0.8125rem;
+  }
+  
+  /* Response buttons responsive styles */
+  .response-btn-compact {
+    padding: 0.75rem 0.4rem;
+    font-size: 0.75rem;
+    min-height: 70px;
+  }
+  
+  .response-btn-compact i {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile responsive styles for button layout */
+@media (max-width: 480px) {
+  .fixed-response-buttons {
+    padding: 0.75rem;
+    gap: 0.4rem;
+  }
+  
+  .response-row {
+    gap: 0.4rem;
+  }
+  
+  .response-btn-compact {
+    padding: 0.625rem 0.3rem;
+    font-size: 0.7rem;
+    min-height: 65px;
+  }
+  
+  .response-btn-compact i {
+    font-size: 1rem;
+  }
+  
+  .response-btn-compact span {
+    font-size: 0.7rem;
+  }
+  
+  .response-btn-compact kbd {
+    font-size: 0.55rem;
+    padding: 0.1rem 0.2rem;
   }
 }

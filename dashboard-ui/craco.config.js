@@ -1,4 +1,6 @@
 // CRACO configuration for better hot reload in Docker
+const path = require('path');
+
 module.exports = {
   webpack: {
     configure: (webpackConfig, { env, paths }) => {
@@ -10,6 +12,12 @@ module.exports = {
           ignored: /node_modules/,
         };
       }
+      
+      // Add path aliases for shadcn/ui
+      webpackConfig.resolve.alias = {
+        ...webpackConfig.resolve.alias,
+        '@': path.resolve(__dirname, 'src'),
+      };
       
       return webpackConfig;
     },

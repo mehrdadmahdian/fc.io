@@ -220,6 +220,7 @@
                             onShowAnswer={handleShowAnswer}
                             onResponse={handleResponse}
                             onNext={handleNext}
+                            onArchive={handleArchive}
                         />
                     </div>
 

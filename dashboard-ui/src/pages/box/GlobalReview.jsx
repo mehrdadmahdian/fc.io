@@ -222,6 +222,7 @@ function GlobalReview() {
                         onShowAnswer={handleShowAnswer}
                         onResponse={handleResponse}
                         onNext={handleNext}
+                        onArchive={handleArchive}
                         mode="global"
                     />
                 </div>
