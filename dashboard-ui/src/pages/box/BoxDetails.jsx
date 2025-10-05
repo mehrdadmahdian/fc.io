@@ -9,7 +9,28 @@ import ProgressResetModal from '../../components/dashboard/cards/ProgressResetMo
 import BoxEditModal from '../../components/social/BoxEditModal';
 import StatusFilter from '../../components/ui/StatusFilter';
 import ActionsMenu from '../../components/ui/ActionsMenu';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Badge } from '../../components/ui/badge';
 import { useToast } from '../../contexts/ToastContext';
+import {
+    Plus,
+    PlusCircle,
+    Play,
+    Presentation,
+    RotateCcw,
+    CheckSquare,
+    X,
+    Search,
+    Edit,
+    ArrowLeft,
+    MoreHorizontal,
+    Save,
+    Edit2,
+    ChevronLeft,
+    ChevronRight
+} from 'lucide-react';
 import '../../assets/styles/Dashboard.css';
 import '../../assets/styles/BoxCard.css';
 import '../../assets/styles/BoxDetails.css';
@@ -858,7 +879,7 @@ function BoxDetails() {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="cards-table">
+                                    <div className={`cards-table ${bulkSelectMode ? 'bulk-select-mode' : ''}`}>
                                         <div className="table-header">
                                             {bulkSelectMode && (
                                                 <div className="col-select">
