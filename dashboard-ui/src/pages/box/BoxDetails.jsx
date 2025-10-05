@@ -28,7 +28,7 @@ function BoxDetails() {
     const [loading, setLoading] = useState(true);
     const [box, setBox] = useState(null);
     const [cards, setCards] = useState([]);
-    const [statusFilter, setStatusFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState('');
     
@@ -80,7 +80,7 @@ function BoxDetails() {
                 sort_order: '-1' // Descending order
             });
             
-            if (statusFilter) {
+            if (statusFilter && statusFilter !== 'all') {
                 params.append('status', statusFilter);
             }
             
@@ -830,12 +830,12 @@ function BoxDetails() {
                                     <p>
                                         {searchQuery 
                                             ? t('cards.tryDifferentSearch')
-                                            : statusFilter 
+                                            : (statusFilter && statusFilter !== 'all')
                                                 ? t('cards.noCardsWithFilter')
                                                 : t('cards.createFirstDescription')
                                         }
                                     </p>
-                                    {!searchQuery && !statusFilter && (
+                                    {!searchQuery && (!statusFilter || statusFilter === 'all') && (
                                         <div className="empty-state-buttons">
                                             <button 
                                                 onClick={startCreatingCard} 
