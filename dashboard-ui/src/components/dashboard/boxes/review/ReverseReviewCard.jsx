@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import CardStats from '../../CardStats';
 import MarkdownContent from '../../../common/MarkdownContent';
 
-function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive }) {
+function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive, onEdit }) {
     const { t } = useTranslation();
     const [showStats, setShowStats] = useState(false);
     const [showHint, setShowHint] = useState(false);
@@ -73,11 +73,19 @@ function ReverseReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext,
                     role="button"
                     aria-label={showAnswer ? t('review.showingAnswer') : t('review.clickToReveal')}
                 >
-                    <div className="reverse-indicator">
-                        <i className="fas fa-exchange-alt"></i>
-                        <span>REVERSE</span>
-                    </div>
-                    
+                    {/* Edit Button - Top Right Corner */}
+                    {onEdit && (
+                        <button 
+                            className="card-edit-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit();
+                            }}
+                        >
+                            <i className="fas fa-edit"></i>
+                        </button>
+                    )}
+              
                     <div className="card-content">
                         {!showAnswer ? (
                             <div className="question-side">

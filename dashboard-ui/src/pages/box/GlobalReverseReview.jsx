@@ -173,38 +173,18 @@ function GlobalReverseReview() {
                             <i className="fas fa-arrow-left"></i>
                         </button>
                         <div className="page-title">
-                            <h1>
-                                <i className="fas fa-exchange-alt"></i>
-                                {t('globalReview.reverseTitle')}
-                            </h1>
-                            <span className="review-mode-badge global reverse">{t('globalReview.reverseMode')}</span>
+                            <h1>{t('globalReview.reverseTitle')}</h1>
                         </div>
                     </div>
                 </div>
 
-                {/* Fixed Progress Bar with Actions */}
+                {/* Fixed Progress Bar */}
                 <div className={`fixed-progress-bar reverse ${showAnswer ? 'show-answer' : ''}`}>
                     <div className="progress-content">
                         <ReviewProgress 
                             current={currentCard + 1}
                             total={totalCards} 
                         />
-                        <div className="progress-actions-right">
-                            <button 
-                                className="icon-action-btn edit" 
-                                title={t('review.editCard')}
-                                onClick={handleEdit}
-                            >
-                                <i className="fas fa-edit"></i>
-                            </button>
-                            <button 
-                                className="icon-action-btn archive" 
-                                title={t('review.archiveCard')}
-                                onClick={handleArchive}
-                            >
-                                <i className="fas fa-archive"></i>
-                            </button>
-                        </div>
                     </div>
                     {notification && (
                         <div className="inline-notification">
@@ -223,6 +203,7 @@ function GlobalReverseReview() {
                         onResponse={handleResponse}
                         onNext={handleNext}
                         onArchive={handleArchive}
+                        onEdit={handleEdit}
                         mode="global"
                     />
                 </div>

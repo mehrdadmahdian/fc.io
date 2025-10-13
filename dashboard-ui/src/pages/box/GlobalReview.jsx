@@ -173,11 +173,7 @@ function GlobalReview() {
                             <i className="fas fa-arrow-left"></i>
                         </button>
                         <div className="page-title">
-                            <h1>
-                                <i className="fas fa-play-circle"></i>
-                                {t('globalReview.title')}
-                            </h1>
-                            <span className="review-mode-badge global">{t('globalReview.mode')}</span>
+                            <h1>{t('globalReview.title')}</h1>
                         </div>
                     </div>
                 </div>
@@ -196,13 +192,6 @@ function GlobalReview() {
                                 onClick={handleEdit}
                             >
                                 <i className="fas fa-edit"></i>
-                            </button>
-                            <button 
-                                className="icon-action-btn archive" 
-                                title={t('review.archiveCard')}
-                                onClick={handleArchive}
-                            >
-                                <i className="fas fa-archive"></i>
                             </button>
                         </div>
                     </div>

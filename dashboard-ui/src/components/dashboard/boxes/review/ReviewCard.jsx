@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import CardStats from '../../CardStats';
 import MarkdownContent from '../../../common/MarkdownContent';
 
-function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive }) {
+function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive, onEdit }) {
     const { t } = useTranslation();
     const [showStats, setShowStats] = useState(false);
     const [showHint, setShowHint] = useState(false);
@@ -73,6 +73,19 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArch
                     role="button"
                     aria-label={showAnswer ? t('review.showingAnswer') : t('review.clickToReveal')}
                 >
+                    {/* Edit Button - Top Right Corner */}
+                    {onEdit && (
+                        <button 
+                            className="card-edit-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit();
+                            }}
+                            title={t('review.editCard')}
+                        >
+                            <i className="fas fa-edit"></i>
+                        </button>
+                    )}
                     <div className="card-content">
                         {!showAnswer ? (
                             <div className="question-side">

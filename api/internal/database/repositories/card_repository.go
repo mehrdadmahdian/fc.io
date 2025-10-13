@@ -353,7 +353,8 @@ func (cardRepository *CardRepository) SetArchived(ctx context.Context, cardID st
 	filter := bson.M{"_id": objectId}
 	update := bson.M{
 		"$set": bson.M{
-			"review.next_due_date": nil,
+			"review.next_due_date":         nil,
+			"reverse_review.next_due_date": nil,
 		},
 	}
 	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)

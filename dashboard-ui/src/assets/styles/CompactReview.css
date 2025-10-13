@@ -526,6 +526,53 @@
   padding: 2rem;
 }
 
+/* ===== CARD EDIT BUTTON ===== */
+.card-edit-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--compact-primary);
+  border: 2px solid var(--compact-primary);
+  border-radius: 10px;
+  padding: 0.75rem;
+  color: white;
+  cursor: pointer;
+  transition: var(--compact-transition);
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+  font-size: 1rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-edit-btn:hover {
+  background: #4F46E5;
+  border-color: #4F46E5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4);
+}
+
+.card-edit-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.compact-review-container.reverse .card-edit-btn {
+  background: var(--compact-reverse);
+  border-color: var(--compact-reverse);
+  color: white;
+  box-shadow: 0 4px 8px rgba(147, 51, 234, 0.3);
+}
+
+.compact-review-container.reverse .card-edit-btn:hover {
+  background: #7C3AED;
+  border-color: #7C3AED;
+  box-shadow: 0 6px 12px rgba(147, 51, 234, 0.4);
+}
+
 /* Removed hover effect since card is now part of content box */
 
 .compact-review-section.reverse {
@@ -885,6 +932,15 @@
   .compact-review-card {
     min-height: 250px;
   }
+  
+  .card-edit-btn {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.625rem;
+    font-size: 0.9rem;
+    min-width: 40px;
+    min-height: 40px;
+  }
 
   .card-content {
     padding: 1.5rem 1rem;
@@ -959,6 +1015,15 @@
 
   .compact-review-card {
     min-height: 200px;
+  }
+  
+  .card-edit-btn {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    min-width: 36px;
+    min-height: 36px;
   }
 
   .card-content {

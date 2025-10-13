@@ -27,6 +27,11 @@ function CardCreate() {
     const [boxName, setBoxName] = useState('');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const formRef = useRef(null);
+    const [showMigrationModal, setShowMigrationModal] = useState(false);
+    const [userBoxes, setUserBoxes] = useState([]);
+    const [selectedTargetBox, setSelectedTargetBox] = useState('');
+    const [preserveProgress, setPreserveProgress] = useState(true);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Function to handle navigation back to the appropriate page
     const navigateBack = () => {
@@ -116,6 +121,89 @@ function CardCreate() {
             ...prev,
             [fieldName]: value
         }));
+    };
+
+    // Card operation handlers (only for edit mode)
+    const handleDeleteCard = async () => {
+        if (window.confirm(t('cards.deleteConfirm', 'Are you sure you want to delete this card?'))) {
+            setIsProcessing(true);
+            try {
+                await api.delete(`/dashboard/boxes/${boxId}/cards/${cardId}`);
+                success(t('cards.deleteSuccess', 'Card deleted successfully'));
+                // Wait a bit to ensure the operation completes
+                await new Promise(resolve => setTimeout(resolve, 500));
+                navigateBack();
+            } catch (err) {
+                error(t('cards.deleteError', 'Failed to delete card'));
+                setIsProcessing(false);
+            }
+        }
+    };
+
+    const handleArchiveCard = async () => {
+        setIsProcessing(true);
+        try {
+            await api.post(`/dashboard/boxes/${boxId}/cards/${cardId}/archive`);
+            success(t('cards.archiveSuccess', 'Card archived successfully'));
+            // Wait a bit to ensure the operation completes
+            await new Promise(resolve => setTimeout(resolve, 500));
+            navigateBack();
+        } catch (err) {
+            error(t('cards.archiveError', 'Failed to archive card'));
+            setIsProcessing(false);
+        }
+    };
+
+    const handleResetProgress = async () => {
+        if (window.confirm(t('cards.resetConfirm', 'Are you sure you want to reset the progress for this card?'))) {
+            setIsProcessing(true);
+            try {
+                await api.post(`/dashboard/boxes/${boxId}/cards/${cardId}/reset`);
+                success(t('cards.resetSuccess', 'Card progress reset successfully'));
+                // Wait a bit to ensure the operation completes
+                await new Promise(resolve => setTimeout(resolve, 500));
+                setIsProcessing(false);
+            } catch (err) {
+                error(t('cards.resetError', 'Failed to reset card progress'));
+                setIsProcessing(false);
+            }
+        }
+    };
+
+    const handleOpenMigrationModal = async () => {
+        try {
+            // Fetch user's boxes
+            const response = await api.get('/dashboard/boxes');
+            const boxes = response.data.data.boxes.filter(b => b.Box.ID !== boxId);
+            setUserBoxes(boxes);
+            setShowMigrationModal(true);
+        } catch (err) {
+            error(t('migration.fetchBoxesError', 'Failed to fetch boxes'));
+        }
+    };
+
+    const handleMigrateCard = async () => {
+        if (!selectedTargetBox) {
+            error(t('migration.selectBoxError', 'Please select a target box'));
+            return;
+        }
+
+        setIsProcessing(true);
+        try {
+            await api.post(`/dashboard/boxes/${boxId}/cards/migrate`, {
+                cardIds: [cardId],
+                targetBoxId: selectedTargetBox,
+                preserveProgress: preserveProgress
+            });
+            success(t('migration.success', 'Card moved successfully'));
+            setShowMigrationModal(false);
+            // Wait a bit to ensure the operation completes
+            await new Promise(resolve => setTimeout(resolve, 500));
+            navigateBack();
+        } catch (err) {
+            error(t('migration.error', 'Failed to move card'));
+            setIsProcessing(false);
+        }
     };
 
     if (loading) {
@@ -216,6 +304,57 @@ function CardCreate() {
                                         placeholder={t('cardCreate.hintPlaceholder')}
                                     />
                                 </div>
+
+                                {/* Card Operations - Only show when editing */}
+                                {cardId && (
+                                    <div className="compact-form-group" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #E5E7EB' }}>
+                                        <label className="compact-form-label">
+                                            {t('cards.operations', 'Card Operations')}
+                                        </label>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                            <button
+                                                type="button"
+                                                onClick={handleOpenMigrationModal}
+                                                className="compact-btn compact-btn-outline"
+                                                style={{ flex: '1 1 auto' }}
+                                                disabled={isProcessing}
+                                            >
+                                                <i className="fas fa-arrow-right"></i>
+                                                {t('migration.move_to_box', 'Move to Box')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleResetProgress}
+                                                className="compact-btn compact-btn-outline"
+                                                style={{ flex: '1 1 auto' }}
+                                                disabled={isProcessing}
+                                            >
+                                                <i className={`fas ${isProcessing ? 'fa-spinner fa-spin' : 'fa-undo-alt'}`}></i>
+                                                {t('cards.reset', 'Reset Progress')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleArchiveCard}
+                                                className="compact-btn compact-btn-outline"
+                                                style={{ flex: '1 1 auto' }}
+                                                disabled={isProcessing}
+                                            >
+                                                <i className={`fas ${isProcessing ? 'fa-spinner fa-spin' : 'fa-archive'}`}></i>
+                                                {t('cards.archive', 'Archive')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={handleDeleteCard}
+                                                className="compact-btn compact-btn-outline"
+                                                style={{ flex: '1 1 auto', color: '#DC2626', borderColor: '#DC2626' }}
+                                                disabled={isProcessing}
+                                            >
+                                                <i className={`fas ${isProcessing ? 'fa-spinner fa-spin' : 'fa-trash-alt'}`}></i>
+                                                {t('cards.delete', 'Delete')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -242,6 +381,68 @@ function CardCreate() {
                         </button>
                     </div>
                 </div>
+
+                {/* Migration Modal */}
+                {showMigrationModal && (
+                    <div className="modal-overlay" onClick={() => setShowMigrationModal(false)}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-header">
+                                <h3>{t('migration.move_card', 'Move Card to Another Box')}</h3>
+                                <button 
+                                    className="modal-close"
+                                    onClick={() => setShowMigrationModal(false)}
+                                >
+                                    <i className="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="compact-form-group">
+                                    <label className="compact-form-label">
+                                        {t('migration.select_target_box', 'Select Target Box')}
+                                    </label>
+                                    <select
+                                        className="compact-form-input"
+                                        value={selectedTargetBox}
+                                        onChange={(e) => setSelectedTargetBox(e.target.value)}
+                                    >
+                                        <option value="">{t('migration.choose_box', 'Choose a box...')}</option>
+                                        {userBoxes.map(box => (
+                                            <option key={box.Box.ID} value={box.Box.ID}>
+                                                {box.Box.Name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="compact-form-group">
+                                    <label className="checkbox-label">
+                                        <input
+                                            type="checkbox"
+                                            checked={preserveProgress}
+                                            onChange={(e) => setPreserveProgress(e.target.checked)}
+                                        />
+                                        <span>{t('migration.preserve_progress', 'Preserve learning progress')}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    className="sticky-btn sticky-btn-cancel"
+                                    onClick={() => setShowMigrationModal(false)}
+                                >
+                                    {t('common.cancel', 'Cancel')}
+                                </button>
+                                <button
+                                    className="sticky-btn sticky-btn-save"
+                                    onClick={handleMigrateCard}
+                                    disabled={!selectedTargetBox || isProcessing}
+                                >
+                                    <i className={`fas ${isProcessing ? 'fa-spinner fa-spin' : 'fa-arrow-right'}`}></i>
+                                    {isProcessing ? t('migration.moving', 'Moving...') : t('migration.move', 'Move')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </ModernContainer>
     );

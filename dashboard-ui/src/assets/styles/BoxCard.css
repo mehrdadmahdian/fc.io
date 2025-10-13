@@ -513,7 +513,7 @@
 /* Tablet styles */
 @media (max-width: 768px) {
     .box-card {
-        padding: 16px;
+        padding: 6px;
         max-width: 100%;
         margin: 0;
         width: 100%;
@@ -521,16 +521,36 @@
     }
     
     .box-card-icon {
-        padding: 12px;
-        min-height: 140px;
+        padding: 6px;
+        min-height: 80px;
         max-width: none;
         width: 100%;
         margin: 0;
         box-sizing: border-box;
     }
     
+    .box-name {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .box-stats {
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .box-actions {
+        gap: 0.25rem;
+    }
+    
+    .action-btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        min-height: 28px;
+    }
+    
     .boxes-grid-icons {
-        gap: 16px;
+        gap: 8px;
         justify-items: stretch;
         padding: 0;
         width: 100%;

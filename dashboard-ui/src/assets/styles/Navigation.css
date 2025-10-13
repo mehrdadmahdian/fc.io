@@ -1,5 +1,5 @@
 :root {
-    --nav-height: 4rem;
+    --nav-height: 3rem;
     --primary-color: #4F46E5;
     --text-color: #4B5563;
     --hover-bg: #F3F4F6;
@@ -102,7 +102,23 @@
 
 @media (max-width: 768px) {
     .nav-container {
-        padding: 0 1rem;
+        padding: 0 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 3rem; /* Make nav even more compact */
+    }
+
+    .nav-brand {
+        font-size: 1.1rem;
+        font-weight: 700;
+        flex: 1;
+        text-align: center;
+        margin: 0 0.5rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        display: block !important; /* Force show on mobile */
+        line-height: 1;
     }
 
     .main-links,
@@ -112,6 +128,9 @@
 
     .mobile-menu-btn {
         display: block;
+        order: -1; /* Move hamburger to the left */
+        padding: 0.375rem;
+        font-size: 1rem;
     }
 
     .mobile-nav {

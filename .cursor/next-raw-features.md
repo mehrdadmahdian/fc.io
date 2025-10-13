@@ -9,5 +9,6 @@
 - should be possible put cards directly ready for review while adding a new card and also from the details page.
 - card status is not understandable. new/learning/ archived and etc. should be something like : Review needed cards, archived cards, labled cards.
 - presentation page must follow the overal design
-- change css styling to tailwind
-- make everything componenet.
+- add daily question. In Both direction.
+- add quiz mode.in Both Direction.
+- connect to telegram for daily quizes
