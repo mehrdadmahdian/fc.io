@@ -214,7 +214,7 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 
 	var card models.Card
 	err := cardRepository.collection.FindOne(
-		context.Background(),
+		ctx,
 		filter,
 		options.FindOne().SetSort(sort),
 	).Decode(&card)
@@ -244,7 +244,7 @@ func (cardRepository *CardRepository) GetBoxCardsToReview(ctx context.Context, b
 	sort := bson.D{{Key: "review.next_due_date", Value: 1}}
 
 	cursor, err := cardRepository.collection.Find(
-		context.Background(),
+		ctx,
 		filter,
 		options.Find().SetSort(sort),
 	)
@@ -498,7 +498,7 @@ func (cardRepository *CardRepository) GetBoxCardsToReverseReview(ctx context.Con
 	sort := bson.D{{Key: "reverse_review.next_due_date", Value: 1}}
 
 	cursor, err := cardRepository.collection.Find(
-		context.Background(),
+		ctx,
 		filter,
 		options.Find().SetSort(sort),
 	)

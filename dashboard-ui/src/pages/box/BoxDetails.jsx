@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import ModernContainer from '../../components/layout/ModernContainer';
@@ -42,6 +42,7 @@ function BoxDetails() {
     const { t } = useTranslation();
     const { boxId } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const { api } = useAuth();
     const { success, error: showError } = useToast();
     
@@ -51,6 +52,7 @@ function BoxDetails() {
     const [cards, setCards] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [error, setError] = useState('');
     
     // Pagination (server-side)
@@ -87,6 +89,9 @@ function BoxDetails() {
     // Box edit modal
     const [showBoxEditModal, setShowBoxEditModal] = useState(false);
     const [resetCardIds, setResetCardIds] = useState([]);
+    
+    // Box deletion
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Fetch box and cards data with server-side pagination and filtering
     const fetchBoxData = useCallback(async () => {
@@ -105,8 +110,8 @@ function BoxDetails() {
                 params.append('status', statusFilter);
             }
             
-            if (searchQuery.trim()) {
-                params.append('search', searchQuery.trim());
+            if (debouncedSearchQuery.trim()) {
+                params.append('search', debouncedSearchQuery.trim());
             }
             
             const [boxResponse, cardsResponse] = await Promise.all([
@@ -131,7 +136,7 @@ function BoxDetails() {
         } finally {
             setLoading(false);
         }
-    }, [boxId, api, currentPage, cardsPerPage, statusFilter, searchQuery]);
+    }, [boxId, api, currentPage, cardsPerPage, statusFilter, debouncedSearchQuery]);
 
     // Fetch data when dependencies change
     useEffect(() => {
@@ -140,10 +145,19 @@ function BoxDetails() {
         }
     }, [boxId, fetchBoxData]);
 
+    // Debounce search query to avoid too many API calls
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     // Reset to page 1 when filters or search query change
     useEffect(() => {
         setCurrentPage(1);
-    }, [statusFilter, searchQuery]);
+    }, [statusFilter, debouncedSearchQuery]);
 
     // Inline editing functions
     const startEditing = (cardId, field, currentValue) => {
@@ -218,6 +232,22 @@ function BoxDetails() {
         } catch (error) {
             // Failed to archive card - error handled by toast
             showError(t('cards.archiveError'));
+        }
+    };
+
+    const handleDeleteBox = async () => {
+        if (window.confirm(t('dashboard.boxes.deleteConfirm'))) {
+            setIsDeleting(true);
+            try {
+                await api.delete(`/dashboard/boxes/${boxId}`);
+                success(t('dashboard.boxes.deleteSuccess'));
+                // Navigate to dashboard after successful deletion
+                navigate('/dashboard');
+            } catch (error) {
+                showError(t('dashboard.boxes.deleteError'));
+            } finally {
+                setIsDeleting(false);
+            }
         }
     };
 
@@ -417,6 +447,23 @@ function BoxDetails() {
         if (card.Review.Interval < 7) return 'learning';
         return 'review';
     };
+
+    const getCardStatusIcon = (card) => {
+        const status = getCardStatusBadge(card);
+        switch (status) {
+            case 'new':
+                return { icon: 'fas fa-circle', color: '#10b981', title: t('cards.new') };
+            case 'learning':
+                return { icon: 'fas fa-clock', color: '#f59e0b', title: t('cards.learning') };
+            case 'review':
+                return { icon: 'fas fa-sync', color: '#3b82f6', title: t('cards.review') };
+            case 'archived':
+                return { icon: 'fas fa-archive', color: '#6b7280', title: t('cards.archived') };
+            default:
+                return { icon: 'fas fa-question', color: '#6b7280', title: t('cards.unknown') };
+        }
+    };
+
 
     // Format timestamp for display
     const formatTimestamp = (timestamp) => {
@@ -709,6 +756,15 @@ function BoxDetails() {
                                             <span className="action-text">{t('boxDetails.editBox')}</span>
                                         </button>
                                         <button 
+                                            className="compact-btn compact-btn-danger"
+                                            onClick={handleDeleteBox}
+                                            disabled={isDeleting}
+                                            title={t('dashboard.boxes.actions.delete')}
+                                        >
+                                            <i className="fas fa-trash"></i>
+                                            <span className="action-text">{t('dashboard.boxes.actions.delete')}</span>
+                                        </button>
+                                        <button 
                                             onClick={startCreatingCard} 
                                             className="compact-btn compact-btn-primary"
                                             disabled={isCreatingCard}
@@ -919,11 +975,18 @@ function BoxDetails() {
                                                     </div>
                                                 )}
                                                 <div className="col-status">
-                                                    <span 
-                                                        className={`status-badge status-${getCardStatusBadge(card)}`}
-                                                    >
-                                                        {t(`cards.${getCardStatusBadge(card)}`)}
-                                                    </span>
+                                                    {(() => {
+                                                        const statusInfo = getCardStatusIcon(card);
+                                                        return (
+                                                            <span 
+                                                                className="status-icon-simple"
+                                                                title={statusInfo.title}
+                                                                style={{ color: statusInfo.color }}
+                                                            >
+                                                                <i className={statusInfo.icon}></i>
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </div>
                                                 <div className="col-front">
                                                     {renderEditableField(card, 'Front')}

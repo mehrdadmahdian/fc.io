@@ -447,11 +447,8 @@ func (boxService *BoxService) GetAllUserCardsToReview(ctx context.Context, user 
 
 	var allCards []*models.Card
 	for _, box := range boxes {
-		// Skip inactive (archived) boxes
-		if !box.IsActive {
-			continue
-		}
-
+		// Include cards from ALL boxes for global review, not just active ones
+		// The IsActive field is used for individual box review, but global review should include all boxes
 		cards, err := boxService.cardRepository.GetBoxCardsToReview(ctx, box)
 		if err != nil {
 			continue // Skip this box if there's an error, don't fail the entire request
@@ -470,11 +467,8 @@ func (boxService *BoxService) GetAllUserCardsToReverseReview(ctx context.Context
 
 	var allCards []*models.Card
 	for _, box := range boxes {
-		// Skip inactive (archived) boxes
-		if !box.IsActive {
-			continue
-		}
-
+		// Include cards from ALL boxes for global reverse review, not just active ones
+		// The IsActive field is used for individual box review, but global review should include all boxes
 		cards, err := boxService.cardRepository.GetBoxCardsToReverseReview(ctx, box)
 		if err != nil {
 			continue // Skip this box if there's an error, don't fail the entire request

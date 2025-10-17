@@ -405,6 +405,25 @@
     text-transform: capitalize;
 }
 
+/* Simple Status Icons */
+.status-icon-simple {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.75rem;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.status-icon-simple:hover {
+    transform: scale(1.1);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+
 .status-new {
     background: #dbeafe;
     color: #1d4ed8;

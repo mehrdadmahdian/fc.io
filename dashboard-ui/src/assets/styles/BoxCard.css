@@ -510,6 +510,24 @@
     transform: translateY(-1px);
 }
 
+.icon-action-btn.delete {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.icon-action-btn.delete:hover {
+    background: #dc2626;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.icon-action-btn.delete:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Tablet styles */
 @media (max-width: 768px) {
     .box-card {
@@ -839,6 +857,22 @@
 .list-action-btn.details:hover {
     background: #6b7280;
     color: white;
+}
+
+.list-action-btn.delete {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.list-action-btn.delete:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.list-action-btn.delete:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
 }
 
 /* Mobile responsive for list view */

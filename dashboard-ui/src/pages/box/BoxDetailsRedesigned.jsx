@@ -46,6 +46,7 @@ function BoxDetailsRedesigned() {
     const [cards, setCards] = useState([]);
     const [statusFilter, setStatusFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [error, setError] = useState('');
     
     // Pagination (server-side)
@@ -91,6 +92,15 @@ function BoxDetailsRedesigned() {
         return { variant: "default", label: t('cards.review') };
     };
 
+    const getCardStatusIcon = (card) => {
+        if (!card.Review) return { icon: 'fas fa-circle', color: '#10b981', title: t('cards.new') };
+        if (card.Review.ReviewsCount === 0) return { icon: 'fas fa-circle', color: '#10b981', title: t('cards.new') };
+        if (card.Review.NextDueDate === null) return { icon: 'fas fa-archive', color: '#6b7280', title: t('cards.archived') };
+        if (card.Review.Interval < 7) return { icon: 'fas fa-clock', color: '#f59e0b', title: t('cards.learning') };
+        return { icon: 'fas fa-sync', color: '#3b82f6', title: t('cards.review') };
+    };
+
+
     // Placeholder functions - in real implementation, these would be the same as the original
     const fetchBoxData = useCallback(async () => {
         // Implementation would be the same as original
@@ -124,6 +134,15 @@ function BoxDetailsRedesigned() {
     const handleBoxReset = () => {};
     const selectAllCards = () => {};
     const clearSelection = () => {};
+
+    // Debounce search query to avoid too many API calls
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     useEffect(() => {
         fetchBoxData();
@@ -434,9 +453,18 @@ function BoxDetailsRedesigned() {
                                                 <div className="flex-1 min-w-0 space-y-4">
                                                     {/* Header */}
                                                     <div className="flex items-center justify-between">
-                                                        <Badge variant={statusBadge.variant}>
-                                                            {statusBadge.label}
-                                                        </Badge>
+                                                        {(() => {
+                                                            const statusInfo = getCardStatusIcon(card);
+                                                            return (
+                                                                <span 
+                                                                    className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs bg-gray-100 transition-all hover:scale-110"
+                                                                    title={statusInfo.title}
+                                                                    style={{ color: statusInfo.color }}
+                                                                >
+                                                                    <i className={statusInfo.icon}></i>
+                                                                </span>
+                                                            );
+                                                        })()}
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-xs text-muted-foreground">
                                                                 {formatTimestamp(card.UpdatedAt)}

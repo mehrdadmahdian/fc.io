@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
+import { useToast } from '../../../contexts/ToastContext';
 import '../../../assets/styles/BoxCard.css';
 
 const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
     const { t } = useTranslation();
     const location = useLocation();
+    const navigate = useNavigate();
+    const { success, error: showError } = useToast();
     const [isSettingActive, setIsSettingActive] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     
     const handleSetActive = async () => {
         if (box.Box.IsActive) return;
@@ -22,6 +26,22 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
             // Error setting active box - could add proper error handling here
         } finally {
             setIsSettingActive(false);
+        }
+    };
+
+    const handleDeleteBox = async () => {
+        if (window.confirm(t('dashboard.boxes.deleteConfirm'))) {
+            setIsDeleting(true);
+            try {
+                await api.delete(`/dashboard/boxes/${box.Box.ID}`);
+                success(t('dashboard.boxes.deleteSuccess'));
+                // Navigate to dashboard after successful deletion
+                navigate('/dashboard');
+            } catch (error) {
+                showError(t('dashboard.boxes.deleteError'));
+            } finally {
+                setIsDeleting(false);
+            }
         }
     };
 
@@ -99,6 +119,17 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                     </svg>
                     <span className="action-text">{t('dashboard.boxes.actions.details')}</span>
                 </Link>
+                <button 
+                    className="icon-action-btn delete" 
+                    onClick={handleDeleteBox}
+                    disabled={isDeleting}
+                    title={t('dashboard.boxes.actions.delete')}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452a51.007 51.007 0 013.273 0zM14.25 9.75a.75.75 0 00-1.5 0v8.25a.75.75 0 001.5 0v-8.25zm-4.5 0a.75.75 0 00-1.5 0v8.25a.75.75 0 001.5 0v-8.25z" clipRule="evenodd" />
+                    </svg>
+                    <span className="action-text">{t('dashboard.boxes.actions.delete')}</span>
+                </button>
             </div>
         </div>
     );
@@ -175,6 +206,14 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
                     >
                         <i className="fas fa-info-circle"></i>
                     </Link>
+                    <button 
+                        className="list-action-btn delete" 
+                        onClick={handleDeleteBox}
+                        disabled={isDeleting}
+                        title={t('dashboard.boxes.actions.delete')}
+                    >
+                        <i className="fas fa-trash"></i>
+                    </button>
                 </div>
             </div>
         </div>
