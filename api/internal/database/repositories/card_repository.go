@@ -1049,3 +1049,118 @@ func (cardRepository *CardRepository) BulkRestoreCardsProgress(ctx context.Conte
 
 	return successfulRestores, failedRestores, nil
 }
+
+// BoxStats represents aggregated statistics for a box
+type BoxStats struct {
+	BoxID                     primitive.ObjectID `bson:"_id"`
+	TotalCards                int64              `bson:"totalCards"`
+	CardsDueToday             int64              `bson:"cardsDueToday"`
+	CardsNeedingReview        int64              `bson:"cardsNeedingReview"`
+	CardsDueTodayReverse      int64              `bson:"cardsDueTodayReverse"`
+	CardsNeedingReverseReview int64              `bson:"cardsNeedingReverseReview"`
+}
+
+// GetBoxesStatistics returns aggregated statistics for multiple boxes in a single query
+func (cardRepository *CardRepository) GetBoxesStatistics(ctx context.Context, boxIDs []primitive.ObjectID) (map[primitive.ObjectID]*BoxStats, error) {
+	currentTime := time.Now()
+
+	// Create aggregation pipeline
+	pipeline := mongo.Pipeline{
+		// Match cards from the specified boxes
+		{{Key: "$match", Value: bson.M{"box_id": bson.M{"$in": boxIDs}}}},
+
+		// Group by box_id and calculate all statistics
+		{{Key: "$group", Value: bson.M{
+			"_id":        "$box_id",
+			"totalCards": bson.M{"$sum": 1},
+			"cardsDueToday": bson.M{
+				"$sum": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$and": []bson.M{
+								{"$ne": []interface{}{"$review", nil}},
+								{"$ne": []interface{}{"$review.next_due_date", nil}},
+								{"$lte": []interface{}{"$review.next_due_date", currentTime}},
+							},
+						},
+						"then": 1,
+						"else": 0,
+					},
+				},
+			},
+			"cardsNeedingReview": bson.M{
+				"$sum": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$and": []bson.M{
+								{"$ne": []interface{}{"$review", nil}},
+								{"$ne": []interface{}{"$review.next_due_date", nil}},
+							},
+						},
+						"then": 1,
+						"else": 0,
+					},
+				},
+			},
+			"cardsDueTodayReverse": bson.M{
+				"$sum": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$and": []bson.M{
+								{"$ne": []interface{}{"$reverse_review", nil}},
+								{"$ne": []interface{}{"$reverse_review.next_due_date", nil}},
+								{"$lte": []interface{}{"$reverse_review.next_due_date", currentTime}},
+							},
+						},
+						"then": 1,
+						"else": 0,
+					},
+				},
+			},
+			"cardsNeedingReverseReview": bson.M{
+				"$sum": bson.M{
+					"$cond": bson.M{
+						"if": bson.M{
+							"$and": []bson.M{
+								{"$ne": []interface{}{"$reverse_review", nil}},
+								{"$ne": []interface{}{"$reverse_review.next_due_date", nil}},
+							},
+						},
+						"then": 1,
+						"else": 0,
+					},
+				},
+			},
+		}}},
+	}
+
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	statsMap := make(map[primitive.ObjectID]*BoxStats)
+
+	// Initialize all boxes with zero stats
+	for _, boxID := range boxIDs {
+		statsMap[boxID] = &BoxStats{
+			BoxID: boxID,
+		}
+	}
+
+	// Process aggregation results
+	for cursor.Next(ctx) {
+		var stats BoxStats
+		if err := cursor.Decode(&stats); err != nil {
+			return nil, err
+		}
+		statsMap[stats.BoxID] = &stats
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	return statsMap, nil
+}

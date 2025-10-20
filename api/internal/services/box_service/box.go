@@ -7,6 +7,7 @@ import (
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BoxService struct {
@@ -74,38 +75,36 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 		return nil, err
 	}
 
+	if len(boxes) == 0 {
+		return []*BoxInfo{}, nil
+	}
+
+	// Extract box IDs for batch query
+	boxIDs := make([]primitive.ObjectID, len(boxes))
+	for i, box := range boxes {
+		boxIDs[i] = box.ID
+	}
+
+	// Get all statistics in a single aggregation query
+	statsMap, err := boxService.cardRepository.GetBoxesStatistics(ctx, boxIDs)
+	if err != nil {
+		return nil, err
+	}
+
 	var boxInfos []*BoxInfo
 	for _, box := range boxes {
-		countOfCardsDueToday, err := boxService.cardRepository.GetCountOfRemainingCardsForReview(ctx, box)
-		if err != nil {
-			return nil, err
-		}
-
-		boxCardsCount, err := boxService.cardRepository.GetCountOfAllCardsOfTheBox(ctx, box)
-		if err != nil {
-			return nil, err
-		}
-
-		CountOfCardsNeedingReview, err := boxService.cardRepository.GetCountOfNeedingReviewCount(ctx, box)
-		if err != nil {
-			return nil, err
-		}
-
-		// Get reverse review counts
-		countOfCardsDueTodayReverse, err := boxService.cardRepository.GetCountOfRemainingCardsForReverseReview(ctx, box)
-		if err != nil {
-			return nil, err
-		}
-
-		CountOfCardsNeedingReverseReview, err := boxService.cardRepository.GetCountOfNeedingReverseReviewCount(ctx, box)
-		if err != nil {
-			return nil, err
+		stats := statsMap[box.ID]
+		if stats == nil {
+			// Fallback to zero stats if no data found
+			stats = &repositories.BoxStats{
+				BoxID: box.ID,
+			}
 		}
 
 		// Calculate success rate, avoiding division by zero
 		var successRate float64
-		if *boxCardsCount > 0 {
-			successRate = (float64(*boxCardsCount) - float64(*CountOfCardsNeedingReview)) / float64(*boxCardsCount)
+		if stats.TotalCards > 0 {
+			successRate = (float64(stats.TotalCards) - float64(stats.CardsNeedingReview)) / float64(stats.TotalCards)
 		} else {
 			successRate = 0.0
 		}
@@ -113,11 +112,11 @@ func (boxService *BoxService) RenderUserBoxes(ctx context.Context, user *models.
 		// Create a new BoxInfo and append it
 		boxInfos = append(boxInfos, &BoxInfo{
 			Box:                              box,
-			CountOfCardsDueToday:             int(*countOfCardsDueToday),
-			CountOfTotalCards:                int(*boxCardsCount),
-			CountOfCardsNeedingReview:        int(*CountOfCardsNeedingReview),
-			CountOfCardsDueTodayReverse:      int(*countOfCardsDueTodayReverse),
-			CountOfCardsNeedingReverseReview: int(*CountOfCardsNeedingReverseReview),
+			CountOfCardsDueToday:             int(stats.CardsDueToday),
+			CountOfTotalCards:                int(stats.TotalCards),
+			CountOfCardsNeedingReview:        int(stats.CardsNeedingReview),
+			CountOfCardsDueTodayReverse:      int(stats.CardsDueTodayReverse),
+			CountOfCardsNeedingReverseReview: int(stats.CardsNeedingReverseReview),
 			SuccessRate:                      successRate,
 		})
 	}
@@ -477,6 +476,27 @@ func (boxService *BoxService) GetAllUserCardsToReverseReview(ctx context.Context
 	}
 
 	return allCards, nil
+}
+
+// GetGlobalReviewCardsCount returns the total count of cards available for global review across all boxes
+func (boxService *BoxService) GetGlobalReviewCardsCount(ctx context.Context, user *models.User) (int, error) {
+	boxes, err := boxService.boxRepository.GetAllBoxesForUser(ctx, user)
+	if err != nil {
+		return 0, err
+	}
+
+	totalCount := 0
+	for _, box := range boxes {
+		count, err := boxService.cardRepository.GetCountOfRemainingCardsForReview(ctx, box)
+		if err != nil {
+			continue // Skip this box if there's an error, don't fail the entire request
+		}
+		if count != nil {
+			totalCount += int(*count)
+		}
+	}
+
+	return totalCount, nil
 }
 
 // Reverse review methods

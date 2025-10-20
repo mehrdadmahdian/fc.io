@@ -17,7 +17,7 @@ const GlobalReviewCard = () => {
 
     const fetchGlobalCardsCount = async () => {
         try {
-            const response = await api.get('/dashboard/review/global/cards');
+            const response = await api.get('/dashboard/review/global/cards/count');
             const count = response.data.data.totalCards || 0;
             setCardsCount(count);
         } catch (error) {

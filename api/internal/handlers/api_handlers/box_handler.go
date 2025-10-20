@@ -500,3 +500,46 @@ func (handler *ApiHandler) GetGlobalReverseReviewCards(c *fiber.Ctx) error {
 
 	return JsonSuccess(c, utils.PointerString("global reverse review cards fetched successfully"), &dataMap)
 }
+
+// GetGlobalReviewCardsCount returns only the count of cards available for global review
+func (handler *ApiHandler) GetGlobalReviewCardsCount(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	userModel, ok := user.(*models.User)
+	if !ok {
+		utils.LogError(c, handler.loggerService, "GetGlobalReviewCardsCount",
+			fmt.Errorf("user not found in context"), map[string]interface{}{
+				"error_type": "authentication_error",
+			})
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("user is not set in the lifecycle"),
+			nil,
+		)
+	}
+
+	count, err := handler.boxService.GetGlobalReviewCardsCount(c.Context(), userModel)
+	if err != nil {
+		utils.LogError(c, handler.loggerService, "GetGlobalReviewCardsCount", err, map[string]interface{}{
+			"error_type": "service_error",
+			"user_id":    userModel.ID.Hex(),
+		})
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get global review cards count"), nil)
+	}
+
+	utils.LogInfo(c, handler.loggerService, "GetGlobalReviewCardsCount",
+		"Successfully retrieved global review cards count", map[string]interface{}{
+			"user_id":     userModel.ID.Hex(),
+			"cards_count": count,
+		})
+
+	dataMap := map[string]interface{}{
+		"totalCards": count,
+	}
+
+	return JsonSuccess(
+		c,
+		utils.PointerString("global review cards count fetched successfully!"),
+		&dataMap,
+	)
+}
