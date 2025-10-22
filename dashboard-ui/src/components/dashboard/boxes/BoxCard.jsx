@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../../services/api';
@@ -12,6 +12,33 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
     const { success, error: showError } = useToast();
     const [isSettingActive, setIsSettingActive] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    // Check if we're on mobile and handle initial state
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth <= 768;
+            setIsMobile(mobile);
+            // On mobile, only the active box should be expanded initially
+            if (mobile) {
+                setIsExpanded(box.Box.IsActive);
+            } else {
+                setIsExpanded(true);
+            }
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, [box.Box.IsActive]);
+
+    // Handle box expansion/collapse on mobile
+    const handleBoxToggle = () => {
+        if (isMobile) {
+            setIsExpanded(!isExpanded);
+        }
+    };
     
     const handleSetActive = async () => {
         if (box.Box.IsActive) return;
@@ -136,85 +163,99 @@ const BoxCard = ({ box, onActiveChange, viewMode = 'full' }) => {
 
     // Compact list view rendering
     const renderListView = () => (
-        <div className={`box-list-item ${box.Box.IsActive ? 'active-box' : ''}`}>
+        <div className={`box-list-item ${box.Box.IsActive ? 'active-box' : ''} ${isMobile ? 'mobile-view' : ''} ${isExpanded ? 'expanded' : 'collapsed'}`}>
             <div className="list-item-main">
-                <div className="list-item-info">
+                <div className="list-item-info" onClick={isMobile ? handleBoxToggle : undefined}>
                     <div className="list-item-header">
                         <h4 className="list-item-title">{box.Box.Name}</h4>
-                        <div className="list-item-status">
-                            {box.Box.IsActive ? (
-                                <span className="status-badge active">{t('dashboard.boxes.active')}</span>
-                            ) : (
-                                <button 
-                                    className="list-set-active-btn" 
-                                    onClick={handleSetActive}
-                                    disabled={isSettingActive}
-                                    title={t('dashboard.boxes.setActive')}
-                                >
-                                    ✓
-                                </button>
+                        <div className="list-item-right-controls">
+                            <div className="list-item-status">
+                                {box.Box.IsActive ? (
+                                    <span className="status-badge active">{t('dashboard.boxes.active')}</span>
+                                ) : (
+                                    <button 
+                                        className="list-set-active-btn" 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSetActive();
+                                        }}
+                                        disabled={isSettingActive}
+                                        title={t('dashboard.boxes.setActive')}
+                                    >
+                                        ✓
+                                    </button>
+                                )}
+                            </div>
+                            {isMobile && (
+                                <div className="mobile-expand-indicator">
+                                    <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+                                </div>
                             )}
                         </div>
                     </div>
-                    {box.Box.Description && (
+                    {box.Box.Description && isExpanded && (
                         <p className="list-item-description">{box.Box.Description}</p>
                     )}
                 </div>
                 
-                <div className="list-item-stats">
-                    <div className="list-stat">
-                        <span className="list-stat-number">{box.CountOfTotalCards}</span>
-                        <span className="list-stat-label">{t('dashboard.boxes.totalCards')}</span>
-                    </div>
-                    <div className="list-stat">
-                        <span className="list-stat-number due">{box.CountOfCardsDueToday}</span>
-                        <span className="list-stat-label">{t('dashboard.boxes.dueToday')}</span>
-                    </div>
-                    <div className="list-stat">
-                        <span className="list-stat-number review">{box.CountOfCardsNeedingReview}</span>
-                        <span className="list-stat-label">{t('dashboard.boxes.needingReview')}</span>
-                    </div>
-                </div>
-                
-                <div className="list-item-actions">
-                    <Link 
-                        to={`/box/${box.Box.ID}/cards/create`} 
-                        state={{ from: location.pathname }}
-                        className="list-action-btn add" 
-                        title={t('dashboard.boxes.actions.addCard')}
-                    >
-                        <i className="fas fa-plus"></i>
-                    </Link>
-                    <Link 
-                        to={`/box/${box.Box.ID}/review`} 
-                        className="list-action-btn review" 
-                        title={t('dashboard.boxes.actions.review')}
-                    >
-                        <i className="fas fa-play"></i>
-                    </Link>
-                    <Link 
-                        to={`/box/${box.Box.ID}/review/reverse`} 
-                        className="list-action-btn review-reverse" 
-                        title={t('dashboard.boxes.actions.reviewReverse')}
-                    >
-                        <i className="fas fa-exchange-alt"></i>
-                    </Link>
-                    <Link 
-                        to={`/box/${box.Box.ID}`} 
-                        className="list-action-btn details" 
-                        title={t('dashboard.boxes.actions.details')}
-                    >
-                        <i className="fas fa-info-circle"></i>
-                    </Link>
-                    <button 
-                        className="list-action-btn delete" 
-                        onClick={handleDeleteBox}
-                        disabled={isDeleting}
-                        title={t('dashboard.boxes.actions.delete')}
-                    >
-                        <i className="fas fa-trash"></i>
-                    </button>
-                </div>
+                {isExpanded && (
+                    <>
+                        <div className="list-item-stats">
+                            <div className="list-stat">
+                                <span className="list-stat-number">{box.CountOfTotalCards}</span>
+                                <span className="list-stat-label">{t('dashboard.boxes.totalCards')}</span>
+                            </div>
+                            <div className="list-stat">
+                                <span className="list-stat-number due">{box.CountOfCardsDueToday}</span>
+                                <span className="list-stat-label">{t('dashboard.boxes.dueToday')}</span>
+                            </div>
+                            <div className="list-stat">
+                                <span className="list-stat-number review">{box.CountOfCardsNeedingReview}</span>
+                                <span className="list-stat-label">{t('dashboard.boxes.needingReview')}</span>
+                            </div>
+                        </div>
+                        
+                        <div className="list-item-actions">
+                            <Link 
+                                to={`/box/${box.Box.ID}/cards/create`} 
+                                state={{ from: location.pathname }}
+                                className="list-action-btn add" 
+                                title={t('dashboard.boxes.actions.addCard')}
+                            >
+                                <i className="fas fa-plus"></i>
+                            </Link>
+                            <Link 
+                                to={`/box/${box.Box.ID}/review`} 
+                                className="list-action-btn review" 
+                                title={t('dashboard.boxes.actions.review')}
+                            >
+                                <i className="fas fa-play"></i>
+                            </Link>
+                            <Link 
+                                to={`/box/${box.Box.ID}/review/reverse`} 
+                                className="list-action-btn review-reverse" 
+                                title={t('dashboard.boxes.actions.reviewReverse')}
+                            >
+                                <i className="fas fa-exchange-alt"></i>
+                            </Link>
+                            <Link 
+                                to={`/box/${box.Box.ID}`} 
+                                className="list-action-btn details" 
+                                title={t('dashboard.boxes.actions.details')}
+                            >
+                                <i className="fas fa-info-circle"></i>
+                            </Link>
+                            <button 
+                                className="list-action-btn delete" 
+                                onClick={handleDeleteBox}
+                                disabled={isDeleting}
+                                title={t('dashboard.boxes.actions.delete')}
+                            >
+                                <i className="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -136,14 +136,22 @@ function Dashboard() {
                     </div>
                     <div className="boxes-grid-list">
                         {data.boxes.length > 0 ? (
-                            data.boxes.map((box) => (
-                                <BoxCard 
-                                    key={box.Box.ID} 
-                                    box={box} 
-                                    onActiveChange={handleActiveBoxChange}
-                                    viewMode="full"
-                                />
-                            ))
+                            data.boxes
+                                .sort((a, b) => {
+                                    // Active box should be first
+                                    if (a.Box.IsActive && !b.Box.IsActive) return -1;
+                                    if (!a.Box.IsActive && b.Box.IsActive) return 1;
+                                    // If both have same active status, maintain original order
+                                    return 0;
+                                })
+                                .map((box) => (
+                                    <BoxCard 
+                                        key={box.Box.ID} 
+                                        box={box} 
+                                        onActiveChange={handleActiveBoxChange}
+                                        viewMode="full"
+                                    />
+                                ))
                         ) : (
                             <div className="empty-state">
                                 <div className="empty-icon">
