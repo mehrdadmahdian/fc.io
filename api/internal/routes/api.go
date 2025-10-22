@@ -159,5 +159,19 @@ func setupApiRoutes(fiberApp *fiber.App, applicationContainer *application.Conta
 	dashboardGroup.Post("/boxes/:boxid/cards/:cardid/reset-progress", apiHandler.ResetCardProgress)
 	dashboardGroup.Post("/boxes/:boxid/reset-progress", apiHandler.ResetBoxProgress)
 	dashboardGroup.Post("/cards/bulk-reset", apiHandler.BulkResetCardsProgress)
+
+	// Label management endpoints
+	dashboardGroup.Post("/boxes/:boxid/labels", apiHandler.CreateLabel)
+	dashboardGroup.Get("/boxes/:boxid/labels", apiHandler.GetBoxLabels)
+	dashboardGroup.Get("/labels/:labelid", apiHandler.GetLabel)
+	dashboardGroup.Put("/labels/:labelid", apiHandler.UpdateLabel)
+	dashboardGroup.Delete("/labels/:labelid", apiHandler.DeleteLabel)
+
+	// Card feature endpoints
+	dashboardGroup.Post("/cards/:cardid/bookmark", apiHandler.ToggleBookmark)
+	dashboardGroup.Post("/cards/:cardid/difficulty", apiHandler.UpdateCardDifficulty)
+
+	// Custom review endpoints
+	dashboardGroup.Post("/review/custom", apiHandler.GetCustomReviewCards)
 	// dashboardGroup.Post("/boxes/:boxid/cards/:cardid/action", apiHandler.PerformCardAction)
 }

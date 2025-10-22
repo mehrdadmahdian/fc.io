@@ -44,8 +44,8 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": "Can not parse the request",
 			"Box":          box,
-			"Labels":    labels,
-			"csrfToken": c.Locals("csrfToken"),
+			"Labels":       labels,
+			"csrfToken":    c.Locals("csrfToken"),
 		})
 	}
 
@@ -54,8 +54,8 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": utils.MapToString(*validationErros),
 			"Box":          box,
-			"Labels":    labels,
-			"csrfToken": c.Locals("csrfToken"),
+			"Labels":       labels,
+			"csrfToken":    c.Locals("csrfToken"),
 		})
 	}
 
@@ -66,6 +66,8 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		request.Back,
 		request.Extra,
 		request.Hint,
+		false,    // isBookmarked - default to false for web interface
+		"medium", // difficulty - default to medium for web interface
 	)
 
 	if err != nil {
@@ -77,14 +79,14 @@ func (handler *WebHandler) StoreCard(c *fiber.Ctx) error {
 		return c.Render("dashboard/boxes/cards/create", fiber.Map{
 			"ErrorMessage": fmt.Sprintf("can not add card to the box."),
 			"Box":          box,
-			"Labels":    labels,
-			"csrfToken": c.Locals("csrfToken"),
+			"Labels":       labels,
+			"csrfToken":    c.Locals("csrfToken"),
 		})
 	}
 
 	return c.Render("dashboard/boxes/cards/create", fiber.Map{
-		"Message": "card added to box successfully",
-		"Box":     box,
+		"Message":   "card added to box successfully",
+		"Box":       box,
 		"Labels":    labels,
 		"csrfToken": c.Locals("csrfToken"),
 	})

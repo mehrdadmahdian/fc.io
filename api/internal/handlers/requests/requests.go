@@ -35,19 +35,23 @@ type RespondToReviewRequest struct {
 }
 
 type CreateCardRequest struct {
-	Front string `json:"front" validate:"required"`
-	Back  string `json:"back" validate:"required"`
-	Extra string `json:"extra"`
-	Hint  string `json:"hint"`
-	// LabelIds []string `json:"labelIds" validate:"required"`
+	Front        string   `json:"front" validate:"required"`
+	Back         string   `json:"back" validate:"required"`
+	Extra        string   `json:"extra"`
+	Hint         string   `json:"hint"`
+	LabelIds     []string `json:"labelIds"`
+	IsBookmarked bool     `json:"isBookmarked"`
+	Difficulty   string   `json:"difficulty" validate:"omitempty,oneof=easy medium hard"`
 }
 
 type EditCardRequest struct {
-	Front string `json:"front" validate:"required"`
-	Back  string `json:"back" validate:"required"`
-	Extra string `json:"extra"`
-	Hint  string `json:"hint"`
-	// LabelIds []string `json:"labelIds" validate:"required"`
+	Front        string   `json:"front" validate:"required"`
+	Back         string   `json:"back" validate:"required"`
+	Extra        string   `json:"extra"`
+	Hint         string   `json:"hint"`
+	LabelIds     []string `json:"labelIds"`
+	IsBookmarked bool     `json:"isBookmarked"`
+	Difficulty   string   `json:"difficulty" validate:"omitempty,oneof=easy medium hard"`
 }
 
 type CreateBoxRequest struct {
@@ -111,4 +115,36 @@ type CreateBackupRequest struct {
 	Description string   `json:"description,omitempty"`
 	CardIDs     []string `json:"card_ids,omitempty"`
 	BoxID       string   `json:"box_id,omitempty"`
+}
+
+// Label Management Requests
+
+type CreateLabelRequest struct {
+	Name  string `json:"name" validate:"required"`
+	Color string `json:"color" validate:"required"`
+}
+
+type UpdateLabelRequest struct {
+	Name  string `json:"name" validate:"required"`
+	Color string `json:"color" validate:"required"`
+}
+
+// Custom Review Requests
+
+type CustomReviewRequest struct {
+	BoxID      string   `json:"box_id,omitempty"`
+	LabelIds   []string `json:"label_ids,omitempty"`
+	Bookmarked bool     `json:"bookmarked,omitempty"`
+	Difficulty []string `json:"difficulty,omitempty" validate:"omitempty,dive,oneof=easy medium hard"`
+	Shuffle    bool     `json:"shuffle"`
+	Limit      int      `json:"limit,omitempty"`
+}
+
+type ToggleBookmarkRequest struct {
+	CardID string `json:"card_id" validate:"required"`
+}
+
+type UpdateCardDifficultyRequest struct {
+	CardID     string `json:"card_id" validate:"required"`
+	Difficulty string `json:"difficulty" validate:"required,oneof=easy medium hard"`
 }

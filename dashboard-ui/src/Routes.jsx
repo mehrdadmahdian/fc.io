@@ -9,6 +9,8 @@ import BoxReview from './pages/box/Review';
 import ReverseReview from './pages/box/ReverseReview';
 import GlobalReview from './pages/box/GlobalReview';
 import GlobalReverseReview from './pages/box/GlobalReverseReview';
+import CustomReview from './pages/box/CustomReview';
+import BoxCustomReview from './pages/box/BoxCustomReview';
 import CardCreate from './pages/box/CardCreate';
 import BoxCreate from './pages/box/BoxCreate';
 import BoxDetails from './pages/box/BoxDetails';
@@ -67,6 +69,10 @@ const Routes = () => {
                 element={isAuthenticated ? <ReverseReview /> : <Navigate to="/auth/login" />} 
             />
             <Route 
+                path="/box/:boxId/review/custom" 
+                element={isAuthenticated ? <BoxCustomReview /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
                 path="/box/:boxId/presentation" 
                 element={isAuthenticated ? <BoxPresentation /> : <Navigate to="/auth/login" />} 
             />
@@ -79,6 +85,10 @@ const Routes = () => {
             <Route 
                 path="/review/global/reverse" 
                 element={isAuthenticated ? <GlobalReverseReview /> : <Navigate to="/auth/login" />} 
+            />
+            <Route 
+                path="/review/custom" 
+                element={isAuthenticated ? <CustomReview /> : <Navigate to="/auth/login" />} 
             />
             
             <Route 

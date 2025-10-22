@@ -6,6 +6,7 @@ import (
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	"github.com/mehrdadmahdian/fc.io/internal/database/repositories"
+	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
 	"github.com/mehrdadmahdian/fc.io/internal/services/audit_service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -30,8 +31,8 @@ func (cardService *CardService) ArchiveCard(ctx context.Context, cardID string) 
 	return cardService.cardRepository.SetArchived(ctx, cardID)
 }
 
-func (cardService *CardService) UpdateCard(ctx context.Context, cardID string, front string, back string, extra string, hint string) error {
-	return cardService.cardRepository.UpdateCardContent(ctx, cardID, front, back, extra, hint)
+func (cardService *CardService) UpdateCard(ctx context.Context, cardID string, front string, back string, extra string, hint string, labelIds []string, isBookmarked bool, difficulty string) error {
+	return cardService.cardRepository.UpdateCardContent(ctx, cardID, front, back, extra, hint, labelIds, isBookmarked, difficulty)
 }
 
 func (cardService *CardService) DeleteCard(ctx context.Context, cardID string) error {
@@ -164,4 +165,18 @@ func (cardService *CardService) ValidateCardOwnership(ctx context.Context, cardI
 
 func (cardService *CardService) CheckDuplicateInBox(ctx context.Context, boxID string, front string, back string) (bool, error) {
 	return cardService.cardRepository.CheckDuplicateInBox(ctx, boxID, front, back)
+}
+
+// New feature methods
+
+func (cardService *CardService) ToggleBookmark(ctx context.Context, cardID string) error {
+	return cardService.cardRepository.ToggleBookmark(ctx, cardID)
+}
+
+func (cardService *CardService) UpdateDifficulty(ctx context.Context, cardID string, difficulty string) error {
+	return cardService.cardRepository.UpdateDifficulty(ctx, cardID, difficulty)
+}
+
+func (cardService *CardService) GetCustomReviewCards(ctx context.Context, user *models.User, request *requests.CustomReviewRequest) ([]*models.Card, error) {
+	return cardService.cardRepository.GetCustomReviewCards(ctx, user, request)
 }

@@ -9,6 +9,7 @@ import ProgressResetModal from '../../components/dashboard/cards/ProgressResetMo
 import BoxEditModal from '../../components/social/BoxEditModal';
 import StatusFilter from '../../components/ui/StatusFilter';
 import ActionsMenu from '../../components/ui/ActionsMenu';
+import LabelManager from '../../components/dashboard/labels/LabelManager';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
@@ -37,6 +38,7 @@ import '../../assets/styles/BoxDetails.css';
 import '../../assets/styles/ModernPage.css';
 import '../../assets/styles/Migration.css';
 import '../../assets/styles/ProgressReset.css';
+import '../../assets/styles/LabelManager.css';
 
 function BoxDetails() {
     const { t } = useTranslation();
@@ -73,7 +75,10 @@ function BoxDetails() {
         front: '',
         back: '',
         extra: '',
-        hint: ''
+        hint: '',
+        labelIds: [],
+        isBookmarked: false,
+        difficulty: 'medium'
     });
     
     // Card migration
@@ -92,6 +97,9 @@ function BoxDetails() {
     
     // Box deletion
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    // Label management
+    const [showLabelManager, setShowLabelManager] = useState(false);
 
     // Fetch box and cards data with server-side pagination and filtering
     const fetchBoxData = useCallback(async () => {
@@ -232,6 +240,21 @@ function BoxDetails() {
         } catch (error) {
             // Failed to archive card - error handled by toast
             showError(t('cards.archiveError'));
+        }
+    };
+
+    const handleToggleBookmark = async (cardId) => {
+        try {
+            await api.post(`/dashboard/cards/${cardId}/bookmark`);
+            // Update the card's bookmark status in the local state
+            setCards(cards.map(card => 
+                card.ID === cardId 
+                    ? { ...card, IsBookmarked: !card.IsBookmarked }
+                    : card
+            ));
+            success(t('cards.bookmarkSuccess'));
+        } catch (error) {
+            showError(t('cards.bookmarkError'));
         }
     };
 
@@ -784,6 +807,10 @@ function BoxDetails() {
                                             <i className="fas fa-play"></i>
                                             <span className="action-text">{t('review.start')}</span>
                                         </Link>
+                                        <Link to={`/box/${boxId}/review/custom`} className="compact-btn compact-btn-outline">
+                                            <i className="fas fa-filter"></i>
+                                            <span className="action-text">Custom Review</span>
+                                        </Link>
                                         <Link to={`/box/${boxId}/presentation`} className="compact-btn compact-btn-presentation">
                                             <i className="fas fa-slideshare"></i>
                                             <span className="action-text">{t('presentation.start')}</span>
@@ -795,6 +822,14 @@ function BoxDetails() {
                                         >
                                             <i className="fas fa-undo-alt"></i>
                                             <span className="action-text">{t('progress_reset.box_reset')}</span>
+                                        </button>
+                                        <button 
+                                            onClick={() => setShowLabelManager(!showLabelManager)}
+                                            className={`compact-btn ${showLabelManager ? 'compact-btn-primary' : 'compact-btn-outline'}`}
+                                            title="Manage Labels"
+                                        >
+                                            <i className="fas fa-tags"></i>
+                                            <span className="action-text">Labels</span>
                                         </button>
                                     </div>
                                 </div>
@@ -935,6 +970,19 @@ function BoxDetails() {
                                 </div>
                             ) : (
                                 <>
+                                    {/* Label Manager */}
+                                    {showLabelManager && (
+                                        <div className="label-manager-section mb-6">
+                                            <LabelManager 
+                                                boxId={boxId} 
+                                                onLabelsChange={() => {
+                                                    // Refresh cards to show updated labels
+                                                    fetchBoxData();
+                                                }} 
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className={`cards-table ${bulkSelectMode ? 'bulk-select-mode' : ''}`}>
                                         <div className="table-header">
                                             {bulkSelectMode && (
@@ -957,6 +1005,7 @@ function BoxDetails() {
                             <div className="col-back">{t('cards.back')}</div>
                             <div className="col-extra">{t('cards.extra')}</div>
                             <div className="col-hint">{t('cards.hint')}</div>
+                            <div className="col-labels">Labels</div>
                             <div className="col-timestamp">{t('cards.lastModified')}</div>
                             <div className="col-actions">{t('cards.actions')}</div>
                                         </div>
@@ -999,6 +1048,30 @@ function BoxDetails() {
                                                 </div>
                                                 <div className="col-hint">
                                                     {renderEditableField(card, 'Hint')}
+                                                </div>
+                                                <div className="col-labels">
+                                                    {card.Labels && card.Labels.length > 0 ? (
+                                                        <div className="card-labels-display">
+                                                            {card.Labels.slice(0, 2).map((label) => (
+                                                                <span 
+                                                                    key={label.ID} 
+                                                                    className="label-badge"
+                                                                    style={{ 
+                                                                        backgroundColor: `${label.Color}20`, 
+                                                                        color: label.Color,
+                                                                        border: `1px solid ${label.Color}40`
+                                                                    }}
+                                                                >
+                                                                    {label.Name}
+                                                                </span>
+                                                            ))}
+                                                            {card.Labels.length > 2 && (
+                                                                <span className="label-more">+{card.Labels.length - 2}</span>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="no-labels">No labels</span>
+                                                    )}
                                                 </div>
                                                 <div className="col-timestamp">
                                                     <div className="timestamp-info">

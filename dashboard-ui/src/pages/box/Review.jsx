@@ -110,6 +110,34 @@
             navigate(`/box/${boxId}/cards/${currentCardId}/edit`);
         };
 
+        const handleToggleBookmark = async () => {
+            try {
+                const currentCardId = reviewData.cards[currentCard].ID;
+                await api.post(`/dashboard/cards/${currentCardId}/bookmark`, {
+                    card_id: currentCardId
+                });
+                
+                // Update the card's bookmark status in the local state
+                setReviewData(prev => ({
+                    ...prev,
+                    cards: prev.cards.map((card, index) => 
+                        index === currentCard 
+                            ? { ...card, IsBookmarked: !card.IsBookmarked }
+                            : card
+                    )
+                }));
+                
+                setNotification(
+                    reviewData.cards[currentCard].IsBookmarked 
+                        ? t('review.bookmarkRemoved') 
+                        : t('review.bookmarkAdded')
+                );
+                setTimeout(() => setNotification(null), 3000);
+            } catch (err) {
+                console.error('Failed to toggle bookmark:', err);
+            }
+        };
+
         if (loading) {
             return (
                 <ReviewContainer>
@@ -205,6 +233,7 @@
                             onNext={handleNext}
                             onArchive={handleArchive}
                             onEdit={handleEdit}
+                            onToggleBookmark={handleToggleBookmark}
                         />
                     </div>
 

@@ -1,0 +1,231 @@
+/* Custom Review Styles */
+
+.custom-review-filters {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.filters-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.filters-header h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.filters-header p {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.filters-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.form-control {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.label-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.checkbox-label:hover {
+    border-color: #3498db;
+    background: #f8f9fa;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+}
+
+.label-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.label-name {
+    font-size: 13px;
+    color: #2c3e50;
+}
+
+.checkbox-text {
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.difficulty-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.difficulty-filters .checkbox-label {
+    flex: 1;
+    justify-content: center;
+}
+
+.filters-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-lg {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Custom Review Navigation */
+.custom-review-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.card-counter {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+/* Custom Review Info */
+.custom-review-info {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+}
+
+.card-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.metadata-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.metadata-item.bookmark {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.metadata-item.difficulty {
+    background: #e9ecef;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.metadata-item.difficulty.easy {
+    background: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.metadata-item.difficulty.medium {
+    background: #fff3cd;
+    color: #856404;
+    border-color: #ffeaa7;
+}
+
+.metadata-item.difficulty.hard {
+    background: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.card-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.label-tag {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .custom-review-filters {
+        padding: 15px;
+    }
+    
+    .label-filters {
+        flex-direction: column;
+    }
+    
+    .difficulty-filters {
+        flex-direction: column;
+    }
+    
+    .custom-review-navigation {
+        padding: 10px 15px;
+    }
+    
+    .card-metadata {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

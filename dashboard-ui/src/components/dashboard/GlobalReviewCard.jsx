@@ -68,30 +68,32 @@ const GlobalReviewCard = () => {
                 <p className="stat-title">{t('globalReview.cardsToReview')}</p>
             </div>
             
-            {cardsCount > 0 ? (
-                <div className="review-actions">
-                    <button 
-                        className="review-action-btn normal"
-                        onClick={() => handleGlobalReview('normal')}
-                        title={t('globalReview.normalReview')}
-                    >
-                        <i className="fas fa-play"></i>
-                        <span>{t('globalReview.review')}</span>
-                    </button>
-                    <button 
-                        className="review-action-btn reverse"
-                        onClick={() => handleGlobalReview('reverse')}
-                        title={t('globalReview.reverseReview')}
-                    >
-                        <i className="fas fa-exchange-alt"></i>
-                        <span>{t('globalReview.reverse')}</span>
-                    </button>
-                </div>
-            ) : (
-                <div className="empty-state">
-                    <p className="empty-message">{t('globalReview.noCards')}</p>
-                </div>
-            )}
+            <div className="review-actions">
+                {cardsCount > 0 ? (
+                    <>
+                        <button 
+                            className="review-action-btn normal"
+                            onClick={() => handleGlobalReview('normal')}
+                            title={t('globalReview.normalReview')}
+                        >
+                            <i className="fas fa-play"></i>
+                            <span>{t('globalReview.review')}</span>
+                        </button>
+                        <button 
+                            className="review-action-btn reverse"
+                            onClick={() => handleGlobalReview('reverse')}
+                            title={t('globalReview.reverseReview')}
+                        >
+                            <i className="fas fa-exchange-alt"></i>
+                            <span>{t('globalReview.reverse')}</span>
+                        </button>
+                    </>
+                ) : (
+                    <div className="empty-state">
+                        <p className="empty-message">{t('globalReview.noCards')}</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

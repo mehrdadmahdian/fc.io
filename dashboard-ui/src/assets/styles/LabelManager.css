@@ -1,0 +1,185 @@
+/* Label Manager Styles */
+.label-manager-section {
+    margin-bottom: 1.5rem;
+}
+
+.label-manager-section .card {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.label-manager-section .card-header {
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+}
+
+.label-manager-section .card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.label-manager-section .card-content {
+    padding: 1rem;
+}
+
+/* Color picker styles */
+.color-picker-grid {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.color-option {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.1);
+}
+
+.color-option.selected {
+    border-color: #374151;
+    border-width: 3px;
+}
+
+/* Label item styles */
+.label-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    background-color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+.label-item:hover {
+    background-color: #f9fafb;
+}
+
+.label-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.label-color-dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.label-name {
+    font-weight: 500;
+    color: #111827;
+}
+
+.label-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Form styles */
+.label-form {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    margin-bottom: 1rem;
+}
+
+.label-form h4 {
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.75rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+/* Card Labels Display */
+.card-labels-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.label-badge {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.label-more {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.no-labels {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* Table column for labels */
+.col-labels {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .label-manager-section .card-content {
+        padding: 0.75rem;
+    }
+    
+    .label-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .label-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .col-labels {
+        min-width: 100px;
+        max-width: 120px;
+    }
+}

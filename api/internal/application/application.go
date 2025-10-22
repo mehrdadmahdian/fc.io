@@ -12,6 +12,7 @@ import (
 	"github.com/mehrdadmahdian/fc.io/internal/services/auth_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/box_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/card_service"
+	"github.com/mehrdadmahdian/fc.io/internal/services/label_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	logger "github.com/mehrdadmahdian/fc.io/internal/services/logger_service"
 	"github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
@@ -28,6 +29,7 @@ type Container struct {
 	AuditService         *audit_service.AuditService
 	BoxService           *box_service.BoxService
 	CardService          *card_service.CardService
+	LabelService         *label_service.LabelService
 	ProgressResetService *progress_reset_service.ProgressResetService
 	SocialService        *social_service.SocialService
 	Seeder               *seeders.Seeder
@@ -200,10 +202,18 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 	)
 
 	cardService, err := card_service.NewCardService(cardRepository, auditService)
-
 	if err != nil {
 		return nil, &ServiceCreationError{
-			ServiceName:          "boxService",
+			ServiceName:          "cardService",
+			Err:                  FailedToCreateService,
+			OriginalErrorMessage: err.Error(),
+		}
+	}
+
+	labelService, err := label_service.NewLabelService(labelRepository)
+	if err != nil {
+		return nil, &ServiceCreationError{
+			ServiceName:          "labelService",
 			Err:                  FailedToCreateService,
 			OriginalErrorMessage: err.Error(),
 		}
@@ -218,12 +228,13 @@ func NewContainer(Cfg *config.Config, ctx context.Context) (*Container, error) {
 		AuditService:         auditService,
 		BoxService:           boxService,
 		CardService:          cardService,
+		LabelService:         labelService,
 		ProgressResetService: progressResetService,
 		SocialService:        socialService,
 		Seeder:               seeder,
 	}
 
-	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService, loggerService, progressResetService)
+	apiHandler, err := api_handlers.NewApiHandler(authService, boxService, redisService, cardService, labelService, loggerService, progressResetService)
 	if err != nil {
 		return nil, &ServiceCreationError{
 			ServiceName:          "authHandler",

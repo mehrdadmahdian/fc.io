@@ -22,14 +22,20 @@ func (handler *ApiHandler) CreateCard(c *fiber.Ctx) error {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get box"), nil)
 	}
 
-	emptyLabels := []string{}
+	labelIds := request.LabelIds
+	if labelIds == nil {
+		labelIds = []string{}
+	}
+
 	card, err := models.NewCard(
 		box.IDString(),
-		emptyLabels,
+		labelIds,
 		request.Front,
 		request.Back,
 		request.Extra,
 		request.Hint,
+		request.IsBookmarked,
+		request.Difficulty,
 	)
 
 	if err != nil {
@@ -94,7 +100,12 @@ func (handler *ApiHandler) UpdateCard(c *fiber.Ctx) error {
 		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
 	}
 
-	err = handler.cardService.UpdateCard(c.Context(), cardID, request.Front, request.Back, request.Extra, request.Hint)
+	labelIds := request.LabelIds
+	if labelIds == nil {
+		labelIds = []string{}
+	}
+
+	err = handler.cardService.UpdateCard(c.Context(), cardID, request.Front, request.Back, request.Extra, request.Hint, labelIds, request.IsBookmarked, request.Difficulty)
 	if err != nil {
 		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update card"), nil)
 	}
@@ -248,4 +259,102 @@ func (handler *ApiHandler) BulkMigrateCards(c *fiber.Ctx) error {
 	return JsonSuccess(c, utils.PointerString("bulk migration completed"), &map[string]interface{}{
 		"migration_result": result,
 	})
+}
+
+// New feature handlers
+
+func (handler *ApiHandler) ToggleBookmark(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	request, err := requests.ParseRequestBody(c, new(requests.ToggleBookmarkRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusBadRequest, utils.PointerString("unable to parse request"), nil)
+	}
+
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
+
+	err = handler.cardService.ToggleBookmark(c.Context(), cardID)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to toggle bookmark"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("bookmark toggled successfully"), nil)
+}
+
+func (handler *ApiHandler) UpdateCardDifficulty(c *fiber.Ctx) error {
+	cardID := c.Params("cardid")
+
+	request, err := requests.ParseRequestBody(c, new(requests.UpdateCardDifficultyRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusBadRequest, utils.PointerString("unable to parse request"), nil)
+	}
+
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
+
+	err = handler.cardService.UpdateDifficulty(c.Context(), cardID, request.Difficulty)
+	if err != nil {
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to update difficulty"), nil)
+	}
+
+	return JsonSuccess(c, utils.PointerString("difficulty updated successfully"), nil)
+}
+
+func (handler *ApiHandler) GetCustomReviewCards(c *fiber.Ctx) error {
+	user := c.Locals("user")
+	userModel, ok := user.(*models.User)
+	if !ok {
+		utils.LogError(c, handler.loggerService, "GetCustomReviewCards",
+			fmt.Errorf("user not found in context"), map[string]interface{}{
+				"error_type": "authentication_error",
+			})
+		return JsonFailed(
+			c,
+			fiber.StatusInternalServerError,
+			utils.PointerString("user is not set in the lifecycle"),
+			nil,
+		)
+	}
+
+	request, err := requests.ParseRequestBody(c, new(requests.CustomReviewRequest))
+	if err != nil {
+		return JsonFailed(c, fiber.StatusBadRequest, utils.PointerString("unable to parse request"), nil)
+	}
+
+	validationErrors := requests.Validate(request)
+	if validationErrors != nil {
+		return JsonFailed(c, fiber.StatusUnprocessableEntity, utils.PointerString("failed to validate request"), utils.ConvertToMapInterface(validationErrors))
+	}
+
+	cards, err := handler.cardService.GetCustomReviewCards(c.Context(), userModel, request)
+	if err != nil {
+		utils.LogError(c, handler.loggerService, "GetCustomReviewCards", err, map[string]interface{}{
+			"error_type": "service_error",
+			"user_id":    userModel.ID.Hex(),
+		})
+		return JsonFailed(c, fiber.StatusInternalServerError, utils.PointerString("failed to get custom review cards"), nil)
+	}
+
+	utils.LogInfo(c, handler.loggerService, "GetCustomReviewCards",
+		"Successfully retrieved custom review cards", map[string]interface{}{
+			"user_id":     userModel.ID.Hex(),
+			"cards_count": len(cards),
+		})
+
+	dataMap := map[string]interface{}{
+		"totalCards": len(cards),
+		"cards":      cards,
+		"mode":       "custom",
+	}
+
+	return JsonSuccess(
+		c,
+		utils.PointerString("custom review cards fetched successfully!"),
+		&dataMap,
+	)
 }

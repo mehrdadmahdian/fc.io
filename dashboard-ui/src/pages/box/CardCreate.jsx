@@ -10,6 +10,7 @@ import '../../assets/styles/ModernPage.css';
 import '../../assets/styles/MarkdownTextarea.css';
 import { useEffect, useState, useRef } from 'react';
 import { useToast } from '../../contexts/ToastContext';
+import LabelSelector from '../../components/form/LabelSelector';
 
 function CardCreate() {
     const { t } = useTranslation();
@@ -21,7 +22,10 @@ function CardCreate() {
         front: '',
         back: '',
         extra: '',
-        hint: ''
+        hint: '',
+        labelIds: [],
+        isBookmarked: false,
+        difficulty: 'medium'
     });
     const [loading, setLoading] = useState(cardId ? true : false);
     const [boxName, setBoxName] = useState('');
@@ -74,7 +78,10 @@ function CardCreate() {
                         front: response.data.data.card.Front,
                         back: response.data.data.card.Back,
                         extra: response.data.data.card.Extra || '',
-                        hint: response.data.data.card.Hint || ''
+                        hint: response.data.data.card.Hint || '',
+                        labelIds: response.data.data.card.LabelIDs || [],
+                        isBookmarked: response.data.data.card.IsBookmarked || false,
+                        difficulty: response.data.data.card.Difficulty || 'medium'
                     });
                 } catch (err) {
                     // Error fetching card - handled by loading state
@@ -303,6 +310,50 @@ function CardCreate() {
                                         onChange={(e) => handleFieldChange('hint', e.target.value)}
                                         placeholder={t('cardCreate.hintPlaceholder')}
                                     />
+                                </div>
+
+                                {/* Label Selection */}
+                                <div className="compact-form-group">
+                                    <LabelSelector
+                                        boxId={boxId}
+                                        selectedLabels={formData.labelIds}
+                                        onLabelsChange={(labelIds) => setFormData({...formData, labelIds: labelIds})}
+                                    />
+                                </div>
+
+                                {/* Bookmark Toggle */}
+                                <div className="compact-form-group">
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            id="isBookmarked"
+                                            checked={formData.isBookmarked}
+                                            onChange={(e) => setFormData({...formData, isBookmarked: e.target.checked})}
+                                            className="form-checkbox"
+                                        />
+                                        <label htmlFor="isBookmarked" className="compact-form-label">
+                                            <i className="fas fa-bookmark mr-2"></i>
+                                            Bookmark this card
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Difficulty Selection */}
+                                <div className="compact-form-group">
+                                    <label className="compact-form-label" htmlFor="difficulty">
+                                        <i className="fas fa-signal mr-2"></i>
+                                        Difficulty Level
+                                    </label>
+                                    <select
+                                        id="difficulty"
+                                        className="compact-form-input"
+                                        value={formData.difficulty}
+                                        onChange={(e) => setFormData({...formData, difficulty: e.target.value})}
+                                    >
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
                                 </div>
 
                                 {/* Card Operations - Only show when editing */}

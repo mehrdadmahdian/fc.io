@@ -143,7 +143,7 @@ func (boxService *BoxService) GetBoxStages(ctx context.Context, box *models.Box)
 }
 
 func (boxService *BoxService) GetBoxLabels(ctx context.Context, box *models.Box) ([]*models.Label, error) {
-	labels, err := boxService.labelRepository.GetAllForBox(ctx, box)
+	labels, err := boxService.labelRepository.GetBoxLabels(ctx, box.IDString())
 	if err != nil {
 		return nil, err
 	}

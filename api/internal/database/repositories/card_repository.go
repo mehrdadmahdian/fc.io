@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
+	"github.com/mehrdadmahdian/fc.io/internal/handlers/requests"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -418,20 +419,33 @@ func (cardRepository *CardRepository) GetCardsByStatus(ctx context.Context, box 
 	return cards, nil
 }
 
-func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, cardID string, front string, back string, extra string, hint string) error {
+func (cardRepository *CardRepository) UpdateCardContent(ctx context.Context, cardID string, front string, back string, extra string, hint string, labelIds []string, isBookmarked bool, difficulty string) error {
 	objectId, err := models.StringToObjectID(cardID)
 	if err != nil {
 		return err
 	}
 
+	// Convert label IDs to ObjectIDs
+	labelObjectIds := []primitive.ObjectID{}
+	for _, labelId := range labelIds {
+		objectid, err := models.StringToObjectID(labelId)
+		if err != nil {
+			return err
+		}
+		labelObjectIds = append(labelObjectIds, objectid)
+	}
+
 	filter := bson.M{"_id": objectId}
 	update := bson.M{
 		"$set": bson.M{
-			"front":      front,
-			"back":       back,
-			"extra":      extra,
-			"hint":       hint,
-			"updated_at": time.Now(),
+			"front":         front,
+			"back":          back,
+			"extra":         extra,
+			"hint":          hint,
+			"label_ids":     labelObjectIds,
+			"is_bookmarked": isBookmarked,
+			"difficulty":    difficulty,
+			"updated_at":    time.Now(),
 		},
 	}
 
@@ -1163,4 +1177,139 @@ func (cardRepository *CardRepository) GetBoxesStatistics(ctx context.Context, bo
 	}
 
 	return statsMap, nil
+}
+
+// New feature methods
+
+func (cardRepository *CardRepository) ToggleBookmark(ctx context.Context, cardID string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	// First get the current bookmark status
+	var card models.Card
+	err = cardRepository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&card)
+	if err != nil {
+		return err
+	}
+
+	// Toggle the bookmark status
+	newBookmarkStatus := !card.IsBookmarked
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"is_bookmarked": newBookmarkStatus,
+			"updated_at":    time.Now(),
+		},
+	}
+
+	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (cardRepository *CardRepository) UpdateDifficulty(ctx context.Context, cardID string, difficulty string) error {
+	objectId, err := models.StringToObjectID(cardID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"difficulty": difficulty,
+			"updated_at": time.Now(),
+		},
+	}
+
+	_, err = cardRepository.collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (cardRepository *CardRepository) GetCustomReviewCards(ctx context.Context, user *models.User, request *requests.CustomReviewRequest) ([]*models.Card, error) {
+	// Build the base filter for user's cards
+	pipeline := mongo.Pipeline{
+		// First, get all boxes belonging to the user
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "boxes",
+			"localField":   "box_id",
+			"foreignField": "_id",
+			"as":           "box",
+		}}},
+		{{Key: "$unwind", Value: "$box"}},
+		{{Key: "$match", Value: bson.M{"box.user_id": user.ID}}},
+	}
+
+	// Add label lookup
+	pipeline = append(pipeline, bson.D{
+		{Key: "$lookup", Value: bson.M{
+			"from":         "labels",
+			"localField":   "label_ids",
+			"foreignField": "_id",
+			"as":           "labels",
+		}},
+	})
+
+	// Build match conditions
+	matchConditions := bson.M{}
+
+	// Filter by specific box if provided
+	if request.BoxID != "" {
+		boxObjectId, err := models.StringToObjectID(request.BoxID)
+		if err == nil {
+			matchConditions["box_id"] = boxObjectId
+		}
+	}
+
+	// Filter by labels if provided
+	if len(request.LabelIds) > 0 {
+		var labelObjectIds []primitive.ObjectID
+		for _, labelId := range request.LabelIds {
+			if objectId, err := models.StringToObjectID(labelId); err == nil {
+				labelObjectIds = append(labelObjectIds, objectId)
+			}
+		}
+		if len(labelObjectIds) > 0 {
+			matchConditions["label_ids"] = bson.M{"$in": labelObjectIds}
+		}
+	}
+
+	// Filter by bookmark status if provided
+	if request.Bookmarked {
+		matchConditions["is_bookmarked"] = true
+	}
+
+	// Filter by difficulty if provided
+	if len(request.Difficulty) > 0 {
+		matchConditions["difficulty"] = bson.M{"$in": request.Difficulty}
+	}
+
+	// Add match stage if we have conditions
+	if len(matchConditions) > 0 {
+		pipeline = append(pipeline, bson.D{{Key: "$match", Value: matchConditions}})
+	}
+
+	// Add shuffle if requested
+	if request.Shuffle {
+		pipeline = append(pipeline, bson.D{{Key: "$sample", Value: bson.M{"size": 1000}}})
+	}
+
+	// Add limit if provided
+	if request.Limit > 0 {
+		pipeline = append(pipeline, bson.D{{Key: "$limit", Value: request.Limit}})
+	}
+
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var cards []*models.Card
+	if err := cursor.All(ctx, &cards); err != nil {
+		return nil, err
+	}
+
+	return cards, nil
 }

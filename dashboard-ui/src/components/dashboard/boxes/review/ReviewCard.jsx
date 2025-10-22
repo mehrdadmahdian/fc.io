@@ -2,8 +2,9 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import CardStats from '../../CardStats';
 import MarkdownContent from '../../../common/MarkdownContent';
+import '../../../../assets/styles/ReviewCard.css';
 
-function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive, onEdit }) {
+function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArchive, onEdit, onToggleBookmark, isCustomReview = false }) {
     const { t } = useTranslation();
     const [showStats, setShowStats] = useState(false);
     const [showHint, setShowHint] = useState(false);
@@ -73,19 +74,36 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArch
                     role="button"
                     aria-label={showAnswer ? t('review.showingAnswer') : t('review.clickToReveal')}
                 >
-                    {/* Edit Button - Top Right Corner */}
-                    {onEdit && (
-                        <button 
-                            className="card-edit-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onEdit();
-                            }}
-                            title={t('review.editCard')}
-                        >
-                            <i className="fas fa-edit"></i>
-                        </button>
-                    )}
+                    {/* Simple Action Buttons - Top Corners */}
+                    <div className="card-action-buttons">
+                        {/* Bookmark Toggle - Top Left */}
+                        {onToggleBookmark && (
+                            <button 
+                                className={`card-bookmark-btn ${card.IsBookmarked ? 'bookmarked' : ''}`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleBookmark();
+                                }}
+                                title={card.IsBookmarked ? t('review.removeBookmark') : t('review.addBookmark')}
+                            >
+                                <i className={`fas ${card.IsBookmarked ? 'fa-star' : 'fa-star-o'}`}></i>
+                            </button>
+                        )}
+                        
+                        {/* Edit Button - Top Right */}
+                        {onEdit && (
+                            <button 
+                                className="card-edit-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEdit();
+                                }}
+                                title={t('review.editCard')}
+                            >
+                                <i className="fas fa-edit"></i>
+                            </button>
+                        )}
+                    </div>
                     <div className="card-content">
                         {!showAnswer ? (
                             <div className="question-side">
@@ -116,6 +134,33 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArch
                                 <div className="swipe-hint">
                                     <span>Tap or swipe → to reveal</span>
                                 </div>
+                                
+                                {/* Card Metadata - Bottom Left */}
+                                <div className="card-metadata-inline">
+                                    {card.IsBookmarked && (
+                                        <span className="metadata-item bookmark">
+                                            <i className="fas fa-bookmark"></i>
+                                        </span>
+                                    )}
+                                    {card.Difficulty && (
+                                        <span className={`metadata-item difficulty ${card.Difficulty}`}>
+                                            <i className="fas fa-signal"></i>
+                                        </span>
+                                    )}
+                                    {card.Labels && card.Labels.length > 0 && (
+                                        <div className="card-labels">
+                                            {card.Labels.map(label => (
+                                                <span 
+                                                    key={label.ID} 
+                                                    className="label-tag"
+                                                    style={{ backgroundColor: label.Color }}
+                                                >
+                                                    {label.Name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <div className="answer-side">
@@ -136,76 +181,118 @@ function ReviewCard({ card, showAnswer, onShowAnswer, onResponse, onNext, onArch
                                 <div className="swipe-hint">
                                     <span>← Swipe to go back</span>
                                 </div>
+                                
+                                {/* Card Metadata - Bottom Left */}
+                                <div className="card-metadata-inline">
+                                    {card.IsBookmarked && (
+                                        <span className="metadata-item bookmark">
+                                            <i className="fas fa-bookmark"></i>
+                                        </span>
+                                    )}
+                                    {card.Difficulty && (
+                                        <span className={`metadata-item difficulty ${card.Difficulty}`}>
+                                            <i className="fas fa-signal"></i>
+                                        </span>
+                                    )}
+                                    {card.Labels && card.Labels.length > 0 && (
+                                        <div className="card-labels">
+                                            {card.Labels.map(label => (
+                                                <span 
+                                                    key={label.ID} 
+                                                    className="label-tag"
+                                                    style={{ backgroundColor: label.Color }}
+                                                >
+                                                    {label.Name}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Always visible response buttons */}
-                <div className="fixed-response-buttons">
-                    <div className="response-row primary">
-                        <button 
-                            className="response-btn-compact again"
-                            onClick={() => {
-                                if (!showAnswer) onShowAnswer(true);
-                                else onResponse('again');
-                            }}
-                            title={!showAnswer ? "Reveal answer first" : "Again - Study in 1 min"}
-                        >
-                            <i className="fas fa-redo"></i>
-                            <span>Again</span>
-                            <kbd>1</kbd>
-                        </button>
+
+                {/* Response buttons - different for custom review */}
+                {!isCustomReview ? (
+                    <div className="fixed-response-buttons">
+                        <div className="response-row primary">
+                            <button 
+                                className="response-btn-compact again"
+                                onClick={() => {
+                                    if (!showAnswer) onShowAnswer(true);
+                                    else onResponse('again');
+                                }}
+                                title={!showAnswer ? "Reveal answer first" : "Again - Study in 1 min"}
+                            >
+                                <i className="fas fa-redo"></i>
+                                <span>Again</span>
+                                <kbd>1</kbd>
+                            </button>
+                            
+                            <button 
+                                className="response-btn-compact hard"
+                                onClick={() => {
+                                    if (!showAnswer) onShowAnswer(true);
+                                    else onResponse('hard');
+                                }}
+                                title={!showAnswer ? "Reveal answer first" : "Hard - Study in 6 min"}
+                            >
+                                <i className="fas fa-clock"></i>
+                                <span>Hard</span>
+                                <kbd>2</kbd>
+                            </button>
+                            
+                            <button 
+                                className="response-btn-compact easy"
+                                onClick={() => {
+                                    if (!showAnswer) onShowAnswer(true);
+                                    else onResponse('easy');
+                                }}
+                                title={!showAnswer ? "Reveal answer first" : "Easy - Study in 4 days"}
+                            >
+                                <i className="fas fa-check"></i>
+                                <span>Easy</span>
+                                <kbd>3</kbd>
+                            </button>
+                        </div>
                         
-                        <button 
-                            className="response-btn-compact hard"
-                            onClick={() => {
-                                if (!showAnswer) onShowAnswer(true);
-                                else onResponse('hard');
-                            }}
-                            title={!showAnswer ? "Reveal answer first" : "Hard - Study in 6 min"}
-                        >
-                            <i className="fas fa-clock"></i>
-                            <span>Hard</span>
-                            <kbd>2</kbd>
-                        </button>
-                        
-                        <button 
-                            className="response-btn-compact easy"
-                            onClick={() => {
-                                if (!showAnswer) onShowAnswer(true);
-                                else onResponse('easy');
-                            }}
-                            title={!showAnswer ? "Reveal answer first" : "Easy - Study in 4 days"}
-                        >
-                            <i className="fas fa-check"></i>
-                            <span>Easy</span>
-                            <kbd>3</kbd>
-                        </button>
+                        <div className="response-row secondary">
+                            <button 
+                                className="response-btn-compact archive"
+                                onClick={onArchive}
+                                title="Archive - Remove from review"
+                            >
+                                <i className="fas fa-archive"></i>
+                                <span>Archive</span>
+                                <kbd>4</kbd>
+                            </button>
+                            
+                            <button 
+                                className="response-btn-compact next"
+                                onClick={onNext}
+                                title="Next - Skip without changing interval"
+                            >
+                                <i className="fas fa-arrow-right"></i>
+                                <span>Next</span>
+                                <kbd>5</kbd>
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div className="response-row secondary">
-                        <button 
-                            className="response-btn-compact archive"
-                            onClick={onArchive}
-                            title="Archive - Remove from review"
-                        >
-                            <i className="fas fa-archive"></i>
-                            <span>Archive</span>
-                            <kbd>4</kbd>
-                        </button>
-                        
-                        <button 
-                            className="response-btn-compact next"
-                            onClick={onNext}
-                            title="Next - Skip without changing interval"
-                        >
-                            <i className="fas fa-arrow-right"></i>
-                            <span>Next</span>
-                            <kbd>5</kbd>
-                        </button>
+                ) : (
+                    <div className="custom-review-info">
+                        <div className="custom-review-navigation">
+                            <button 
+                                className="btn btn-secondary"
+                                onClick={onNext}
+                                title={t('common.next')}
+                            >
+                                {t('common.next')} <i className="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {showStats && (

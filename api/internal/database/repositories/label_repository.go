@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 
 	"github.com/mehrdadmahdian/fc.io/internal/database/models"
 	internal_mongo "github.com/mehrdadmahdian/fc.io/internal/services/mongo_service"
@@ -23,37 +24,76 @@ func NewLabelRepository(mongoService *internal_mongo.MongoService) (*LabelReposi
 	}, nil
 }
 
-func (LabelRepository *LabelRepository) Insert(ctx context.Context, stage *models.Label) (*models.Label, error) {
-	_, err := LabelRepository.collection.InsertOne(ctx, stage)
-	if err != nil {
-		return nil, err
-	}
-
-	return stage, nil
+func (labelRepository *LabelRepository) CreateLabel(ctx context.Context, label *models.Label) error {
+	_, err := labelRepository.collection.InsertOne(ctx, label)
+	return err
 }
 
-func (LabelRepository *LabelRepository) GetAllForBox(ctx context.Context, box *models.Box) ([]*models.Label, error) {
-	var labels []*models.Label
-
-	filter := bson.M{"box_id": box.ID}
-
-	cursor, err := LabelRepository.collection.Find(ctx, filter)
-	defer cursor.Close(ctx)
+func (labelRepository *LabelRepository) GetBoxLabels(ctx context.Context, boxID string) ([]*models.Label, error) {
+	boxObjectId, err := models.StringToObjectID(boxID)
 	if err != nil {
 		return nil, err
 	}
 
-	for cursor.Next(ctx) {
-		var label models.Label
-		if err := cursor.Decode(&label); err != nil {
-			return nil, err
-		}
-		labels = append(labels, &label)
+	filter := bson.M{"box_id": boxObjectId}
+	cursor, err := labelRepository.collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
 	}
+	defer cursor.Close(ctx)
 
-	if err := cursor.Err(); err != nil {
+	var labels []*models.Label
+	if err := cursor.All(ctx, &labels); err != nil {
 		return nil, err
 	}
 
 	return labels, nil
+}
+
+func (labelRepository *LabelRepository) GetLabel(ctx context.Context, labelID string) (*models.Label, error) {
+	objectId, err := models.StringToObjectID(labelID)
+	if err != nil {
+		return nil, err
+	}
+
+	var label models.Label
+	err = labelRepository.collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&label)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &label, nil
+}
+
+func (labelRepository *LabelRepository) UpdateLabel(ctx context.Context, labelID string, name string, color string) error {
+	objectId, err := models.StringToObjectID(labelID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	update := bson.M{
+		"$set": bson.M{
+			"name":       name,
+			"color":      color,
+			"updated_at": time.Now(),
+		},
+	}
+
+	_, err = labelRepository.collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (labelRepository *LabelRepository) DeleteLabel(ctx context.Context, labelID string) error {
+	objectId, err := models.StringToObjectID(labelID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": objectId}
+	_, err = labelRepository.collection.DeleteOne(ctx, filter)
+	return err
 }

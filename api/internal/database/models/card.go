@@ -17,6 +17,8 @@ type Card struct {
 	Back          string               `bson:"back"`
 	Extra         string               `bson:"extra"`
 	Hint          string               `bson:"hint"`
+	IsBookmarked  bool                 `bson:"is_bookmarked"` // Bookmark functionality
+	Difficulty    string               `bson:"difficulty"`    // easy, medium, hard
 	Review        Review               `bson:"review"`
 	ReverseReview Review               `bson:"reverse_review"`
 	CreatedAt     time.Time            `bson:"created_at"`
@@ -52,6 +54,8 @@ func NewCard(
 	back string,
 	Extra string,
 	hint string,
+	isBookmarked bool,
+	difficulty string,
 ) (*Card, error) {
 	boxObjectId, err := StringToObjectID(boxID)
 	if err != nil {
@@ -67,20 +71,27 @@ func NewCard(
 		labelObjectIds = append(labelObjectIds, objectid)
 	}
 
+	// Set default difficulty if not provided
+	if difficulty == "" {
+		difficulty = "medium"
+	}
+
 	nextDueDate := time.Now().Add(24 * time.Hour)
 	reverseNextDueDate := time.Now().Add(24 * time.Hour)
 	defaultInterval := DefaultInteval
 	defaultEaseFactor := DefaultEaseFactor
 	return &Card{
-		ID:        primitive.NewObjectID(),
-		BoxID:     boxObjectId,
-		LabelIDs:  labelObjectIds,
-		Front:     front,
-		Back:      back,
-		Extra:     Extra,
-		Hint:      hint,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:           primitive.NewObjectID(),
+		BoxID:        boxObjectId,
+		LabelIDs:     labelObjectIds,
+		Front:        front,
+		Back:         back,
+		Extra:        Extra,
+		Hint:         hint,
+		IsBookmarked: isBookmarked,
+		Difficulty:   difficulty,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 		Review: Review{
 			LastReviewDate: nil,
 			NextDueDate:    &nextDueDate,

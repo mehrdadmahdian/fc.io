@@ -136,6 +136,8 @@
     "deleteError": "Failed to delete card",
     "archiveSuccess": "Card archived successfully",
     "archiveError": "Failed to archive card",
+    "bookmarkSuccess": "Card bookmark updated successfully",
+    "bookmarkError": "Failed to update card bookmark",
     "frontBackRequired": "Front and back fields are required",
     "createSuccess": "Card created successfully",
     "createError": "Failed to create card",
@@ -212,6 +214,12 @@
     "editCard": "Edit Card",
     "archiveCard": "Archive Card",
     "showStats": "Show Statistics",
+    "addBookmark": "Add Bookmark",
+    "removeBookmark": "Remove Bookmark",
+    "bookmarkAdded": "Card bookmarked",
+    "bookmarkRemoved": "Bookmark removed",
+    "showActions": "Show Actions",
+    "hideActions": "Hide Actions",
     "cardsRemaining": "{{remaining}} cards remaining",
     "noChange": "No change",
     "noCards": {
@@ -265,6 +273,32 @@
       }
     },
     "progress": "Card {{current}} of {{total}}"
+  },
+  "customReview": {
+    "title": "Custom Review",
+    "bookmarked": "Bookmarked",
+    "shuffle": "Shuffle",
+    "startReview": "Start Review",
+    "noCards": {
+      "title": "No Cards Found",
+      "message": "No cards match your current filters. Try adjusting your selection criteria."
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "filters": {
+      "title": "Filter Cards",
+      "description": "Select criteria to customize your review session",
+      "box": "Box",
+      "allBoxes": "All Boxes",
+      "labels": "Labels",
+      "bookmarkedOnly": "Bookmarked Cards Only",
+      "difficulty": "Difficulty Level",
+      "shuffle": "Shuffle Cards",
+      "limit": "Maximum Cards"
+    }
   },
   "auth": {
     "name": "Name",
@@ -439,7 +473,9 @@
     "back": "Back",
     "fillRequiredFields": "Please fill in all required fields",
     "optional": "optional",
-    "characters": "characters"
+    "characters": "characters",
+    "showActions": "Show Actions",
+    "hideActions": "Hide Actions"
   },
   "social": {
     "follow": {
