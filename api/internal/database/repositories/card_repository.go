@@ -233,22 +233,26 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReview(ctx context.C
 func (cardRepository *CardRepository) GetBoxCardsToReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
 	currentTime := time.Now()
 
-	filter := bson.M{
-		"box_id": box.ID,
-		"review": bson.M{"$ne": nil},
-		"review.next_due_date": bson.M{
-			"$ne":  nil,
-			"$lte": currentTime,
-		},
+	// Use aggregation pipeline to include labels lookup
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{
+			"box_id": box.ID,
+			"review": bson.M{"$ne": nil},
+			"review.next_due_date": bson.M{
+				"$ne":  nil,
+				"$lte": currentTime,
+			},
+		}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "labels",
+			"localField":   "label_ids",
+			"foreignField": "_id",
+			"as":           "labels",
+		}}},
+		{{Key: "$sort", Value: bson.D{{Key: "review.next_due_date", Value: 1}}}},
 	}
 
-	sort := bson.D{{Key: "review.next_due_date", Value: 1}}
-
-	cursor, err := cardRepository.collection.Find(
-		ctx,
-		filter,
-		options.Find().SetSort(sort),
-	)
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}
@@ -500,22 +504,26 @@ func (cardRepository *CardRepository) GetFirstEligibleCardToReverseReview(ctx co
 func (cardRepository *CardRepository) GetBoxCardsToReverseReview(ctx context.Context, box *models.Box) ([]*models.Card, error) {
 	currentTime := time.Now()
 
-	filter := bson.M{
-		"box_id":         box.ID,
-		"reverse_review": bson.M{"$ne": nil},
-		"reverse_review.next_due_date": bson.M{
-			"$ne":  nil,
-			"$lte": currentTime,
-		},
+	// Use aggregation pipeline to include labels lookup
+	pipeline := mongo.Pipeline{
+		{{Key: "$match", Value: bson.M{
+			"box_id":         box.ID,
+			"reverse_review": bson.M{"$ne": nil},
+			"reverse_review.next_due_date": bson.M{
+				"$ne":  nil,
+				"$lte": currentTime,
+			},
+		}}},
+		{{Key: "$lookup", Value: bson.M{
+			"from":         "labels",
+			"localField":   "label_ids",
+			"foreignField": "_id",
+			"as":           "labels",
+		}}},
+		{{Key: "$sort", Value: bson.D{{Key: "reverse_review.next_due_date", Value: 1}}}},
 	}
 
-	sort := bson.D{{Key: "reverse_review.next_due_date", Value: 1}}
-
-	cursor, err := cardRepository.collection.Find(
-		ctx,
-		filter,
-		options.Find().SetSort(sort),
-	)
+	cursor, err := cardRepository.collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return nil, err
 	}

@@ -311,6 +311,7 @@ function CustomReview() {
                         onShowAnswer={setShowAnswer}
                         onResponse={() => {}} // No response handling in custom review
                         onNext={handleNext}
+                        onPrevious={handlePrevious}
                         onArchive={() => {}} // No archive in custom review
                         onEdit={() => {}} // No edit in custom review
                         onToggleBookmark={handleToggleBookmark}

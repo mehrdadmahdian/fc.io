@@ -39,6 +39,7 @@ import '../../assets/styles/ModernPage.css';
 import '../../assets/styles/Migration.css';
 import '../../assets/styles/ProgressReset.css';
 import '../../assets/styles/LabelManager.css';
+import '../../assets/styles/ColorfulActions.css';
 
 function BoxDetails() {
     const { t } = useTranslation();
@@ -771,61 +772,61 @@ function BoxDetails() {
                                 <div className="box-actions-left">
                                     <div className="action-buttons-compact">
                                         <button 
-                                            className="compact-btn compact-btn-primary"
+                                            className="compact-btn compact-btn-edit"
                                             onClick={() => setShowBoxEditModal(true)}
                                             title={t('boxDetails.editBox')}
                                         >
                                             <i className="fas fa-edit"></i>
-                                            <span className="action-text">{t('boxDetails.editBox')}</span>
+                                            <span className="action-text">Edit Box</span>
                                         </button>
                                         <button 
-                                            className="compact-btn compact-btn-danger"
+                                            className="compact-btn compact-btn-delete"
                                             onClick={handleDeleteBox}
                                             disabled={isDeleting}
                                             title={t('dashboard.boxes.actions.delete')}
                                         >
                                             <i className="fas fa-trash"></i>
-                                            <span className="action-text">{t('dashboard.boxes.actions.delete')}</span>
+                                            <span className="action-text">Delete</span>
                                         </button>
                                         <button 
                                             onClick={startCreatingCard} 
-                                            className="compact-btn compact-btn-primary"
+                                            className="compact-btn compact-btn-add"
                                             disabled={isCreatingCard}
                                         >
                                             <i className="fas fa-plus"></i>
-                                            <span className="action-text">{t('cards.addQuick')}</span>
+                                            <span className="action-text">Quick Add</span>
                                         </button>
                                         <Link 
                                             to={`/box/${boxId}/cards/create`} 
                                             state={{ from: location.pathname }}
-                                            className="compact-btn compact-btn-outline"
+                                            className="compact-btn compact-btn-add-detailed"
                                         >
                                             <i className="fas fa-plus-circle"></i>
-                                            <span className="action-text">{t('cards.addDetailed')}</span>
+                                            <span className="action-text">Add Card</span>
                                         </Link>
-                                        <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-success">
+                                        <Link to={`/box/${boxId}/review`} className="compact-btn compact-btn-review">
                                             <i className="fas fa-play"></i>
-                                            <span className="action-text">{t('review.start')}</span>
+                                            <span className="action-text">Review</span>
                                         </Link>
-                                        <Link to={`/box/${boxId}/review/custom`} className="compact-btn compact-btn-outline">
+                                        <Link to={`/box/${boxId}/review/custom`} className="compact-btn compact-btn-custom">
                                             <i className="fas fa-filter"></i>
-                                            <span className="action-text">Custom Review</span>
+                                            <span className="action-text">Custom</span>
                                         </Link>
                                         <Link to={`/box/${boxId}/presentation`} className="compact-btn compact-btn-presentation">
                                             <i className="fas fa-slideshare"></i>
-                                            <span className="action-text">{t('presentation.start')}</span>
+                                            <span className="action-text">Present</span>
                                         </Link>
                                         <button 
                                             onClick={handleBoxReset}
-                                            className="compact-btn compact-btn-danger"
+                                            className="compact-btn compact-btn-reset"
                                             title={t('progress_reset.box_reset_warning')}
                                         >
                                             <i className="fas fa-undo-alt"></i>
-                                            <span className="action-text">{t('progress_reset.box_reset')}</span>
+                                            <span className="action-text">Reset</span>
                                         </button>
                                         <button 
                                             onClick={() => setShowLabelManager(!showLabelManager)}
-                                            className={`compact-btn ${showLabelManager ? 'compact-btn-primary' : 'compact-btn-outline'}`}
+                                            className={`compact-btn ${showLabelManager ? 'compact-btn-labels-active' : 'compact-btn-labels'}`}
                                             title="Manage Labels"
                                         >
                                             <i className="fas fa-tags"></i>
@@ -838,48 +839,48 @@ function BoxDetails() {
                                 <div className="box-actions-right">
                                     <button 
                                         onClick={toggleBulkSelectMode}
-                                        className={`compact-btn ${bulkSelectMode ? 'compact-btn-primary' : 'compact-btn-outline'}`}
+                                        className={`compact-btn ${bulkSelectMode ? 'compact-btn-bulk-active' : 'compact-btn-bulk'}`}
                                     >
                                         <i className={`fas ${bulkSelectMode ? 'fa-times' : 'fa-check-square'}`}></i>
-                                        <span className="action-text">{bulkSelectMode ? t('cards.exitBulkSelect') : t('cards.bulkSelect')}</span>
+                                        <span className="action-text">{bulkSelectMode ? 'Exit' : 'Bulk'}</span>
                                     </button>
                                     
                                     {bulkSelectMode && (
                                         <>
                                             <button 
                                                 onClick={selectAllCards}
-                                                className="compact-btn compact-btn-outline"
+                                                className="compact-btn compact-btn-select"
                                                 disabled={selectedCards.size === currentCards.length}
                                             >
                                                 <i className="fas fa-check-double"></i>
-                                                <span className="action-text">{t('cards.selectAll')}</span>
+                                                <span className="action-text">All</span>
                                             </button>
                                             <button 
                                                 onClick={clearSelection}
-                                                className="compact-btn compact-btn-outline"
+                                                className="compact-btn compact-btn-clear"
                                                 disabled={selectedCards.size === 0}
                                             >
                                                 <i className="fas fa-times"></i>
-                                                <span className="action-text">{t('cards.clearSelection')}</span>
+                                                <span className="action-text">Clear</span>
                                             </button>
                                             
                                             {selectedCards.size > 0 && (
                                                 <>
                                                     <button 
                                                         onClick={handleBulkMigration}
-                                                        className="compact-btn compact-btn-warning"
+                                                        className="compact-btn compact-btn-migrate"
                                                         disabled={selectedCards.size === 0}
                                                     >
                                                         <i className="fas fa-arrow-right"></i>
-                                                        <span className="action-text">{t('migration.migrateSelected', { count: selectedCards.size })}</span>
+                                                        <span className="action-text">Move ({selectedCards.size})</span>
                                                     </button>
                                                     <button 
                                                         onClick={handleBulkReset}
-                                                        className="compact-btn compact-btn-danger"
+                                                        className="compact-btn compact-btn-bulk-reset"
                                                         disabled={selectedCards.size === 0}
                                                     >
                                                         <i className="fas fa-undo-alt"></i>
-                                                        <span className="action-text">{t('progress_reset.bulk_reset')} ({selectedCards.size})</span>
+                                                        <span className="action-text">Reset ({selectedCards.size})</span>
                                                     </button>
                                                 </>
                                             )}
@@ -1051,11 +1052,11 @@ function BoxDetails() {
                                                 </div>
                                                 <div className="col-labels">
                                                     {card.Labels && card.Labels.length > 0 ? (
-                                                        <div className="card-labels-display">
-                                                            {card.Labels.slice(0, 2).map((label) => (
-                                                                <span 
+                                                        <div className="card-labels-display-vertical">
+                                                            {card.Labels.map((label) => (
+                                                                <div 
                                                                     key={label.ID} 
-                                                                    className="label-badge"
+                                                                    className="label-badge-vertical"
                                                                     style={{ 
                                                                         backgroundColor: `${label.Color}20`, 
                                                                         color: label.Color,
@@ -1063,11 +1064,8 @@ function BoxDetails() {
                                                                     }}
                                                                 >
                                                                     {label.Name}
-                                                                </span>
+                                                                </div>
                                                             ))}
-                                                            {card.Labels.length > 2 && (
-                                                                <span className="label-more">+{card.Labels.length - 2}</span>
-                                                            )}
                                                         </div>
                                                     ) : (
                                                         <span className="no-labels">No labels</span>

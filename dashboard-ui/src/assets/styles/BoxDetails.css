@@ -190,7 +190,7 @@
 /* Default table layout (without bulk select) */
 .table-header {
     display: grid !important;
-    grid-template-columns: 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px);
+    grid-template-columns: 70px 1fr 1fr 1fr 1fr 100px minmax(200px, 250px);
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: #f8fafc;
@@ -200,26 +200,28 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.025em;
+    min-height: 3rem;
 }
 
 .table-row {
     display: grid !important;
-    grid-template-columns: 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px) !important;
+    grid-template-columns: 70px 1fr 1fr 1fr 1fr 100px minmax(200px, 250px) !important;
     gap: 0.5rem;
     padding: 0.75rem;
     border-bottom: 1px solid #f3f4f6;
     transition: all 0.2s ease;
     align-items: center; /* Center content vertically */
     flex-direction: row !important; /* Override any flex-direction: column */
+    min-height: 4rem; /* Ensure consistent row height */
 }
 
 /* Table layout with bulk select checkbox column */
 .cards-table.bulk-select-mode .table-header {
-    grid-template-columns: 50px 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px) !important;
+    grid-template-columns: 50px 70px 1fr 1fr 1fr 1fr 100px minmax(200px, 250px) !important;
 }
 
 .cards-table.bulk-select-mode .table-row {
-    grid-template-columns: 50px 70px 1fr 1fr 1fr 1fr 120px minmax(280px, 320px) !important;
+    grid-template-columns: 50px 70px 1fr 1fr 1fr 1fr 100px minmax(200px, 250px) !important;
 }
 
 .table-row:hover {
@@ -366,27 +368,58 @@
     background: white;
 }
 
-/* Timestamp Column */
+/* Labels Column - Vertical Display */
+.card-labels-display-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+    max-width: 100%;
+}
+
+.label-badge-vertical {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-labels {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* Timestamp Column - More Compact */
 .col-timestamp {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .timestamp-info {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #6b7280;
     line-height: 1.2;
+    text-align: center;
 }
 
 .timestamp-main {
     font-weight: 500;
     color: #374151;
+    font-size: 0.7rem;
 }
 
 .timestamp-created {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: #9ca3af;
     margin-top: 0.125rem;
+    display: none; /* Hide created timestamp to save space */
 }
 
 .new-card-timestamp {
@@ -809,7 +842,7 @@
 @media (max-width: 1200px) {
     .table-header,
     .table-row {
-        grid-template-columns: 60px 1fr 1fr 0.8fr 0.8fr 100px 200px !important;
+        grid-template-columns: 60px 1fr 1fr 0.8fr 0.8fr 80px 180px !important;
         gap: 0.375rem;
         font-size: 0.8rem;
         display: grid !important;
@@ -819,7 +852,7 @@
     /* Bulk select mode adjustments for medium screens */
     .cards-table.bulk-select-mode .table-header,
     .cards-table.bulk-select-mode .table-row {
-        grid-template-columns: 40px 60px 1fr 1fr 0.8fr 0.8fr 100px 180px !important;
+        grid-template-columns: 40px 60px 1fr 1fr 0.8fr 0.8fr 80px 160px !important;
     }
 }
 
@@ -1393,10 +1426,10 @@
 
 /* ===== DESKTOP ACTION ICONS OPTIMIZATION ===== */
 
-/* Hide action labels on all devices for cleaner look */
+/* Show action labels for better clarity */
 .card-action-btn .action-label,
 .compact-btn .action-text {
-    display: none;
+    display: inline;
 }
 
 /* Icon-only button styling for all devices */
