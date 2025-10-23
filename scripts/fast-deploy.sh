@@ -19,6 +19,40 @@ print_error() {
     echo "❌ $1"
 }
 
+# Function to check available memory and set build limits
+check_and_set_resource_limits() {
+    # Get available memory in MB (works on Linux and macOS)
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        AVAILABLE_MEM=$(free -m | awk 'NR==2{print $7}')
+        TOTAL_MEM=$(free -m | awk 'NR==2{print $2}')
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        TOTAL_MEM=$(sysctl -n hw.memsize | awk '{print int($1/1024/1024)}')
+        AVAILABLE_MEM=$(vm_stat | grep "Pages free" | awk '{print int($3 * 4096 / 1024 / 1024)}')
+    else
+        # Default conservative values
+        TOTAL_MEM=4096
+        AVAILABLE_MEM=2048
+    fi
+    
+    print_status "System Memory: ${TOTAL_MEM}MB total, ${AVAILABLE_MEM}MB available"
+    
+    # Set conservative build limits based on available memory
+    if [ "$AVAILABLE_MEM" -lt 2048 ]; then
+        print_warning "Low memory detected. Using sequential build mode."
+        export BUILD_MODE="sequential"
+        export NODE_OPTIONS="--max-old-space-size=1024"
+    elif [ "$AVAILABLE_MEM" -lt 4096 ]; then
+        print_warning "Moderate memory available. Using limited parallel builds."
+        export BUILD_MODE="limited"
+        export NODE_OPTIONS="--max-old-space-size=2048"
+    else
+        print_status "Sufficient memory available. Using parallel builds."
+        export BUILD_MODE="parallel"
+        export NODE_OPTIONS="--max-old-space-size=3072"
+    fi
+}
+
 # Function to check service health
 check_health() {
     local service=$1
@@ -59,8 +93,38 @@ show_usage() {
 rolling_deployment() {
     print_status "Starting rolling deployment..."
     
-    # Pre-build all images in parallel
-    APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    # Check resources and set limits
+    check_and_set_resource_limits
+    
+    # Build images based on available resources
+    if [ "$BUILD_MODE" = "sequential" ]; then
+        print_status "Building images sequentially to conserve memory..."
+        # Build one service at a time
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build api
+        
+        # Clean up intermediate layers before building heavy Node.js apps
+        docker builder prune -f --filter "until=1h" >/dev/null 2>&1
+        
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui
+        
+        # Clean up again before final build
+        docker builder prune -f --filter "until=1h" >/dev/null 2>&1
+        
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build public-ui
+    elif [ "$BUILD_MODE" = "limited" ]; then
+        print_status "Building images with limited parallelism..."
+        # Build lightweight services together, heavy ones separately
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f --filter "until=1h" >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui public-ui
+    else
+        print_status "Building all images in parallel..."
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    fi
+    
+    # Clean up after build
+    docker builder prune -f >/dev/null 2>&1
     
     # Rolling update strategy - update services one by one
     APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-deps redis mongodb
@@ -82,8 +146,28 @@ rolling_deployment() {
 blue_green_deployment() {
     print_status "Starting blue-green deployment..."
     
+    # Check resources and set limits
+    check_and_set_resource_limits
+    
     export COMPOSE_PROJECT_NAME="fcio-green"
-    APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    
+    # Build based on available resources
+    if [ "$BUILD_MODE" = "sequential" ]; then
+        print_status "Building images sequentially..."
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build public-ui
+    elif [ "$BUILD_MODE" = "limited" ]; then
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui public-ui
+    else
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    fi
+    
+    docker builder prune -f >/dev/null 2>&1
     APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
     
     check_health api && check_health dashboard-ui && check_health public-ui && check_health nginx
@@ -95,7 +179,27 @@ blue_green_deployment() {
 # Strategy 3: Build Only (Pre-build for faster deployment)
 build_only() {
     print_status "Building images..."
-    APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    
+    # Check resources and set limits
+    check_and_set_resource_limits
+    
+    # Build based on available resources
+    if [ "$BUILD_MODE" = "sequential" ]; then
+        print_status "Building images sequentially..."
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build public-ui
+    elif [ "$BUILD_MODE" = "limited" ]; then
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui public-ui
+    else
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    fi
+    
+    docker builder prune -f >/dev/null 2>&1
     print_success "Images built - ready for deployment"
 }
 
@@ -103,7 +207,26 @@ build_only() {
 quick_restart() {
     print_status "Quick restart deployment..."
     
-    APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    # Check resources and set limits
+    check_and_set_resource_limits
+    
+    # Build based on available resources
+    if [ "$BUILD_MODE" = "sequential" ]; then
+        print_status "Building images sequentially..."
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build public-ui
+    elif [ "$BUILD_MODE" = "limited" ]; then
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build nginx api
+        docker builder prune -f >/dev/null 2>&1
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build dashboard-ui public-ui
+    else
+        APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml build --parallel
+    fi
+    
+    docker builder prune -f >/dev/null 2>&1
     APP_ENV=production docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --force-recreate
     
     sleep 10
@@ -116,8 +239,19 @@ quick_restart() {
 optimize_for_speed() {
     export DOCKER_BUILDKIT=1
     export COMPOSE_DOCKER_CLI_BUILD=1
-    docker image prune -af --filter "until=24h" >/dev/null 2>&1
-    docker builder prune -af >/dev/null 2>&1
+    
+    print_status "Cleaning up old Docker resources..."
+    
+    # Remove dangling images and build cache older than 24h
+    docker image prune -f --filter "until=24h" >/dev/null 2>&1
+    
+    # Clean up build cache but keep recent layers for faster rebuilds
+    docker builder prune -f --filter "until=24h" >/dev/null 2>&1
+    
+    # Remove stopped containers older than 1 hour
+    docker container prune -f --filter "until=1h" >/dev/null 2>&1
+    
+    print_success "Docker cleanup completed"
 }
 
 # Main deployment function

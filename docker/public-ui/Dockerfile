@@ -54,11 +54,13 @@ COPY public-ui/ .
 
 # Set environment variables for build
 ARG NEXT_PUBLIC_API_URL
+ARG NODE_OPTIONS="--max-old-space-size=2048"
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=${NODE_OPTIONS}
 
-# Build the application
+# Build the application with memory limits
 RUN npm run build
 
 # Production stage

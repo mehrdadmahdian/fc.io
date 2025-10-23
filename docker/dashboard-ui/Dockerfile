@@ -68,12 +68,14 @@ COPY dashboard-ui/ .
 
 # Build arguments
 ARG REACT_APP_API_BASE_URL
+ARG NODE_OPTIONS="--max-old-space-size=2048"
 ENV REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
 ENV PUBLIC_URL=/dashboard
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=${NODE_OPTIONS}
 
-# Build the application
+# Build the application with memory limits
 RUN npm run build
 
 # Production stage
